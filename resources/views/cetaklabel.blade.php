@@ -1034,10 +1034,6 @@ function buatLabel() {
 
             </div>
 
-            <div class="label-price">
-                Rp ${formatRupiah(selectedProduct.price)}
-            </div>
-
             <div class="label-sku">
                 ${escapeHtml(selectedProduct.sku)}
             </div>
@@ -1095,23 +1091,6 @@ function cetakLabel() {
     */
 
     window.print();
-
-}
-
-
-/* =========================================================
-   FORMAT RUPIAH
-   ========================================================= */
-
-function formatRupiah(value) {
-
-    const number =
-        parseFloat(value) || 0;
-
-
-    return new Intl.NumberFormat(
-        'id-ID'
-    ).format(number);
 
 }
 

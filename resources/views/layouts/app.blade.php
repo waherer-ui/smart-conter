@@ -19,6 +19,14 @@
 
 <body class="min-h-screen bg-gray-900 text-gray-200 flex flex-col">
 
+    {{-- Ambil data user aktif secara dinamis untuk seluruh layout --}}
+    @php
+        $layoutUser = session('logged_in') ? \App\Models\User::find(session('user_id')) : null;
+        $avatarUrl = ($layoutUser && $layoutUser->avatar) 
+            ? asset('avatars/' . $layoutUser->avatar) 
+            : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100';
+    @endphp
+
 
     {{-- ========================================================= --}}
     {{-- NAVBAR GLOBAL --}}
@@ -89,10 +97,10 @@
                                 </div>
 
 
-                                {{-- Avatar --}}
+                                {{-- Avatar Desktop Utama --}}
                                 <img
-                                    class="w-9 h-9 rounded-full border border-white/20"
-                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100"
+                                    class="w-9 h-9 rounded-full border border-white/20 object-cover"
+                                    src="{{ $avatarUrl }}"
                                     alt="Profile"
                                 >
 
@@ -136,9 +144,10 @@
 
                                     <div class="flex items-center gap-3">
 
+                                        {{-- Avatar Desktop Dropdown Header --}}
                                         <img
-                                            class="w-11 h-11 rounded-full border border-white/20"
-                                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100"
+                                            class="w-11 h-11 rounded-full border border-white/20 object-cover"
+                                            src="{{ $avatarUrl }}"
                                             alt="Profile"
                                         >
 
@@ -214,14 +223,14 @@
                                         <span>Pengeluaran</span>
                                     </a>
                                     
-                                        {{-- Laporan --}}
-                                        <a
-                                            href="{{ route('laporan') }}"
-                                            class="dropdown-link"
-                                        >
-                                            <span>📊</span>
-                                            <span>Laporan</span>
-                                        </a>
+                                    {{-- Laporan --}}
+                                    <a
+                                        href="{{ route('laporan') }}"
+                                        class="dropdown-link"
+                                    >
+                                        <span>📊</span>
+                                        <span>Laporan</span>
+                                    </a>
 
                                     {{-- Riwayat --}}
                                     <a
@@ -230,6 +239,15 @@
                                     >
                                         <span>🧾</span>
                                         <span>Riwayat Transaksi</span>
+                                    </a>
+
+                                    {{-- Profil Saya --}}
+                                    <a
+                                        href="{{ route('profil') }}"
+                                        class="dropdown-link"
+                                    >
+                                        <span>👤</span>
+                                        <span>Profil Saya</span>
                                     </a>
 
                                 </div>
@@ -257,10 +275,6 @@
                                             <span>👥</span>
                                             <span>Manajemen Admin</span>
                                         </a>
-
-
-
-
 
                                         {{-- Setting --}}
                                         <a
@@ -344,9 +358,10 @@
                                    focus:outline-none"
                         >
 
+                            {{-- Avatar Mobile Utama --}}
                             <img
-                                class="w-9 h-9 rounded-full border border-white/20"
-                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100"
+                                class="w-9 h-9 rounded-full border border-white/20 object-cover"
+                                src="{{ $avatarUrl }}"
                                 alt="Profile"
                             >
 
@@ -420,9 +435,10 @@
 
                         <div class="flex items-center gap-3">
 
+                            {{-- Avatar Mobile Dropdown Header --}}
                             <img
-                                class="w-11 h-11 rounded-full border border-white/20"
-                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100"
+                                class="w-11 h-11 rounded-full border border-white/20 object-cover"
+                                src="{{ $avatarUrl }}"
                                 alt="Profile"
                             >
 
@@ -497,7 +513,15 @@
                             <span>💸</span>
                             <span>Pengeluaran</span>
                         </a>
-
+                        
+                                                    {{-- Laporan --}}
+                            <a
+                                href="{{ route('laporan') }}"
+                                class="dropdown-link"
+                            >
+                                <span>📊</span>
+                                <span>Laporan</span>
+                            </a>
 
                         {{-- Riwayat --}}
                         <a
@@ -506,6 +530,15 @@
                         >
                             <span>🧾</span>
                             <span>Riwayat Transaksi</span>
+                        </a>
+
+                        {{-- Profil Saya --}}
+                        <a
+                            href="{{ route('profil') }}"
+                            class="dropdown-link"
+                        >
+                            <span>👤</span>
+                            <span>Profil Saya</span>
                         </a>
 
                     </div>
@@ -535,14 +568,7 @@
                             </a>
 
 
-                            {{-- Laporan --}}
-                            <a
-                                href="{{ route('laporan') }}"
-                                class="dropdown-link"
-                            >
-                                <span>📊</span>
-                                <span>Laporan</span>
-                            </a>
+
 
 
                             {{-- Setting --}}
@@ -567,6 +593,7 @@
 
                         <a
                             href="{{ route('logout') }}"
+                            onclick="localStorage.removeItem('smart_pos_cart')"
                             class="dropdown-link text-red-400
                                    hover:bg-red-500/10
                                    hover:text-red-300"

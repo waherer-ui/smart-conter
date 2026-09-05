@@ -23,51 +23,95 @@
                 </p>
             </div>
 
-            {{-- FILTER --}}
-            <form
-                action="{{ route('riwayat') }}"
-                method="GET"
-                class="flex flex-col sm:flex-row gap-2"
-            >
+<form
+    action="{{ route('riwayat') }}"
+    method="GET"
+    class="flex flex-col sm:flex-row gap-2"
+>
+    {{-- PENCARIAN --}}
+    <input
+        type="text"
+        name="search"
+        value="{{ request('search') }}"
+        placeholder="Cari invoice / kasir..."
+        class="bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:ring-2 focus:ring-indigo-500"
+    >
 
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    placeholder="Cari invoice / kasir..."
-                    class="bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:ring-2 focus:ring-indigo-500"
-                >
+    {{-- PILIH PERIODE --}}
+    <select
+        name="period"
+        id="periodFilter"
+        onchange="applyRiwayatPeriod(this.value)"
+        class="bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+        <option value="">Pilih periode</option>
+        <option value="today" {{ request('period') == 'today' ? 'selected' : '' }}>
+            Hari ini
+        </option>
+        <option value="7days" {{ request('period') == '7days' ? 'selected' : '' }}>
+            7 hari terakhir
+        </option>
+        <option value="1month" {{ request('period') == '1month' ? 'selected' : '' }}>
+            1 bulan terakhir
+        </option>
+        <option value="1year" {{ request('period') == '1year' ? 'selected' : '' }}>
+            1 tahun terakhir
+        </option>
+        <option value="3years" {{ request('period') == '3years' ? 'selected' : '' }}>
+            3 tahun terakhir
+        </option>
+        <option value="custom" {{ request('period') == 'custom' ? 'selected' : '' }}>
+            Rentang tanggal
+        </option>
+    </select>
 
-                <input
-                    type="date"
-                    name="date"
-                    value="{{ request('date') }}"
-                    class="bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:ring-2 focus:ring-indigo-500"
-                >
+    {{-- RENTANG TANGGAL --}}
+    <div
+        id="customDateRange"
+        class="{{ request('period') == 'custom' ? 'flex' : 'hidden' }} flex-col sm:flex-row gap-2"
+    >
+        <input
+            type="date"
+            name="start_date"
+            id="riwayatStartDate"
+            value="{{ request('start_date') }}"
+            class="bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:ring-2 focus:ring-indigo-500"
+        >
 
-                <button
-                    type="submit"
-                    class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-semibold transition"
-                >
-                    Cari
-                </button>
-
-                @if(request('search') || request('date'))
-
-                    <a
-                        href="{{ route('riwayat') }}"
-                        class="bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-2 rounded-xl text-xs font-medium text-center transition"
-                    >
-                        Reset
-                    </a>
-
-                @endif
-
-            </form>
-
-        </div>
-
+        <input
+            type="date"
+            name="end_date"
+            id="riwayatEndDate"
+            value="{{ request('end_date') }}"
+            class="bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:ring-2 focus:ring-indigo-500"
+        >
     </div>
+
+    {{-- CARI --}}
+    <button
+        type="submit"
+        class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-semibold transition"
+    >
+        Cari
+    </button>
+
+    {{-- RESET --}}
+    @if(
+        request('search') ||
+        request('period') ||
+        request('start_date') ||
+        request('end_date')
+    )
+        <a
+            href="{{ route('riwayat') }}"
+            class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-xl text-xs font-semibold text-center transition"
+        >
+            Reset
+        </a>
+    @endif
+</form>
+</div>
+ </div>
 
 
     {{-- DAFTAR TRANSAKSI --}}
@@ -436,3 +480,61 @@
 </div>
 
 @endsection
+
+<script>
+    function applyRiwayatPeriod(period) {
+        const form = document.getElementById('periodFilter').form;
+        const dateRange = document.getElementById('customDateRange');
+        const start = document.getElementById('riwayatStartDate');
+        const end = document.getElementById('riwayatEndDate');
+
+        // Kalau pilih rentang tanggal
+        if (period === 'custom') {
+            dateRange.classList.remove('hidden');
+            dateRange.classList.add('flex');
+
+            return;
+        }
+
+        // Kalau pilih periode otomatis
+        dateRange.classList.remove('flex');
+        dateRange.classList.add('hidden');
+
+        if (!period) {
+            return;
+        }
+
+        const today = new Date();
+        let startDate = new Date(today);
+
+        if (period === 'today') {
+            startDate = new Date(today);
+
+        } else if (period === '7days') {
+            startDate.setDate(today.getDate() - 6);
+
+        } else if (period === '1month') {
+            startDate.setMonth(today.getMonth() - 1);
+
+        } else if (period === '1year') {
+            startDate.setFullYear(today.getFullYear() - 1);
+
+        } else if (period === '3years') {
+            startDate.setFullYear(today.getFullYear() - 3);
+        }
+
+        start.value = formatDateForInput(startDate);
+        end.value = formatDateForInput(today);
+
+        // Langsung jalankan filter
+        form.submit();
+    }
+
+    function formatDateForInput(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+</script>

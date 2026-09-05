@@ -13,6 +13,8 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\LabelController;
+use App\Http\Controllers\AuthController;
+
 
 
 /*
@@ -211,6 +213,21 @@ Route::post('/proses-login', function (Request $request) {
 
 Route::middleware('auth.role')->group(function () {
 
+    /*
+    |--------------------------------------------------------------------------
+    | PROFIL
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/profil',
+        [AuthController::class, 'edit']
+    )->name('profil');
+
+    Route::put(
+        '/profil',
+        [AuthController::class, 'update']
+    )->name('profile.update');
 
     /*
     |--------------------------------------------------------------------------

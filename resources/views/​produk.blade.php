@@ -280,31 +280,17 @@
 
                             <div class="flex items-center gap-3">
 
-                                @if($p->image)
-
-                                    <img
-                                        src="{{ asset('products/' . $p->image) }}"
-                                        alt="{{ $p->name }}"
-                                        class="w-10 h-10 rounded-lg
-                                               object-cover
-                                               border border-white/10
-                                               shrink-0"
-                                    >
-
-                                @else
-
-                                    <div
-                                        class="w-10 h-10 rounded-lg
-                                               bg-gray-700/50
-                                               flex items-center justify-center
-                                               text-gray-400 text-[10px]
-                                               border border-white/10
-                                               shrink-0"
-                                    >
-                                        No Img
-                                    </div>
-
-                                @endif
+@if($p->image)
+    <img
+        src="{{ asset('products/' . $p->image) }}"
+        alt="{{ $p->name }}"
+        class="w-10 h-10 rounded-lg object-cover border border-white/10 shrink-0"
+    >
+@else
+    <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-gray-400 text-[10px] border border-white/10 shrink-0">
+        No Img
+    </div>
+@endif
 
 
                                 <div>

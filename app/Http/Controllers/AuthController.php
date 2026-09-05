@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\File;
 
 class AuthController extends Controller
 {
@@ -40,163 +41,123 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Validasi
-        |--------------------------------------------------------------------------
-        */
-
         $request->validate([
-            'username' => [
-                'required',
-                'string',
-            ],
-
-            'password' => [
-                'required',
-                'string',
-            ],
+            'username' => ['required', 'string'],
+            'password' => ['required', 'string'],
         ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Ambil Input
-        |--------------------------------------------------------------------------
-        */
 
         $username = trim($request->input('username'));
         $password = $request->input('password');
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Cari User
-        |--------------------------------------------------------------------------
-        |
-        | Bisa menggunakan:
-        | - Email
-        | - Nama
-        |
-        */
 
         $user = User::where('email', $username)
             ->orWhere('name', $username)
             ->first();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Cek User dan Password
-        |--------------------------------------------------------------------------
-        */
-
         if (!$user || !Hash::check($password, $user->password)) {
-
             return back()
                 ->withInput($request->only('username'))
-                ->with(
-                    'error',
-                    'Username atau password salah, atau akun tidak terdaftar.'
-                );
+                ->with('error', 'Username atau password salah, atau akun tidak terdaftar.');
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Cek Role
-        |--------------------------------------------------------------------------
-        */
 
         if (!in_array($user->role, ['admin', 'kasir'])) {
-
             return back()
                 ->withInput($request->only('username'))
-                ->with(
-                    'error',
-                    'Role akun tidak dikenali.'
-                );
+                ->with('error', 'Role akun tidak dikenali.');
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Regenerasi Session
-        |--------------------------------------------------------------------------
-        |
-        | Mencegah Session Fixation.
-        |
-        */
 
         $request->session()->regenerate();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Simpan Informasi Login
-        |--------------------------------------------------------------------------
-        */
-
         $request->session()->put([
             'logged_in' => true,
-
             'user_id' => $user->id,
-
             'username' => $user->name,
-
             'user_role' => $user->role,
         ]);
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECT ADMIN
-        |--------------------------------------------------------------------------
-        */
-
         if ($user->role === 'admin') {
-
             return redirect()
                 ->intended(route('dashboard'))
-                ->with(
-                    'success',
-                    'Selamat datang, Administrator!'
-                );
+                ->with('success', 'Selamat datang, Administrator!');
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECT KASIR
-        |--------------------------------------------------------------------------
-        */
 
         if ($user->role === 'kasir') {
-
             return redirect()
                 ->intended(route('kasir.index'))
-                ->with(
-                    'success',
-                    'Selamat datang, ' . $user->name . '!'
-                );
+                ->with('success', 'Selamat datang, ' . $user->name . '!');
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Fallback
-        |--------------------------------------------------------------------------
-        */
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()
             ->route('login')
-            ->with(
-                'error',
-                'Role akun tidak dikenali.'
-            );
+            ->with('error', 'Role akun tidak dikenali.');
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFIL: MENAMPILKAN HALAMAN EDIT PROFIL
+    |--------------------------------------------------------------------------
+    */
+
+    public function edit()
+    {
+        // Ambil data user berdasarkan session ID yang sedang aktif
+        $user = User::findOrFail(session('user_id'));
+
+        return view('profile', compact('user'));
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFIL: MEMPROSES UPDATE PROFIL (NAMA, PASSWORD, AVATAR)
+    |--------------------------------------------------------------------------
+    */
+
+    public function update(Request $request)
+    {
+        $user = User::findOrFail(session('user_id'));
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'password' => ['nullable', 'string', 'min:6'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+        ]);
+
+        // Update Nama
+        $user->name = $request->input('name');
+        
+        // Update Session Username supaya langsung berubah di navbar
+        session(['username' => $user->name]);
+
+        // Update Password jika diisi
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->input('password'));
+        }
+
+        // Update Foto Avatar jika ada yang di-upload
+        if ($request->hasFile('avatar')) {
+            // Hapus avatar lama jika ada
+            if ($user->avatar && File::exists(public_path('avatars/' . $user->avatar))) {
+                File::delete(public_path('avatars/' . $user->avatar));
+            }
+
+            $file = $request->file('avatar');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            
+            // Pindahkan file ke folder public/avatars
+            $file->move(public_path('avatars'), $filename);
+            
+            $user->avatar = $filename;
+        }
+
+        $user->save();
+
+        return redirect()
+            ->route('profil')
+            ->with('success', 'Profil berhasil diperbarui!');
     }
 
 
@@ -208,35 +169,11 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Hapus Session
-        |--------------------------------------------------------------------------
-        */
-
         $request->session()->invalidate();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Regenerasi CSRF Token
-        |--------------------------------------------------------------------------
-        */
-
         $request->session()->regenerateToken();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Kembali ke Login
-        |--------------------------------------------------------------------------
-        */
 
         return redirect()
             ->route('login')
-            ->with(
-                'success',
-                'Anda berhasil logout.'
-            );
+            ->with('success', 'Anda berhasil logout.');
     }
 }

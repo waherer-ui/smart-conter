@@ -117,6 +117,7 @@
 
 
         {{-- DAFTAR PRODUK --}}
+      @if(request('search') || (request('category') && request('category') != 'all'))
         <div class="bg-gray-800/80 border border-white/10 rounded-2xl p-4 shadow-xl backdrop-blur-md">
 
             <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
@@ -140,11 +141,17 @@
                         <div>
                                   {{-- THUMBNAIL GAMBAR PRODUK --}}
         <div class="w-full h-24 mb-2 bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center border border-white/5">
-            @if($p->image)
-                <img src="{{ asset('products/' . $p->image) }}" alt="{{ $p->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-            @else
-                <span class="text-[10px] text-gray-500">No Img</span>
-            @endif
+@if($p->image)
+    <img
+        src="{{ asset('products/' . $p->image) }}"
+        alt="{{ $p->name }}"
+        class="w-10 h-10 rounded-lg object-cover border border-white/10 shrink-0"
+    >
+@else
+    <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-gray-400 text-[10px] border border-white/10 shrink-0">
+        No Img
+    </div>
+@endif
         </div>
 
 
@@ -217,6 +224,8 @@
             </div>
 
         </div>
+        @endif
+        
 
     </div>
 
@@ -703,7 +712,91 @@ let cart = [];
 
 let transactionProcessing = false;
 
+const CART_STORAGE_KEY = 'smart_pos_cart';
 
+
+/*
+|--------------------------------------------------------------------------
+| LOAD CART DARI STORAGE
+|--------------------------------------------------------------------------
+*/
+
+function loadCart() {
+
+    try {
+
+        const savedCart =
+            localStorage.getItem(CART_STORAGE_KEY);
+
+        if (savedCart) {
+
+            const parsedCart =
+                JSON.parse(savedCart);
+
+            if (Array.isArray(parsedCart)) {
+
+                cart = parsedCart.map(item => ({
+
+                    id: item.id,
+
+                    name: item.name,
+
+                    price: Number(item.price) || 0,
+
+                    qty: Number(item.qty) || 0,
+
+                    stock: Number(item.stock) || 0
+
+                })).filter(item =>
+
+                    item.qty > 0 &&
+                    item.stock > 0
+
+                );
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            'Gagal memuat keranjang:',
+            error
+        );
+
+        cart = [];
+
+    }
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| SIMPAN CART
+|--------------------------------------------------------------------------
+*/
+
+function saveCart() {
+
+    try {
+
+        localStorage.setItem(
+            CART_STORAGE_KEY,
+            JSON.stringify(cart)
+        );
+
+    } catch (error) {
+
+        console.error(
+            'Gagal menyimpan keranjang:',
+            error
+        );
+
+    }
+
+}
 /*
 |--------------------------------------------------------------------------
 | FORMAT RUPIAH
@@ -768,6 +861,8 @@ function addToCart(id, name, price, stock) {
         });
 
     }
+    
+    saveCart();
 
     renderCart();
 
@@ -802,7 +897,7 @@ function updateQty(id, change) {
 
         item.qty = item.stock;
     }
-
+    saveCart();
     renderCart();
 
 }
@@ -818,7 +913,8 @@ function removeFromCart(id) {
 
     cart =
         cart.filter(item => item.id != id);
-
+    
+    saveCart();
     renderCart();
 
 }
@@ -1400,6 +1496,7 @@ async function submitTransaction() {
         */
 
         cart = [];
+        saveCart();
 
         renderCart();
 
@@ -1631,7 +1728,8 @@ function newTransaction() {
 document.addEventListener(
     'DOMContentLoaded',
     function () {
-
+        
+        loadCart();
         renderCart();
 
     }

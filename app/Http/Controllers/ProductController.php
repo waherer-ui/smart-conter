@@ -212,35 +212,97 @@ class ProductController extends Controller
     */
 
     public function dashboard(Request $request)
-    {
-        $category = $request->input('category');
+{
+    $category = $request->input('category');
+    $search = $request->input('search');
 
-        if ($category && $category !== 'all') {
+    /*
+    |--------------------------------------------------------------------------
+    | QUERY PRODUK DASHBOARD
+    |--------------------------------------------------------------------------
+    */
 
-            $products = Product::where(
-                'category',
-                $category
-            )->get();
+    $query = Product::query();
 
-        } else {
 
-            $products = Product::all();
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | PENCARIAN
+    |--------------------------------------------------------------------------
+    */
 
-        $categories = Product::select('category')
-            ->distinct()
-            ->orderBy('category')
-            ->pluck('category');
+    if ($search) {
 
-        return view(
-            'home',
-            compact(
-                'products',
-                'categories',
-                'category'
+        $query->where(function ($q) use ($search) {
+
+            $q->where(
+                'name',
+                'like',
+                '%' . $search . '%'
             )
+            ->orWhere(
+                'category',
+                'like',
+                '%' . $search . '%'
+            )
+            ->orWhere(
+                'sku',
+                'like',
+                '%' . $search . '%'
+            );
+
+        });
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILTER KATEGORI
+    |--------------------------------------------------------------------------
+    */
+
+    if ($category && $category !== 'all') {
+
+        $query->where(
+            'category',
+            $category
         );
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | AMBIL PRODUK
+    |--------------------------------------------------------------------------
+    */
+
+    $products = $query
+        ->orderBy('name')
+        ->get();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | KATEGORI
+    |--------------------------------------------------------------------------
+    */
+
+    $categories = Product::select('category')
+        ->distinct()
+        ->orderBy('category')
+        ->pluck('category');
+
+
+    return view(
+        'home',
+        compact(
+            'products',
+            'categories',
+            'category',
+            'search'
+        )
+    );
+}
 
 
     /*
@@ -1131,24 +1193,16 @@ class ProductController extends Controller
 
             'success' => true,
 
-            'product' => [
-
-                'id' =>
-                    $product->id,
-
-                'name' =>
-                    $product->name,
-
-                'sku' =>
-                    $product->sku,
-
-                'price' =>
-                    (float) $product->price,
-
-                'stock' =>
-                    (int) $product->stock,
-
-            ]
+          'product' => [
+    'id' => $product->id,
+    'name' => $product->name,
+    'sku' => $product->sku,
+    'category' => $product->category,
+    'brand' => $product->brand,
+    'price' => (float) $product->price,
+    'stock' => (int) $product->stock,
+    'image' => $product->image,
+]
 
         ]);
     }
