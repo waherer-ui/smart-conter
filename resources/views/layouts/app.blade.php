@@ -44,16 +44,14 @@
                 {{-- ================================================= --}}
 
                 <div class="flex items-center">
-
+                  
                     <a
-                        href="{{ session('logged_in')
-                            ? (session('user_role') === 'admin'
-                                ? route('dashboard')
-                                : route('kasir.index'))
-                            : route('login') }}"
+                      href="{{ session('logged_in')
+                          ? route('dashboard')
+                          : route('login') }}"
                         class="text-white font-bold text-lg tracking-wide"
                     >
-                        Smart POS
+                        Toko Ku
                     </a>
 
                 </div>
@@ -179,10 +177,7 @@
                                         Navigasi
                                     </div>
 
-
                                     {{-- Dashboard --}}
-                                    @if(session('user_role') === 'admin')
-
                                         <a
                                             href="{{ route('dashboard') }}"
                                             class="dropdown-link"
@@ -190,9 +185,6 @@
                                             <span>🏠</span>
                                             <span>Dashboard</span>
                                         </a>
-
-                                    @endif
-
 
                                     {{-- Kasir --}}
                                     <a
@@ -470,10 +462,7 @@
                             Navigasi
                         </div>
 
-
                         {{-- Dashboard --}}
-                        @if(session('user_role') === 'admin')
-
                             <a
                                 href="{{ route('dashboard') }}"
                                 class="dropdown-link"
@@ -481,9 +470,6 @@
                                 <span>🏠</span>
                                 <span>Dashboard</span>
                             </a>
-
-                        @endif
-
 
                         {{-- Kasir --}}
                         <a
