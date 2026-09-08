@@ -9,11 +9,20 @@ use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
-    /**
-     * Menyimpan transaksi penjualan.
-     */
-    public function store(Request $request)
-    {
+            /**
+             * Menyimpan transaksi penjualan.
+             */
+            public function store(Request $request)
+            {
+              
+              $query = Transaction::with([
+            'user',
+            'items'
+        ])->latest();
+        
+        if (!session('logged_in')) {
+            $query->where('user_id', -1);
+        }
         /*
         |--------------------------------------------------------------------------
         | Validasi Data

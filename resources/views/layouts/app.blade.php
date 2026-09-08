@@ -63,64 +63,96 @@
 
                 <div class="hidden md:flex items-center">
 
-                    @if(session('logged_in'))
-
                         <div class="relative">
 
 
-                            {{-- ===================================== --}}
-                            {{-- PROFILE BUTTON --}}
-                            {{-- ===================================== --}}
+                           {{-- ===================================== --}}
+{{-- PROFILE / GUEST BUTTON --}}
+{{-- ===================================== --}}
 
-                            <button
-                                onclick="toggleUserDropdown()"
-                                type="button"
-                                class="flex items-center gap-3 rounded-xl px-3 py-2
-                                       hover:bg-gray-700 transition
-                                       focus:outline-none focus:ring-2
-                                       focus:ring-indigo-500"
-                            >
+@if(session('logged_in'))
 
-                                {{-- User Info --}}
-                                <div class="text-right">
+    {{-- USER LOGIN --}}
 
-                                    <div class="text-sm font-medium text-white">
-                                        {{ session('username') }}
-                                    </div>
+    <button
+        onclick="toggleUserDropdown()"
+        type="button"
+        class="flex items-center gap-3 rounded-xl px-3 py-2
+               hover:bg-gray-700 transition
+               focus:outline-none focus:ring-2
+               focus:ring-indigo-500"
+    >
 
-                                    <div class="text-xs text-gray-400 uppercase">
-                                        {{ session('user_role') }}
-                                    </div>
+        {{-- User Info --}}
+        <div class="text-right">
 
-                                </div>
+            <div class="text-sm font-medium text-white">
+                {{ session('username') }}
+            </div>
 
+            <div class="text-xs text-gray-400 uppercase">
+                {{ session('user_role') }}
+            </div>
 
-                                {{-- Avatar Desktop Utama --}}
-                                <img
-                                    class="w-9 h-9 rounded-full border border-white/20 object-cover"
-                                    src="{{ $avatarUrl }}"
-                                    alt="Profile"
-                                >
+        </div>
 
+        {{-- Avatar --}}
+        <img
+            class="w-9 h-9 rounded-full border border-white/20 object-cover"
+            src="{{ $avatarUrl }}"
+            alt="Profile"
+        >
 
-                                {{-- Arrow --}}
-                                <svg
-                                    class="w-4 h-4 text-gray-400"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M19 9l-7 7-7-7"
-                                    />
-                                </svg>
+        {{-- Arrow --}}
+        <svg
+            class="w-4 h-4 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+            />
+        </svg>
 
-                            </button>
+    </button>
 
+@else
 
+    {{-- GUEST / PENGUNJUNG --}}
+
+    <button
+        onclick="toggleUserDropdown()"
+        type="button"
+        class="flex items-center justify-center
+               w-11 h-11 rounded-xl
+               hover:bg-gray-700 transition
+               focus:outline-none focus:ring-2
+               focus:ring-indigo-500"
+        aria-label="Menu"
+    >
+
+        {{-- Hamburger --}}
+        <svg
+            class="w-6 h-6 text-gray-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+            />
+        </svg>
+
+    </button>
+
+@endif
                             {{-- ===================================== --}}
                             {{-- PROFILE DROPDOWN --}}
                             {{-- ===================================== --}}
@@ -137,7 +169,7 @@
                                 {{-- ================================= --}}
                                 {{-- PROFILE HEADER --}}
                                 {{-- ================================= --}}
-
+                                @if(session('logged_in'))
                                 <div class="px-4 py-4 bg-gray-800/80">
 
                                     <div class="flex items-center gap-3">
@@ -164,6 +196,7 @@
                                     </div>
 
                                 </div>
+                                @endif
 
 
                                 {{-- ================================= --}}
@@ -233,14 +266,29 @@
                                         <span>Riwayat Transaksi</span>
                                     </a>
 
-                                    {{-- Profil Saya --}}
-                                    <a
-                                        href="{{ route('profil') }}"
-                                        class="dropdown-link"
-                                    >
-                                        <span>👤</span>
-                                        <span>Profil Saya</span>
-                                    </a>
+                                   @if(session('logged_in'))
+
+                                  {{-- Profil Saya --}}
+                                  <a
+                                      href="{{ route('profil') }}"
+                                      class="dropdown-link"
+                                  >
+                                      <span>👤</span>
+                                      <span>Profil Saya</span>
+                                  </a>
+                              
+                              @else
+                              
+                                  {{-- Masuk / Daftar --}}
+                                  <a
+                                      href="{{ route('login') }}"
+                                      class="dropdown-link"
+                                  >
+                                      <span>🔐</span>
+                                      <span>Masuk / Daftar</span>
+                                  </a>
+                              
+                              @endif
 
                                 </div>
 
@@ -285,7 +333,7 @@
                                 {{-- ================================= --}}
                                 {{-- LOGOUT --}}
                                 {{-- ================================= --}}
-
+                            @if(session('logged_in'))
                                 <div class="border-t border-white/10 py-2">
 
                                     <a
@@ -298,36 +346,11 @@
                                         <span>Keluar</span>
                                     </a>
 
-                                </div>
+                                </div> @endif
 
                             </div>
 
                         </div>
-
-
-                    @else
-
-                        {{-- ========================================= --}}
-                        {{-- DESKTOP - BELUM LOGIN --}}
-                        {{-- ========================================= --}}
-
-                        <a
-                            href="{{ route('login') }}"
-                            class="bg-indigo-600
-                                   hover:bg-indigo-500
-                                   text-white
-                                   px-4 py-2
-                                   rounded-xl
-                                   text-sm
-                                   font-medium
-                                   transition
-                                   shadow"
-                        >
-                            🔑 Login
-                        </a>
-
-                    @endif
-
                 </div>
 
 
@@ -337,59 +360,89 @@
 
                 <div class="md:hidden">
 
-                    @if(session('logged_in'))
+                   @if(session('logged_in'))
 
-                        {{-- Mobile Profile Button --}}
-                        <button
-                            onclick="toggleMobileMenu()"
-                            type="button"
-                            class="flex items-center gap-2
-                                   rounded-xl p-1.5
-                                   hover:bg-gray-700
-                                   transition
-                                   focus:outline-none"
-                        >
+    {{-- USER LOGIN --}}
 
-                            {{-- Avatar Mobile Utama --}}
-                            <img
-                                class="w-9 h-9 rounded-full border border-white/20 object-cover"
-                                src="{{ $avatarUrl }}"
-                                alt="Profile"
-                            >
+    <button
+        onclick="toggleUserDropdown()"
+        type="button"
+        class="flex items-center gap-3 rounded-xl px-3 py-2
+               hover:bg-gray-700 transition
+               focus:outline-none focus:ring-2
+               focus:ring-indigo-500"
+    >
 
-                            <svg
-                                class="w-4 h-4 text-gray-400"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M19 9l-7 7-7-7"
-                                />
-                            </svg>
+        {{-- User Info --}}
+        <div class="text-right">
 
-                        </button>
+            <div class="text-sm font-medium text-white">
+                {{ session('username') }}
+            </div>
 
-                    @else
+            <div class="text-xs text-gray-400 uppercase">
+                {{ session('user_role') }}
+            </div>
 
-                        {{-- Mobile Login --}}
-                        <a
-                            href="{{ route('login') }}"
-                            class="bg-indigo-600
-                                   hover:bg-indigo-500
-                                   text-white
-                                   px-3 py-2
-                                   rounded-xl
-                                   text-sm
-                                   font-medium"
-                        >
-                            🔑 Login
-                        </a>
+        </div>
 
-                    @endif
+        {{-- Avatar --}}
+        <img
+            class="w-9 h-9 rounded-full border border-white/20 object-cover"
+            src="{{ $avatarUrl }}"
+            alt="Profile"
+        >
+
+        {{-- Arrow --}}
+        <svg
+            class="w-4 h-4 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+            />
+        </svg>
+
+    </button>
+
+@else
+
+    {{-- GUEST / PENGUNJUNG --}}
+
+    <button
+        onclick="toggleMobileMenu()"
+        type="button"
+        class="flex items-center justify-center
+               w-11 h-11 rounded-xl
+               hover:bg-gray-700 transition
+               focus:outline-none focus:ring-2
+               focus:ring-indigo-500"
+        aria-label="Menu"
+    >
+
+        {{-- Hamburger --}}
+        <svg
+            class="w-6 h-6 text-gray-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+            />
+        </svg>
+
+    </button>
+
+@endif
 
                 </div>
 
@@ -402,7 +455,6 @@
         {{-- MOBILE PROFILE MENU --}}
         {{-- ========================================================= --}}
 
-        @if(session('logged_in'))
 
             <div
                 id="mobile-menu"
@@ -422,7 +474,7 @@
                     {{-- ============================================= --}}
                     {{-- PROFILE --}}
                     {{-- ============================================= --}}
-
+                   @if(session('logged_in'))   
                     <div class="p-4">
 
                         <div class="flex items-center gap-3">
@@ -448,7 +500,7 @@
 
                         </div>
 
-                    </div>
+                    </div> @endif
 
 
                     {{-- ============================================= --}}
@@ -517,15 +569,30 @@
                             <span>🧾</span>
                             <span>Riwayat Transaksi</span>
                         </a>
+                          
+                           @if(session('logged_in'))
 
-                        {{-- Profil Saya --}}
-                        <a
-                            href="{{ route('profil') }}"
-                            class="dropdown-link"
-                        >
-                            <span>👤</span>
-                            <span>Profil Saya</span>
-                        </a>
+                                  {{-- Profil Saya --}}
+                                  <a
+                                      href="{{ route('profil') }}"
+                                      class="dropdown-link"
+                                  >
+                                      <span>👤</span>
+                                      <span>Profil Saya</span>
+                                  </a>
+                              
+                              @else
+                              
+                                  {{-- Masuk / Daftar --}}
+                                  <a
+                                      href="{{ route('login') }}"
+                                      class="dropdown-link"
+                                  >
+                                      <span>🔐</span>
+                                      <span>Masuk / Daftar</span>
+                                  </a>
+                              
+                              @endif
 
                     </div>
 
@@ -574,7 +641,7 @@
                     {{-- ============================================= --}}
                     {{-- LOGOUT --}}
                     {{-- ============================================= --}}
-
+                  @if(session('logged_in'))
                     <div class="border-t border-white/10 py-2">
 
                         <a
@@ -588,13 +655,11 @@
                             <span>Keluar</span>
                         </a>
 
-                    </div>
+                    </div> @endif
 
                 </div>
 
             </div>
-
-        @endif
 
     </nav>
 
@@ -602,8 +667,6 @@
     {{-- ========================================================= --}}
     {{-- HEADER HALAMAN --}}
     {{-- ========================================================= --}}
-
-    @if(session('logged_in'))
 
         <header class="relative bg-gray-800/50 border-b border-white/10">
 
@@ -627,8 +690,6 @@
             </div>
 
         </header>
-
-    @endif
 
 
     {{-- ========================================================= --}}

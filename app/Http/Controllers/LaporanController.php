@@ -25,7 +25,11 @@ class LaporanController extends Controller
         $isAdmin = session('user_role') === 'admin';
         $userId = session('user_id');
 
+        $isGuest = !session('logged_in');
 
+          if ($isGuest) {
+              $userId = -1;
+          }
         /*
         |--------------------------------------------------------------------------
         | FILTER KASIR

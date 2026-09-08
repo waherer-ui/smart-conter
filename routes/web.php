@@ -211,24 +211,6 @@ Route::post('/proses-login', function (Request $request) {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth.role')->group(function () {
-
-    /*
-    |--------------------------------------------------------------------------
-    | PROFIL
-    |--------------------------------------------------------------------------
-    */
-
-    Route::get(
-        '/profil',
-        [AuthController::class, 'edit']
-    )->name('profil');
-
-    Route::put(
-        '/profil',
-        [AuthController::class, 'update']
-    )->name('profile.update');
-
     /*
     |--------------------------------------------------------------------------
     | DASHBOARD
@@ -257,7 +239,8 @@ Route::middleware('auth.role')->group(function () {
     Route::post(
         '/produk',
         [ProductController::class, 'store']
-    )->name('produk.store');
+    )->middleware('auth.role')
+    ->name('produk.store');
 
     Route::get('/produk/scan/{sku}', [ProductController::class, 'scanBySku'])
     ->name('produk.scan');
@@ -266,21 +249,24 @@ Route::middleware('auth.role')->group(function () {
     Route::put(
         '/produk/{id}',
         [ProductController::class, 'update']
-    )->name('produk.update');
+    )->middleware('auth.role')
+    ->name('produk.update');
 
 
     // Hapus Produk
     Route::delete(
         '/produk/{id}',
         [ProductController::class, 'destroy']
-    )->name('produk.destroy');
+    )->middleware('auth.role:admin')
+    ->name('produk.destroy');
 
 
     // Hapus Riwayat Produk
     Route::delete(
         '/produk/history/{id}',
         [ProductController::class, 'destroyHistory']
-    )->name('produk.history.destroy');
+    )->middleware('auth.role:admin')
+    ->name('produk.history.destroy');
 
 
     /*
@@ -299,7 +285,8 @@ Route::middleware('auth.role')->group(function () {
     Route::post(
         '/transaksi',
         [TransactionController::class, 'store']
-    )->name('transaksi.store');
+    )->middleware('auth.role')
+    ->name('transaksi.store');
 
 
     /*
@@ -355,20 +342,36 @@ Route::middleware('auth.role')->group(function () {
         [LaporanController::class, 'index']
     )->name('laporan');
     
+
+Route::middleware('auth.role')->group(function () {
+
     /*
-|--------------------------------------------------------------------------
-| CETAK LABEL QR
-|--------------------------------------------------------------------------
-*/
+    |--------------------------------------------------------------------------
+    | PROFIL
+    |--------------------------------------------------------------------------
+    */
 
-Route::get(
-    '/cetak-label',
-    [LabelController::class, 'index']
-)->name('cetaklabel');
+    Route::get(
+        '/profil',
+        [AuthController::class, 'edit']
+    )->name('profil');
 
-});
-  
-
+    Route::put(
+        '/profil',
+        [AuthController::class, 'update']
+    )->name('profile.update');
+    
+        /*
+      |--------------------------------------------------------------------------
+      | CETAK LABEL QR
+      |--------------------------------------------------------------------------
+      */
+      
+      Route::get(
+          '/cetak-label',
+          [LabelController::class, 'index']
+      )->name('cetaklabel');
+      });
 
 /*
 |--------------------------------------------------------------------------
@@ -484,7 +487,7 @@ Route::get('/', function () {
     if (!session('logged_in')) {
 
         return redirect()
-            ->route('login');
+            ->route('dashboard');
     }
 
 
@@ -560,7 +563,7 @@ Route::get('/logout', function (Request $request) {
     */
 
     return redirect()
-        ->route('login')
+        ->route('dashboard')
         ->with(
             'success',
             'Anda berhasil logout.'

@@ -245,7 +245,7 @@
                         Ketersediaan
                     </th>
 
-                    @if(session('user_role') === 'admin')
+                    @if(session('user_role') === 'admin' || !session('logged_in'))
 
                         <th class="py-3 px-4 text-right">
                             Aksi
@@ -475,7 +475,7 @@
 
 
                         {{-- AKSI --}}
-                        @if(session('user_role') === 'admin')
+                       @if(session('user_role') === 'admin' || !session('logged_in'))
 
                             <td class="py-3.5 px-4">
 
@@ -504,8 +504,8 @@
                                     >
                                         Edit
                                     </button>
-
-
+                                    
+                                    @if(session('user_role') === 'admin')
                                     {{-- HAPUS --}}
                                     <form
                                         action="{{ route('produk.destroy', $p->id) }}"
@@ -532,6 +532,7 @@
                                         </button>
 
                                     </form>
+                                    @endif
 
                                 </div>
 
@@ -546,7 +547,7 @@
                     <tr>
 
                         <td
-                            colspan="{{ session('user_role') === 'admin' ? 7 : 6 }}"
+                            colspan="{{ (session('user_role') === 'admin' || !session('logged_in')) ? 7 : 6 }}"
                             class="text-center py-8
                                    text-gray-400 text-sm"
                         >
@@ -983,7 +984,8 @@
 
 </div>
 
-</div>{{-- =========================================================
+</div>
+{{-- =========================================================
 MODAL TAMBAH PRODUK
 ========================================================== --}}
 
@@ -1024,6 +1026,9 @@ MODAL TAMBAH PRODUK
         method="POST"
         enctype="multipart/form-data"
         class="space-y-4"
+        @if(!session('logged_in'))
+        onsubmit="return blockGuestAction(event, 'Simpan Produk')"
+        @endif
     >
 
         @csrf
@@ -1239,7 +1244,8 @@ MODAL TAMBAH PRODUK
 
 </div>
 
-</div>{{-- =========================================================
+</div>
+{{-- =========================================================
 MODAL EDIT PRODUK
 ========================================================== --}}
 
@@ -1281,6 +1287,9 @@ MODAL EDIT PRODUK
         method="POST"
         enctype="multipart/form-data"
         class="space-y-4"
+         @if(!session('logged_in'))
+        onsubmit="return blockGuestAction(event, 'Simpan Perubahan')"
+          @endif
     >
 
         @csrf
@@ -1497,11 +1506,31 @@ MODAL EDIT PRODUK
 
 </div>
 
-</div>{{-- =========================================================
+</div>
+{{-- =========================================================
 JAVASCRIPT
 ========================================================== --}}
 
 <script>
+  
+  /*
+|--------------------------------------------------------------------------
+| BLOKIR AKSI GUEST
+|--------------------------------------------------------------------------
+*/
+
+function blockGuestAction(event, actionName) {
+
+    event.preventDefault();
+
+    alert(
+        '🔒 Fitur ini membutuhkan akun.\n\n' +
+        'Untuk menggunakan fitur ini, silakan daftar akun terlebih dahulu ' +
+        'atau hubungi kontak yang tersedia.'
+    );
+
+    return false;
+}
 
     /*
     |--------------------------------------------------------------------------

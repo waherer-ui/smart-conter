@@ -12,17 +12,57 @@ class ExpenseController extends Controller
      */
     public function index(Request $request)
     {
+        /*
+        |--------------------------------------------------------------------------
+        | ROLE USER
+        |--------------------------------------------------------------------------
+        */
+
+        $isAdmin = session('user_role') === 'admin';
+        $isGuest = !session('logged_in');
+        $userId = session('user_id');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | DATA PENGELUARAN
+        |--------------------------------------------------------------------------
+        */
+
         $query = Expense::with('user')
             ->latest('expense_date')
             ->latest('id');
 
+
         /*
         |--------------------------------------------------------------------------
-        | Filter tanggal
+        | KONTROL AKSES DATA
+        |--------------------------------------------------------------------------
+        |
+        | Admin  : Melihat semua pengeluaran
+        | Kasir  : Hanya pengeluaran miliknya
+        | Guest  : Tidak melihat data pengeluaran
+        |
+        */
+
+        if ($isGuest) {
+
+            $query->where('user_id', -1);
+
+        } elseif (!$isAdmin) {
+
+            $query->where('user_id', $userId);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER TANGGAL
         |--------------------------------------------------------------------------
         */
 
         if ($request->filled('start_date')) {
+
             $query->whereDate(
                 'expense_date',
                 '>=',
@@ -31,6 +71,7 @@ class ExpenseController extends Controller
         }
 
         if ($request->filled('end_date')) {
+
             $query->whereDate(
                 'expense_date',
                 '<=',
@@ -38,58 +79,118 @@ class ExpenseController extends Controller
             );
         }
 
+
         /*
         |--------------------------------------------------------------------------
-        | Filter kategori
+        | FILTER KATEGORI
         |--------------------------------------------------------------------------
         */
 
         if ($request->filled('category')) {
+
             $query->where(
                 'category',
                 $request->category
             );
         }
 
+
         $pengeluaran = $query->get();
+
 
         /*
         |--------------------------------------------------------------------------
-        | Ringkasan
+        | TOTAL PENGELUARAN SESUAI AKSES USER
         |--------------------------------------------------------------------------
         */
 
         $totalPengeluaran = $pengeluaran->sum('amount');
 
-        $totalHariIni = Expense::whereDate(
+
+        /*
+        |--------------------------------------------------------------------------
+        | PENGELUARAN HARI INI
+        |--------------------------------------------------------------------------
+        */
+
+        $hariIniQuery = Expense::whereDate(
             'expense_date',
             today()
-        )->sum('amount');
+        );
 
-        $totalBulanIni = Expense::whereMonth(
+        if ($isGuest) {
+
+            $hariIniQuery->where('user_id', -1);
+
+        } elseif (!$isAdmin) {
+
+            $hariIniQuery->where('user_id', $userId);
+        }
+
+        $totalHariIni = $hariIniQuery->sum('amount');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PENGELUARAN BULAN INI
+        |--------------------------------------------------------------------------
+        */
+
+        $bulanIniQuery = Expense::whereMonth(
             'expense_date',
             now()->month
         )
         ->whereYear(
             'expense_date',
             now()->year
-        )
-        ->sum('amount');
+        );
+
+        if ($isGuest) {
+
+            $bulanIniQuery->where('user_id', -1);
+
+        } elseif (!$isAdmin) {
+
+            $bulanIniQuery->where('user_id', $userId);
+        }
+
+        $totalBulanIni = $bulanIniQuery->sum('amount');
+
 
         /*
         |--------------------------------------------------------------------------
-        | Kategori
+        | KATEGORI
         |--------------------------------------------------------------------------
         |
-        | Digunakan untuk pilihan filter.
+        | Admin  : Semua kategori
+        | Kasir  : Kategori dari pengeluaran miliknya
+        | Guest  : Kosong
         |
         */
 
-        $kategori = Expense::query()
+        $kategoriQuery = Expense::query();
+
+        if ($isGuest) {
+
+            $kategoriQuery->where('user_id', -1);
+
+        } elseif (!$isAdmin) {
+
+            $kategoriQuery->where('user_id', $userId);
+        }
+
+        $kategori = $kategoriQuery
             ->select('category')
             ->distinct()
             ->orderBy('category')
             ->pluck('category');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | VIEW
+        |--------------------------------------------------------------------------
+        */
 
         return view('pengeluaran', compact(
             'pengeluaran',
