@@ -365,7 +365,7 @@
     {{-- USER LOGIN --}}
 
     <button
-        onclick="toggleUserDropdown()"
+        onclick="toggleMobileUser()"
         type="button"
         class="flex items-center gap-3 rounded-xl px-3 py-2
                hover:bg-gray-700 transition
