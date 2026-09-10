@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
+    private function activeStoreId(): int
+    {
+        return (int) session('active_store_id');
+    }
     /**
      * Menampilkan halaman pengaturan.
      */
@@ -22,11 +26,18 @@ class SettingController extends Controller
         |
         */
 
-        $settings = Setting::first();
+        $storeId = $this->activeStoreId();
+
+$settings = Setting::where(
+    'store_id',
+    $storeId
+)->first();
 
         if (!$settings) {
 
             $settings = Setting::create([
+                'store_id' => $storeId,
+              
                 'store_name' => 'Smart POS',
                 'store_address' => null,
                 'store_phone' => null,
@@ -166,11 +177,17 @@ class SettingController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $settings = Setting::first();
+        $storeId = $this->activeStoreId();
 
-        if (!$settings) {
-            $settings = new Setting();
-        }
+$settings = Setting::where(
+    'store_id',
+    $storeId
+)->first();
+
+if (!$settings) {
+    $settings = new Setting();
+    $settings->store_id = $storeId;
+}
 
 
         /*

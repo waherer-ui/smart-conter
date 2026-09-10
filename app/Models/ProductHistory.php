@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductHistory extends Model
 {
     protected $fillable = [
+        'store_id',
         'product_id',
         'user_id',
         'sku',
@@ -15,6 +17,14 @@ class ProductHistory extends Model
         'status_type',
         'description',
     ];
+
+    /**
+     * Toko yang terkait dengan riwayat.
+     */
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
 
     /**
      * Produk yang terkait dengan riwayat.

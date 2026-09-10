@@ -9,20 +9,19 @@ use Illuminate\Support\Facades\DB;
 
 class TransactionController extends Controller
 {
-            /**
-             * Menyimpan transaksi penjualan.
-             */
-            public function store(Request $request)
-            {
-              
-              $query = Transaction::with([
-            'user',
-            'items'
-        ])->latest();
-        
-        if (!session('logged_in')) {
-            $query->where('user_id', -1);
-        }
+    /**
+     * Mendapatkan ID toko aktif.
+     */
+    private function activeStoreId(): int
+    {
+        return (int) session('active_store_id');
+    }
+
+    /**
+     * Menyimpan transaksi penjualan.
+     */
+    public function store(Request $request)
+    {
         /*
         |--------------------------------------------------------------------------
         | Validasi Data
@@ -91,7 +90,8 @@ class TransactionController extends Controller
         ) {
             return response()->json([
                 'success' => false,
-                'message' => 'Nominal pembayaran kurang dari total tagihan.',
+                'message' =>
+                    'Nominal pembayaran kurang dari total tagihan.',
             ], 422);
         }
 
@@ -106,8 +106,25 @@ class TransactionController extends Controller
         if (!$userId) {
             return response()->json([
                 'success' => false,
-                'message' => 'Session kasir tidak ditemukan. Silakan login kembali.',
+                'message' =>
+                    'Session kasir tidak ditemukan. Silakan login kembali.',
             ], 401);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Toko Aktif
+        |--------------------------------------------------------------------------
+        */
+
+        $storeId = $this->activeStoreId();
+
+        if (!$storeId) {
+            return response()->json([
+                'success' => false,
+                'message' =>
+                    'Toko aktif tidak ditemukan.',
+            ], 422);
         }
 
         /*
@@ -118,174 +135,192 @@ class TransactionController extends Controller
 
         try {
 
-            $transaction = DB::transaction(function () use ($validated, $userId) {
-
-                /*
-                |--------------------------------------------------------------------------
-                | Generate Nomor Invoice
-                |--------------------------------------------------------------------------
-                */
-
-                $invoiceNumber =
-                    'INV-' .
-                    now()->format('YmdHis') .
-                    '-' .
-                    strtoupper(substr(uniqid(), -4));
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Hitung Kembalian
-                |--------------------------------------------------------------------------
-                */
-
-                $change = max(
-                    0,
-                    $validated['paid'] - $validated['total']
-                );
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Buat Transaksi
-                |--------------------------------------------------------------------------
-                */
-
-                $transaction = Transaction::create([
-
-                    'invoice_number' =>
-                        $invoiceNumber,
-
-                    'user_id' =>
-                        $userId,
-
-                    'subtotal' =>
-                        $validated['subtotal'],
-
-                    'discount' =>
-                        $validated['discount'],
-
-                    'total' =>
-                        $validated['total'],
-
-                    'paid' =>
-                        $validated['paid'],
-
-                    'change' =>
-                        $change,
-
-                    'payment_method' =>
-                        $validated['payment_method'],
-
-                ]);
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Simpan Detail Produk
-                |--------------------------------------------------------------------------
-                */
-
-                foreach ($validated['items'] as $item) {
+            $transaction = DB::transaction(
+                function () use (
+                    $validated,
+                    $userId,
+                    $storeId
+                ) {
 
                     /*
                     |--------------------------------------------------------------------------
-                    | Lock Produk
+                    | Generate Nomor Invoice
                     |--------------------------------------------------------------------------
                     */
 
-                    $product = Product::where(
-                        'id',
-                        $item['id']
-                    )
-                    ->lockForUpdate()
-                    ->first();
-
-
-                    if (!$product) {
-
-                        throw new \Exception(
-                            'Produk tidak ditemukan.'
+                    $invoiceNumber =
+                        'INV-' .
+                        now()->format('YmdHis') .
+                        '-' .
+                        strtoupper(
+                            substr(
+                                uniqid(),
+                                -4
+                            )
                         );
-                    }
-
 
                     /*
                     |--------------------------------------------------------------------------
-                    | Cek Stok
+                    | Hitung Kembalian
                     |--------------------------------------------------------------------------
                     */
 
-                    if (
-                        $product->stock <
-                        $item['quantity']
+                    $change = max(
+                        0,
+                        $validated['paid']
+                        - $validated['total']
+                    );
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Buat Transaksi
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $transaction = Transaction::create([
+
+                        'store_id' =>
+                            $storeId,
+
+                        'invoice_number' =>
+                            $invoiceNumber,
+
+                        'user_id' =>
+                            $userId,
+
+                        'subtotal' =>
+                            $validated['subtotal'],
+
+                        'discount' =>
+                            $validated['discount'],
+
+                        'total' =>
+                            $validated['total'],
+
+                        'paid' =>
+                            $validated['paid'],
+
+                        'change' =>
+                            $change,
+
+                        'payment_method' =>
+                            $validated['payment_method'],
+                    ]);
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Simpan Detail Produk
+                    |--------------------------------------------------------------------------
+                    */
+
+                    foreach (
+                        $validated['items']
+                        as $item
                     ) {
 
-                        throw new \Exception(
-                            'Stok produk "' .
-                            $product->name .
-                            '" tidak mencukupi.'
-                        );
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Lock Produk
+                        |--------------------------------------------------------------------------
+                        */
+
+                        $product = Product::where(
+                            'store_id',
+                            $storeId
+                        )
+                        ->where(
+                            'id',
+                            $item['id']
+                        )
+                        ->lockForUpdate()
+                        ->first();
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Produk Tidak Ditemukan
+                        |--------------------------------------------------------------------------
+                        */
+
+                        if (!$product) {
+
+                            throw new \Exception(
+                                'Produk tidak ditemukan di toko aktif.'
+                            );
+                        }
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Cek Stok
+                        |--------------------------------------------------------------------------
+                        */
+
+                        if (
+                            $product->stock
+                            < $item['quantity']
+                        ) {
+
+                            throw new \Exception(
+                                'Stok produk "' .
+                                $product->name .
+                                '" tidak mencukupi.'
+                            );
+                        }
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Hitung Subtotal Item
+                        |--------------------------------------------------------------------------
+                        */
+
+                        $itemSubtotal =
+                            $product->price
+                            * $item['quantity'];
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Simpan Transaction Item
+                        |--------------------------------------------------------------------------
+                        */
+
+                        $transaction->items()->create([
+
+                            'product_id' =>
+                                $product->id,
+
+                            'product_name' =>
+                                $product->name,
+
+                            'sku' =>
+                                $product->sku,
+
+                            'capital_price' =>
+                                $product->capital_price,
+
+                            'price' =>
+                                $product->price,
+
+                            'quantity' =>
+                                $item['quantity'],
+
+                            'subtotal' =>
+                                $itemSubtotal,
+                        ]);
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Kurangi Stok
+                        |--------------------------------------------------------------------------
+                        */
+
+                        $product->stock -=
+                            $item['quantity'];
+
+                        $product->save();
                     }
 
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Hitung Subtotal Item
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $itemSubtotal =
-                        $product->price *
-                        $item['quantity'];
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Simpan Transaction Item
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $transaction->items()->create([
-    'product_id' =>
-        $product->id,
-
-    'product_name' =>
-        $product->name,
-
-    'sku' =>
-        $product->sku,
-
-    'capital_price' =>
-        $product->capital_price,
-
-    'price' =>
-        $product->price,
-
-    'quantity' =>
-        $item['quantity'],
-
-    'subtotal' =>
-        $itemSubtotal,
-]);
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Kurangi Stok
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $product->stock -=
-                        $item['quantity'];
-
-                    $product->save();
+                    return $transaction;
                 }
-
-
-                return $transaction;
-            });
-
+            );
 
             /*
             |--------------------------------------------------------------------------
@@ -309,7 +344,6 @@ class TransactionController extends Controller
 
                 'change' =>
                     $transaction->change,
-
             ]);
 
         } catch (\Throwable $e) {
@@ -331,63 +365,86 @@ class TransactionController extends Controller
             ], 422);
         }
     }
+
     /**
- * Menampilkan riwayat transaksi.
- */
-public function index(Request $request)
-{
-    $query = Transaction::with([
-        'user',
-        'items'
-    ])->latest();
+     * Menampilkan riwayat transaksi.
+     */
+    public function index(Request $request)
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | Query Transaksi Toko Aktif
+        |--------------------------------------------------------------------------
+        */
 
-    /*
-    |--------------------------------------------------------------------------
-    | Filter Pencarian
-    |--------------------------------------------------------------------------
-    */
+        $query = Transaction::where(
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->with([
+            'user',
+            'items'
+        ])
+        ->latest();
 
-    if ($request->filled('search')) {
+        /*
+        |--------------------------------------------------------------------------
+        | Filter Pencarian
+        |--------------------------------------------------------------------------
+        */
 
-        $search = $request->search;
+        if ($request->filled('search')) {
 
-        $query->where(function ($q) use ($search) {
+            $search = $request->search;
 
-            $q->where('invoice_number', 'like', '%' . $search . '%')
-                ->orWhereHas('user', function ($userQuery) use ($search) {
-                    $userQuery->where('name', 'like', '%' . $search . '%');
-                });
+            $query->where(function ($q) use ($search) {
 
-        });
-    }
+                $q->where(
+                    'invoice_number',
+                    'like',
+                    '%' . $search . '%'
+                )
+                ->orWhereHas(
+                    'user',
+                    function ($userQuery) use ($search) {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Filter Tanggal
-    |--------------------------------------------------------------------------
-    */
+                        $userQuery->where(
+                            'name',
+                            'like',
+                            '%' . $search . '%'
+                        );
+                    }
+                );
+            });
+        }
 
-    if ($request->filled('date')) {
+        /*
+        |--------------------------------------------------------------------------
+        | Filter Tanggal
+        |--------------------------------------------------------------------------
+        */
 
-        $query->whereDate(
-            'created_at',
-            $request->date
+        if ($request->filled('date')) {
+
+            $query->whereDate(
+                'created_at',
+                $request->date
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Ambil Data
+        |--------------------------------------------------------------------------
+        */
+
+        $transactions = $query
+            ->paginate(10)
+            ->withQueryString();
+
+        return view(
+            'riwayat',
+            compact('transactions')
         );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Ambil Data
-    |--------------------------------------------------------------------------
-    */
-
-    $transactions = $query
-        ->paginate(10)
-        ->withQueryString();
-
-    return view(
-        'riwayat',
-        compact('transactions')
-    );
-}
 }

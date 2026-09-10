@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Pendaftaran alias middleware keamanan role
         $middleware->alias([
             'auth.role' => \App\Http\Middleware\CheckRole::class,
+            'active.store' => \App\Http\Middleware\ActiveStore::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

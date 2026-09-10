@@ -21,11 +21,21 @@
 
     {{-- Ambil data user aktif secara dinamis untuk seluruh layout --}}
     @php
-        $layoutUser = session('logged_in') ? \App\Models\User::find(session('user_id')) : null;
-        $avatarUrl = ($layoutUser && $layoutUser->avatar) 
-            ? asset('avatars/' . $layoutUser->avatar) 
-            : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100';
-    @endphp
+    $layoutUser = session('logged_in')
+        ? \App\Models\User::find(session('user_id'))
+        : null;
+
+    $avatarUrl = ($layoutUser && $layoutUser->avatar)
+        ? asset('avatars/' . $layoutUser->avatar)
+        : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100';
+
+    $layoutStores = $layoutUser
+        ? $layoutUser->stores()->orderBy('stores.id')->get()
+        : collect();
+
+    $activeStoreId = session('active_store_id');
+    $activeStore = $layoutStores->firstWhere('id', $activeStoreId);
+@endphp
 
 
     {{-- ========================================================= --}}
@@ -43,18 +53,31 @@
                 {{-- LOGO --}}
                 {{-- ================================================= --}}
 
-                <div class="flex items-center">
-                  
-                    <a
-                      href="{{ session('logged_in')
-                          ? route('dashboard')
-                          : route('login') }}"
-                        class="text-white font-bold text-lg tracking-wide"
-                    >
-                        Toko Ku
-                    </a>
+<div class="flex items-center">
+    <a
+        href="{{ session('logged_in')
+            ? route('dashboard')
+            : route('login') }}"
+        class="flex items-center gap-1"
+    >
 
-                </div>
+        {{-- Logo KasirKU --}}
+        <div
+            class="flex h-9 w-9 items-center justify-center
+                   rounded-xl bg-emerald-500
+                   text-lg font-black text-white
+                   shadow-lg shadow-emerald-500/20"
+        >
+            K
+        </div>
+
+        {{-- Nama Aplikasi --}}
+        <span class="text-xl font-black tracking-tight">
+            <span class="text-emerald-400">asir</span><span class="text-white">KU</span>
+        </span>
+
+    </a>
+</div>
 
 
                 {{-- ================================================= --}}
@@ -196,6 +219,48 @@
                                     </div>
 
                                 </div>
+                                @endif
+                                @if(session('logged_in') && $layoutStores->count() > 1)
+
+                                    <div class="border-t border-white/10 py-2">
+
+                                        <div class="px-4 py-1.5 text-xs
+                                                    font-semibold text-gray-500 uppercase">
+                                            Toko Aktif
+                                        </div>
+
+                                        @foreach($layoutStores as $store)
+
+                                            <form
+                                                action="{{ route('store.switch', $store->id) }}"
+                                                method="POST"
+                                            >
+                                                @csrf
+
+                                                <button
+                                                    type="submit"
+                                                    class="dropdown-link"
+                                                >
+                                                    <span>🏪</span>
+
+                                                    <span class="flex-1 text-left truncate">
+                                                        {{ $store->name }}
+                                                    </span>
+
+                                                    @if($store->id == $activeStoreId)
+                                                        <span class="text-emerald-400 font-bold">
+                                                            ✓
+                                                        </span>
+                                                    @endif
+
+                                                </button>
+
+                                            </form>
+
+                                        @endforeach
+
+                                    </div>
+
                                 @endif
 
 
@@ -501,6 +566,48 @@
                         </div>
 
                     </div> @endif
+                    @if(session('logged_in') && $layoutStores->count() > 1)
+
+                                    <div class="border-t border-white/10 py-2">
+
+                                        <div class="px-4 py-1.5 text-xs
+                                                    font-semibold text-gray-500 uppercase">
+                                            Toko Aktif
+                                        </div>
+
+                                        @foreach($layoutStores as $store)
+
+                                            <form
+                                                action="{{ route('store.switch', $store->id) }}"
+                                                method="POST"
+                                            >
+                                                @csrf
+
+                                                <button
+                                                    type="submit"
+                                                    class="dropdown-link"
+                                                >
+                                                    <span>🏪</span>
+
+                                                    <span class="flex-1 text-left truncate">
+                                                        {{ $store->name }}
+                                                    </span>
+
+                                                    @if($store->id == $activeStoreId)
+                                                        <span class="text-emerald-400 font-bold">
+                                                            ✓
+                                                        </span>
+                                                    @endif
+
+                                                </button>
+
+                                            </form>
+
+                                        @endforeach
+
+                                    </div>
+
+                                @endif
 
 
                     {{-- ============================================= --}}
@@ -722,25 +829,6 @@
 
             @endif
 
-
-            {{-- Success --}}
-            @if(session('success'))
-
-                <div
-                    class="mb-5
-                           rounded-xl
-                           border border-green-500/20
-                           bg-green-500/10
-                           px-4 py-3
-                           text-sm
-                           text-green-300"
-                >
-                    {{ session('success') }}
-                </div>
-
-            @endif
-
-
             @yield('content')
 
         </div>
@@ -767,7 +855,7 @@
                    text-xs
                    text-gray-400"
         >
-            &copy; 2026 Smart POS
+            &copy; 2026 KasirKU
         </div>
 
     </footer>

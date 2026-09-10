@@ -40,6 +40,16 @@ class User extends Authenticatable
     {
     return $this->hasMany(Transaction::class);
     }
+    
+          /**
+       * Relasi user dengan toko.
+       */
+      public function stores()
+      {
+          return $this->belongsToMany(Store::class)
+              ->withPivot('role')
+              ->withTimestamps();
+      }
     /**
      * Attribute casting.
      */

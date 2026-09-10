@@ -8,6 +8,14 @@ use Illuminate\Http\Request;
 class ExpenseController extends Controller
 {
     /**
+     * Mendapatkan ID toko aktif.
+     */
+    private function activeStoreId(): int
+    {
+        return (int) session('active_store_id');
+    }
+
+    /**
      * Menampilkan daftar pengeluaran.
      */
     public function index(Request $request)
@@ -29,9 +37,13 @@ class ExpenseController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $query = Expense::with('user')
-            ->latest('expense_date')
-            ->latest('id');
+        $query = Expense::where(
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->with('user')
+        ->latest('expense_date')
+        ->latest('id');
 
 
         /*
@@ -39,8 +51,8 @@ class ExpenseController extends Controller
         | KONTROL AKSES DATA
         |--------------------------------------------------------------------------
         |
-        | Admin  : Melihat semua pengeluaran
-        | Kasir  : Hanya pengeluaran miliknya
+        | Admin  : Melihat semua pengeluaran toko aktif
+        | Kasir  : Hanya pengeluaran miliknya di toko aktif
         | Guest  : Tidak melihat data pengeluaran
         |
         */
@@ -113,7 +125,11 @@ class ExpenseController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $hariIniQuery = Expense::whereDate(
+        $hariIniQuery = Expense::where(
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->whereDate(
             'expense_date',
             today()
         );
@@ -136,7 +152,11 @@ class ExpenseController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $bulanIniQuery = Expense::whereMonth(
+        $bulanIniQuery = Expense::where(
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->whereMonth(
             'expense_date',
             now()->month
         )
@@ -162,13 +182,16 @@ class ExpenseController extends Controller
         | KATEGORI
         |--------------------------------------------------------------------------
         |
-        | Admin  : Semua kategori
+        | Admin  : Semua kategori toko aktif
         | Kasir  : Kategori dari pengeluaran miliknya
         | Guest  : Kosong
         |
         */
 
-        $kategoriQuery = Expense::query();
+        $kategoriQuery = Expense::where(
+            'store_id',
+            $this->activeStoreId()
+        );
 
         if ($isGuest) {
 
@@ -231,25 +254,49 @@ class ExpenseController extends Controller
                 'date',
             ],
         ], [
-            'category.required' => 'Kategori pengeluaran wajib diisi.',
-            'category.max' => 'Kategori terlalu panjang.',
+            'category.required' =>
+                'Kategori pengeluaran wajib diisi.',
 
-            'description.max' => 'Keterangan terlalu panjang.',
+            'category.max' =>
+                'Kategori terlalu panjang.',
 
-            'amount.required' => 'Jumlah pengeluaran wajib diisi.',
-            'amount.numeric' => 'Jumlah pengeluaran harus berupa angka.',
-            'amount.min' => 'Jumlah pengeluaran minimal Rp 1.',
+            'description.max' =>
+                'Keterangan terlalu panjang.',
 
-            'expense_date.required' => 'Tanggal pengeluaran wajib diisi.',
-            'expense_date.date' => 'Tanggal pengeluaran tidak valid.',
+            'amount.required' =>
+                'Jumlah pengeluaran wajib diisi.',
+
+            'amount.numeric' =>
+                'Jumlah pengeluaran harus berupa angka.',
+
+            'amount.min' =>
+                'Jumlah pengeluaran minimal Rp 1.',
+
+            'expense_date.required' =>
+                'Tanggal pengeluaran wajib diisi.',
+
+            'expense_date.date' =>
+                'Tanggal pengeluaran tidak valid.',
         ]);
 
         Expense::create([
-            'user_id' => session('user_id'),
-            'category' => $validated['category'],
-            'description' => $validated['description'] ?? null,
-            'amount' => $validated['amount'],
-            'expense_date' => $validated['expense_date'],
+            'store_id' =>
+                $this->activeStoreId(),
+
+            'user_id' =>
+                session('user_id'),
+
+            'category' =>
+                $validated['category'],
+
+            'description' =>
+                $validated['description'] ?? null,
+
+            'amount' =>
+                $validated['amount'],
+
+            'expense_date' =>
+                $validated['expense_date'],
         ]);
 
         return redirect()
@@ -266,7 +313,10 @@ class ExpenseController extends Controller
      */
     public function edit($id)
     {
-        $pengeluaran = Expense::findOrFail($id);
+        $pengeluaran = Expense::where(
+            'store_id',
+            $this->activeStoreId()
+        )->findOrFail($id);
 
         return view(
             'pengeluaran-edit',
@@ -280,7 +330,10 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $pengeluaran = Expense::findOrFail($id);
+        $pengeluaran = Expense::where(
+            'store_id',
+            $this->activeStoreId()
+        )->findOrFail($id);
 
         $validated = $request->validate([
             'category' => [
@@ -308,10 +361,17 @@ class ExpenseController extends Controller
         ]);
 
         $pengeluaran->update([
-            'category' => $validated['category'],
-            'description' => $validated['description'] ?? null,
-            'amount' => $validated['amount'],
-            'expense_date' => $validated['expense_date'],
+            'category' =>
+                $validated['category'],
+
+            'description' =>
+                $validated['description'] ?? null,
+
+            'amount' =>
+                $validated['amount'],
+
+            'expense_date' =>
+                $validated['expense_date'],
         ]);
 
         return redirect()
@@ -328,7 +388,10 @@ class ExpenseController extends Controller
      */
     public function destroy($id)
     {
-        $pengeluaran = Expense::findOrFail($id);
+        $pengeluaran = Expense::where(
+            'store_id',
+            $this->activeStoreId()
+        )->findOrFail($id);
 
         $pengeluaran->delete();
 

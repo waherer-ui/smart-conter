@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Transaction extends Model
 {
     protected $fillable = [
+        'store_id',
         'invoice_number',
         'user_id',
         'subtotal',
@@ -25,6 +26,14 @@ class Transaction extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Toko tempat transaksi dilakukan.
+     */
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
     }
 
     /**

@@ -12,6 +12,14 @@ use Illuminate\Http\Request;
 class LaporanController extends Controller
 {
     /**
+     * Mendapatkan ID toko aktif.
+     */
+    private function activeStoreId(): int
+    {
+        return (int) session('active_store_id');
+    }
+
+    /**
      * Menampilkan laporan penjualan dan pengeluaran.
      */
     public function index(Request $request)
@@ -23,13 +31,16 @@ class LaporanController extends Controller
         */
 
         $isAdmin = session('user_role') === 'admin';
+        $isGuest = !session('logged_in');
         $userId = session('user_id');
 
-        $isGuest = !session('logged_in');
+        if ($isGuest) {
+            $userId = -1;
+        }
 
-          if ($isGuest) {
-              $userId = -1;
-          }
+        $storeId = $this->activeStoreId();
+
+
         /*
         |--------------------------------------------------------------------------
         | FILTER KASIR
@@ -37,7 +48,7 @@ class LaporanController extends Controller
         |
         | Admin:
         |   - null = Semua Kasir
-        |   - ID tertentu = kasir tertentu
+        |   - ID tertentu = Kasir tertentu
         |
         | Kasir:
         |   - selalu menggunakan user_id miliknya sendiri
@@ -52,7 +63,6 @@ class LaporanController extends Controller
 
         } else {
 
-            // Kasir tidak boleh memilih kasir lain
             $cashierId = $userId;
         }
 
@@ -62,12 +72,15 @@ class LaporanController extends Controller
         | DAFTAR KASIR
         |--------------------------------------------------------------------------
         |
-        | Hanya dibutuhkan untuk dropdown Admin.
+        | Hanya kasir yang terhubung ke toko aktif.
         |
         */
 
         $kasir = $isAdmin
             ? User::where('role', 'kasir')
+                ->whereHas('stores', function ($query) use ($storeId) {
+                    $query->where('stores.id', $storeId);
+                })
                 ->orderBy('name')
                 ->get()
             : collect();
@@ -95,13 +108,20 @@ class LaporanController extends Controller
         */
 
         $transaksiQuery = Transaction::with('user')
+            ->where(
+                'store_id',
+                $storeId
+            )
             ->whereBetween('created_at', [
                 $startDate,
                 $endDate
             ]);
 
         if ($cashierId) {
-            $transaksiQuery->where('user_id', $cashierId);
+            $transaksiQuery->where(
+                'user_id',
+                $cashierId
+            );
         }
 
         $transaksi = $transaksiQuery
@@ -130,7 +150,17 @@ class LaporanController extends Controller
 
         $barangTerjual = TransactionItem::whereHas(
             'transaction',
-            function ($query) use ($startDate, $endDate, $cashierId) {
+            function ($query) use (
+                $storeId,
+                $startDate,
+                $endDate,
+                $cashierId
+            ) {
+
+                $query->where(
+                    'store_id',
+                    $storeId
+                );
 
                 $query->whereBetween('created_at', [
                     $startDate,
@@ -138,7 +168,10 @@ class LaporanController extends Controller
                 ]);
 
                 if ($cashierId) {
-                    $query->where('user_id', $cashierId);
+                    $query->where(
+                        'user_id',
+                        $cashierId
+                    );
                 }
             }
         )->sum('quantity');
@@ -151,6 +184,10 @@ class LaporanController extends Controller
         */
 
         $pengeluaranQuery = Expense::with('user')
+            ->where(
+                'store_id',
+                $storeId
+            )
             ->whereDate(
                 'expense_date',
                 '>=',
@@ -163,7 +200,10 @@ class LaporanController extends Controller
             );
 
         if ($cashierId) {
-            $pengeluaranQuery->where('user_id', $cashierId);
+            $pengeluaranQuery->where(
+                'user_id',
+                $cashierId
+            );
         }
 
         $pengeluaran = $pengeluaranQuery
@@ -178,7 +218,8 @@ class LaporanController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $totalPengeluaran = $pengeluaran->sum('amount');
+        $totalPengeluaran =
+            $pengeluaran->sum('amount');
 
 
         /*
@@ -190,7 +231,9 @@ class LaporanController extends Controller
         |
         */
 
-        $kasBersih = $omzet - $totalPengeluaran;
+        $kasBersih =
+            $omzet
+            - $totalPengeluaran;
 
 
         /*
@@ -200,16 +243,24 @@ class LaporanController extends Controller
         */
 
         $transaksiHariIniQuery = Transaction::query()
+            ->where(
+                'store_id',
+                $storeId
+            )
             ->whereDate(
                 'created_at',
                 Carbon::today()
             );
 
         if ($cashierId) {
-            $transaksiHariIniQuery->where('user_id', $cashierId);
+            $transaksiHariIniQuery->where(
+                'user_id',
+                $cashierId
+            );
         }
 
-        $transaksiHariIni = $transaksiHariIniQuery->get();
+        $transaksiHariIni =
+            $transaksiHariIniQuery->get();
 
 
         /*
@@ -238,20 +289,32 @@ class LaporanController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $barangTerjualHariIni = TransactionItem::whereHas(
-            'transaction',
-            function ($query) use ($cashierId) {
+        $barangTerjualHariIni =
+            TransactionItem::whereHas(
+                'transaction',
+                function ($query) use (
+                    $storeId,
+                    $cashierId
+                ) {
 
-                $query->whereDate(
-                    'created_at',
-                    Carbon::today()
-                );
+                    $query->where(
+                        'store_id',
+                        $storeId
+                    );
 
-                if ($cashierId) {
-                    $query->where('user_id', $cashierId);
+                    $query->whereDate(
+                        'created_at',
+                        Carbon::today()
+                    );
+
+                    if ($cashierId) {
+                        $query->where(
+                            'user_id',
+                            $cashierId
+                        );
+                    }
                 }
-            }
-        )->sum('quantity');
+            )->sum('quantity');
 
 
         /*
@@ -260,14 +323,22 @@ class LaporanController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $pengeluaranHariIniQuery = Expense::query()
-            ->whereDate(
-                'expense_date',
-                Carbon::today()
-            );
+        $pengeluaranHariIniQuery =
+            Expense::query()
+                ->where(
+                    'store_id',
+                    $storeId
+                )
+                ->whereDate(
+                    'expense_date',
+                    Carbon::today()
+                );
 
         if ($cashierId) {
-            $pengeluaranHariIniQuery->where('user_id', $cashierId);
+            $pengeluaranHariIniQuery->where(
+                'user_id',
+                $cashierId
+            );
         }
 
         $totalPengeluaranHariIni =
@@ -302,18 +373,30 @@ class LaporanController extends Controller
             $hpp = TransactionItem::whereHas(
                 'transaction',
                 function ($query) use (
+                    $storeId,
                     $startDate,
                     $endDate,
                     $cashierId
                 ) {
 
-                    $query->whereBetween('created_at', [
-                        $startDate,
-                        $endDate
-                    ]);
+                    $query->where(
+                        'store_id',
+                        $storeId
+                    );
+
+                    $query->whereBetween(
+                        'created_at',
+                        [
+                            $startDate,
+                            $endDate
+                        ]
+                    );
 
                     if ($cashierId) {
-                        $query->where('user_id', $cashierId);
+                        $query->where(
+                            'user_id',
+                            $cashierId
+                        );
                     }
                 }
             )
@@ -332,7 +415,8 @@ class LaporanController extends Controller
             */
 
             $labaKotor =
-                $omzet - $hpp;
+                $omzet
+                - $hpp;
 
 
             /*
@@ -342,7 +426,8 @@ class LaporanController extends Controller
             */
 
             $labaBersih =
-                $labaKotor - $totalPengeluaran;
+                $labaKotor
+                - $totalPengeluaran;
 
 
             /*
@@ -351,26 +436,38 @@ class LaporanController extends Controller
             |--------------------------------------------------------------------------
             */
 
-            $hppHariIni = TransactionItem::whereHas(
-                'transaction',
-                function ($query) use ($cashierId) {
+            $hppHariIni =
+                TransactionItem::whereHas(
+                    'transaction',
+                    function ($query) use (
+                        $storeId,
+                        $cashierId
+                    ) {
 
-                    $query->whereDate(
-                        'created_at',
-                        Carbon::today()
-                    );
+                        $query->where(
+                            'store_id',
+                            $storeId
+                        );
 
-                    if ($cashierId) {
-                        $query->where('user_id', $cashierId);
+                        $query->whereDate(
+                            'created_at',
+                            Carbon::today()
+                        );
+
+                        if ($cashierId) {
+                            $query->where(
+                                'user_id',
+                                $cashierId
+                            );
+                        }
                     }
-                }
-            )
-            ->get()
-            ->sum(function ($item) {
+                )
+                ->get()
+                ->sum(function ($item) {
 
-                return $item->capital_price
-                    * $item->quantity;
-            });
+                    return $item->capital_price
+                        * $item->quantity;
+                });
 
 
             /*

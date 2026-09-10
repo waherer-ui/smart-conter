@@ -9,12 +9,22 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+  private function activeStoreId(): int
+{
+    return (int) session('active_store_id');
+}
     /**
      * Menampilkan halaman manajemen user.
      */
     public function index()
     {
-        $users = User::orderBy('created_at', 'desc')->get();
+        $storeId = $this->activeStoreId();
+
+        $users = User::whereHas('stores', function ($query) use ($storeId) {
+            $query->where('stores.id', $storeId);
+        })
+        ->orderBy('created_at', 'desc')
+        ->get();
 
         return view('admin.users.index', compact('users'));
     }
@@ -60,15 +70,22 @@ class UserController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        User::create([
-            'name' => trim($request->name),
+        $user = User::create([
+    'name' => trim($request->name),
 
-            'email' => strtolower(trim($request->email)),
+    'email' => strtolower(trim($request->email)),
 
-            'password' => Hash::make($request->password),
+    'password' => Hash::make($request->password),
 
-            'role' => $request->role,
-        ]);
+    'role' => $request->role,
+      ]);
+      
+      $user->stores()->attach(
+          $this->activeStoreId(),
+          [
+              'role' => $request->role,
+          ]
+      );
 
 
         /*
@@ -97,7 +114,13 @@ class UserController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $user = User::findOrFail($id);
+        $storeId = $this->activeStoreId();
+
+          $user = User::whereHas('stores', function ($query) use ($storeId) {
+              $query->where('stores.id', $storeId);
+          })
+          ->where('id', $id)
+          ->firstOrFail();
 
 
         /*
@@ -118,14 +141,14 @@ class UserController extends Controller
 
 
         /*
-        |--------------------------------------------------------------------------
-        | Hapus User
-        |--------------------------------------------------------------------------
-        */
+|--------------------------------------------------------------------------
+| Keluarkan User dari Toko Aktif
+|--------------------------------------------------------------------------
+*/
 
         $userName = $user->name;
 
-        $user->delete();
+          $user->stores()->detach($storeId);
 
 
         /*

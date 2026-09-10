@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Product extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'store_id',
         'sku',
         'name',
         'category',
@@ -19,4 +21,12 @@ class Product extends Model
         'stock',
         'image',
     ];
+
+    /**
+     * Relasi produk dengan toko.
+     */
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
 }

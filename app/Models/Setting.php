@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Setting extends Model
 {
     protected $fillable = [
+        'store_id',
         'store_name',
         'store_address',
         'store_phone',
@@ -29,4 +31,9 @@ class Setting extends Model
         'show_payment_method' => 'boolean',
         'show_discount' => 'boolean',
     ];
+
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
+    }
 }

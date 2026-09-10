@@ -14,6 +14,7 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StoreController;
 
 
 
@@ -190,6 +191,18 @@ Route::post('/proses-login', function (Request $request) {
 
 })->name('proses.login');
 
+    /*
+|--------------------------------------------------------------------------
+| SWITCH TOKO
+|--------------------------------------------------------------------------
+*/
+
+Route::post(
+    '/switch-store/{id}',
+    [StoreController::class, 'switch']
+)->middleware('auth.role')
+->name('store.switch');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -217,10 +230,11 @@ Route::post('/proses-login', function (Request $request) {
     |--------------------------------------------------------------------------
     */
 
-    Route::get(
-        '/dashboard',
-        [ProductController::class, 'dashboard']
-    )->name('dashboard');
+          Route::get(
+          '/dashboard',
+          [ProductController::class, 'dashboard']
+      )->middleware('active.store')
+      ->name('dashboard');
 
 
     /*
@@ -230,9 +244,10 @@ Route::post('/proses-login', function (Request $request) {
     */
 
     Route::get(
-        '/produk',
-        [ProductController::class, 'index']
-    )->name('produk.index');
+    '/produk',
+    [ProductController::class, 'index']
+)->middleware('active.store')
+->name('produk.index');
 
 
     // Tambah Produk / Restock
@@ -242,8 +257,11 @@ Route::post('/proses-login', function (Request $request) {
     )->middleware('auth.role')
     ->name('produk.store');
 
-    Route::get('/produk/scan/{sku}', [ProductController::class, 'scanBySku'])
-    ->name('produk.scan');
+    Route::get(
+    '/produk/scan/{sku}',
+    [ProductController::class, 'scanBySku']
+)->middleware('active.store')
+->name('produk.scan');
     
     // Edit Produk
     Route::put(
@@ -276,9 +294,10 @@ Route::post('/proses-login', function (Request $request) {
     */
 
     Route::get(
-        '/kasir',
-        [ProductController::class, 'kasir']
-    )->name('kasir.index');
+    '/kasir',
+    [ProductController::class, 'kasir']
+)->middleware('active.store')
+->name('kasir.index');
 
 
     // Simpan transaksi
@@ -295,10 +314,9 @@ Route::post('/proses-login', function (Request $request) {
     |--------------------------------------------------------------------------
     */
 
-    Route::get(
-        '/riwayat',
-        [TransactionController::class, 'index']
-    )->name('riwayat');
+    Route::get('/riwayat', [TransactionController::class, 'index'])
+    ->middleware('active.store')
+    ->name('riwayat');
 
 
     /*
@@ -313,16 +331,16 @@ Route::post('/proses-login', function (Request $request) {
     |
     */
 
-    Route::get(
-        '/pengeluaran',
-        [ExpenseController::class, 'index']
-    )->name('pengeluaran');
+    Route::get('/pengeluaran', [ExpenseController::class, 'index'])
+    ->middleware('active.store')
+    ->name('pengeluaran');
 
 
     Route::post(
-        '/pengeluaran',
-        [ExpenseController::class, 'store']
-    )->name('pengeluaran.store');
+    '/pengeluaran',
+    [ExpenseController::class, 'store']
+)->middleware('auth.role')
+->name('pengeluaran.store');
 
 
     /*
@@ -337,10 +355,9 @@ Route::post('/proses-login', function (Request $request) {
     |
     */
 
-    Route::get(
-        '/laporan',
-        [LaporanController::class, 'index']
-    )->name('laporan');
+    Route::get('/laporan', [LaporanController::class, 'index'])
+    ->middleware('active.store')
+    ->name('laporan');
     
 
 Route::middleware('auth.role')->group(function () {

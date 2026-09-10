@@ -9,6 +9,13 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+  /**
+ * Mendapatkan ID toko aktif.
+ */
+private function activeStoreId(): int
+{
+    return (int) session('active_store_id');
+}
     /*
     |--------------------------------------------------------------------------
     | DAFTAR PRODUK
@@ -30,7 +37,10 @@ class ProductController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $query = Product::query();
+        $query = Product::where(
+    'store_id',
+    $this->activeStoreId()
+);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -49,10 +59,14 @@ class ProductController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $categories = Product::select('category')
-            ->distinct()
-            ->orderBy('category')
-            ->pluck('category');
+        $categories = Product::where(
+    'store_id',
+    $this->activeStoreId()
+)
+    ->select('category')
+    ->distinct()
+    ->orderBy('category')
+    ->pluck('category');
 
         /*
         |--------------------------------------------------------------------------
@@ -60,10 +74,13 @@ class ProductController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $historyQuery = ProductHistory::orderBy(
-            'created_at',
-            'desc'
-        );
+        $historyQuery = ProductHistory::where(
+    'store_id',
+    $this->activeStoreId()
+)->orderBy(
+    'created_at',
+    'desc'
+);
 
         if ($dateFilter === 'today') {
 
@@ -165,11 +182,17 @@ class ProductController extends Controller
 
     public function destroyHistory($id)
     {
-        $history = ProductHistory::findOrFail($id);
+        $history = ProductHistory::where(
+    'store_id',
+    $this->activeStoreId()
+)->findOrFail($id);
 
-        $product = Product::find(
-            $history->product_id
-        );
+        $product = Product::where(
+    'store_id',
+    $this->activeStoreId()
+)->find(
+    $history->product_id
+);
 
         /*
         |--------------------------------------------------------------------------
@@ -222,7 +245,10 @@ class ProductController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    $query = Product::query();
+    $query = Product::where(
+    'store_id',
+    $this->activeStoreId()
+);
 
 
     /*
@@ -287,10 +313,14 @@ class ProductController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    $categories = Product::select('category')
-        ->distinct()
-        ->orderBy('category')
-        ->pluck('category');
+$categories = Product::where(
+    'store_id',
+    $this->activeStoreId()
+)
+    ->select('category')
+    ->distinct()
+    ->orderBy('category')
+    ->pluck('category');
 
 
     return view(
@@ -316,7 +346,10 @@ class ProductController extends Controller
         $search = $request->input('search');
         $category = $request->input('category');
 
-        $query = Product::query();
+        $query = Product::where(
+    'store_id',
+    $this->activeStoreId()
+);
 
         if ($search) {
 
@@ -353,10 +386,14 @@ class ProductController extends Controller
             ->orderBy('name')
             ->get();
 
-        $categories = Product::select('category')
-            ->distinct()
-            ->orderBy('category')
-            ->pluck('category');
+$categories = Product::where(
+    'store_id',
+    $this->activeStoreId()
+)
+    ->select('category')
+    ->distinct()
+    ->orderBy('category')
+    ->pluck('category');
 
         return view(
             'kasir',
@@ -482,14 +519,18 @@ class ProductController extends Controller
         */
 
         $existingProduct = Product::where(
-            'name',
-            trim($request->name)
-        )
-        ->where(
-            'category',
-            trim($request->category)
-        )
-        ->first();
+    'store_id',
+    $this->activeStoreId()
+          )
+          ->where(
+              'name',
+              trim($request->name)
+          )
+          ->where(
+              'category',
+              trim($request->category)
+          )
+          ->first();
 
 
         /*
@@ -563,6 +604,8 @@ class ProductController extends Controller
             */
 
             ProductHistory::create([
+              'store_id' =>
+        $this->activeStoreId(),
 
                 'product_id' =>
                     $existingProduct->id,
@@ -627,9 +670,14 @@ class ProductController extends Controller
         */
 
         $count = Product::where(
-            'category',
-            $request->category
-        )->count();
+    'store_id',
+    $this->activeStoreId()
+      )
+      ->where(
+          'category',
+          $request->category
+      )
+      ->count();
 
         $nextNumber = $count + 1;
 
@@ -651,6 +699,8 @@ class ProductController extends Controller
         */
 
         $product = Product::create([
+              'store_id' =>
+        $this->activeStoreId(),
 
             'sku' =>
                 $sku,
@@ -686,6 +736,8 @@ class ProductController extends Controller
         */
 
         ProductHistory::create([
+          'store_id' =>
+    $this->activeStoreId(),
 
             'product_id' =>
                 $product->id,
@@ -788,8 +840,10 @@ class ProductController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $product =
-            Product::findOrFail($id);
+        $product = Product::where(
+    'store_id',
+    $this->activeStoreId()
+)->findOrFail($id);
 
 
         /*
@@ -999,8 +1053,11 @@ class ProductController extends Controller
 
             ProductHistory::create([
 
-                'product_id' =>
-                    $product->id,
+    'store_id' =>
+        $this->activeStoreId(),
+
+    'product_id' =>
+        $product->id,
 
                 'sku' =>
                     $product->sku,
@@ -1041,8 +1098,10 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $product =
-            Product::findOrFail($id);
+        $product = Product::where(
+    'store_id',
+    $this->activeStoreId()
+)->findOrFail($id);
 
 
         /*
@@ -1096,25 +1155,28 @@ class ProductController extends Controller
 
         ProductHistory::create([
 
-            'product_id' =>
-                $product->id,
+    'store_id' =>
+        $this->activeStoreId(),
 
-            'sku' =>
-                $sku,
+    'product_id' =>
+        $product->id,
 
-            'name' =>
-                $name,
+    'sku' =>
+        $sku,
 
-            'added_stock' =>
-                0,
+    'name' =>
+        $name,
 
-            'status_type' =>
-                'Hapus Produk | ' .
-                $petugas .
-                ' | Stok terakhir: ' .
-                $stock,
+    'added_stock' =>
+        0,
 
-        ]);
+    'status_type' =>
+        'Hapus Produk | ' .
+        $petugas .
+        ' | Stok terakhir: ' .
+        $stock,
+
+]);
 
 
         /*
@@ -1163,9 +1225,12 @@ class ProductController extends Controller
     public function scanBySku(string $sku)
     {
         $product = Product::where(
-            'sku',
-            $sku
-        )->first();
+    'store_id',
+    $this->activeStoreId()
+)->where(
+    'sku',
+    $sku
+)->first();
 
         if (!$product) {
 
