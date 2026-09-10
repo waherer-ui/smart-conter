@@ -365,7 +365,7 @@
     {{-- USER LOGIN --}}
 
     <button
-        onclick="toggleMobileUser()"
+        onclick="toggleMobileMenu()"
         type="button"
         class="flex items-center gap-3 rounded-xl px-3 py-2
                hover:bg-gray-700 transition
@@ -458,7 +458,7 @@
 
             <div
                 id="mobile-menu"
-                class="hidden md:hidden absolute
+                class="hidden absolute
                        top-16 left-0 right-0 px-4"
             >
 
