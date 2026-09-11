@@ -2,6 +2,7 @@
 <html lang="id" class="h-full bg-gray-900">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -14,614 +15,407 @@
     </title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 
 
 <body class="min-h-screen bg-gray-900 text-gray-200 flex flex-col">
 
-    {{-- Ambil data user aktif secara dinamis untuk seluruh layout --}}
-    @php
-    $layoutUser = session('logged_in')
-        ? \App\Models\User::find(session('user_id'))
-        : null;
 
-    $avatarUrl = ($layoutUser && $layoutUser->avatar)
-        ? asset('avatars/' . $layoutUser->avatar)
-        : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100';
+{{-- ========================================================= --}}
+{{-- DATA USER & TOKO AKTIF --}}
+{{-- ========================================================= --}}
 
-    $layoutStores = $layoutUser
-        ? $layoutUser->stores()->orderBy('stores.id')->get()
-        : collect();
+@php
 
-    $activeStoreId = session('active_store_id');
-    $activeStore = $layoutStores->firstWhere('id', $activeStoreId);
+$layoutUser = session('logged_in')
+    ? \App\Models\User::find(session('user_id'))
+    : null;
+
+$avatarUrl = ($layoutUser && $layoutUser->avatar)
+    ? asset('avatars/' . $layoutUser->avatar)
+    : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100';
+
+$layoutStores = $layoutUser
+    ? $layoutUser->stores()
+        ->orderBy('stores.id')
+        ->get()
+    : collect();
+
+$activeStoreId = session('active_store_id');
+
+$activeStore = $layoutStores->firstWhere(
+    'id',
+    $activeStoreId
+);
+
 @endphp
 
 
-    {{-- ========================================================= --}}
-    {{-- NAVBAR GLOBAL --}}
-    {{-- ========================================================= --}}
 
-    <nav class="bg-gray-800 border-b border-white/10 sticky top-0 z-50">
+{{-- ========================================================= --}}
+{{-- NAVBAR GLOBAL --}}
+{{-- ========================================================= --}}
 
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+<nav class="bg-gray-800 border-b border-white/10 sticky top-0 z-50">
 
-            <div class="flex h-16 items-center justify-between">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-
-                {{-- ================================================= --}}
-                {{-- LOGO --}}
-                {{-- ================================================= --}}
-
-<div class="flex items-center">
-    <a
-        href="{{ session('logged_in')
-            ? route('dashboard')
-            : route('login') }}"
-        class="flex items-center gap-1"
-    >
-
-        {{-- Logo KasirKU --}}
-        <div
-            class="flex h-9 w-9 items-center justify-center
-                   rounded-xl bg-emerald-500
-                   text-lg font-black text-white
-                   shadow-lg shadow-emerald-500/20"
-        >
-            K
-        </div>
-
-        {{-- Nama Aplikasi --}}
-        <span class="text-xl font-black tracking-tight">
-            <span class="text-emerald-400">asir</span><span class="text-white">KU</span>
-        </span>
-
-    </a>
-</div>
+        <div class="flex h-16 items-center justify-between">
 
 
-                {{-- ================================================= --}}
-                {{-- DESKTOP --}}
-                {{-- ================================================= --}}
+            {{-- ================================================= --}}
+            {{-- LOGO --}}
+            {{-- ================================================= --}}
 
-                <div class="hidden md:flex items-center">
+            <div class="flex items-center">
 
-                        <div class="relative">
+                <a
+                    href="{{ session('logged_in')
+                        ? route('dashboard')
+                        : route('login') }}"
+                    class="flex items-center gap-1"
+                >
 
+                    <div
+                        class="flex h-9 w-9 items-center justify-center
+                               rounded-xl bg-emerald-500
+                               text-lg font-black text-white
+                               shadow-lg shadow-emerald-500/20"
+                    >
+                        K
+                    </div>
 
-                           {{-- ===================================== --}}
-{{-- PROFILE / GUEST BUTTON --}}
-{{-- ===================================== --}}
+                    <span class="text-xl font-black tracking-tight">
 
-@if(session('logged_in'))
+                        <span class="text-emerald-400">
+                            asir
+                        </span>
 
-    {{-- USER LOGIN --}}
+                        <span class="text-white">
+                            KU
+                        </span>
 
-    <button
-        onclick="toggleUserDropdown()"
-        type="button"
-        class="flex items-center gap-3 rounded-xl px-3 py-2
-               hover:bg-gray-700 transition
-               focus:outline-none focus:ring-2
-               focus:ring-indigo-500"
-    >
+                    </span>
 
-        {{-- User Info --}}
-        <div class="text-right">
+                </a>
 
-            <div class="text-sm font-medium text-white">
-                {{ session('username') }}
             </div>
 
-            <div class="text-xs text-gray-400 uppercase">
-                {{ session('user_role') }}
-            </div>
-
-        </div>
-
-        {{-- Avatar --}}
-        <img
-            class="w-9 h-9 rounded-full border border-white/20 object-cover"
-            src="{{ $avatarUrl }}"
-            alt="Profile"
-        >
-
-        {{-- Arrow --}}
-        <svg
-            class="w-4 h-4 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-            />
-        </svg>
-
-    </button>
-
-@else
-
-    {{-- GUEST / PENGUNJUNG --}}
-
-    <button
-        onclick="toggleUserDropdown()"
-        type="button"
-        class="flex items-center justify-center
-               w-11 h-11 rounded-xl
-               hover:bg-gray-700 transition
-               focus:outline-none focus:ring-2
-               focus:ring-indigo-500"
-        aria-label="Menu"
-    >
-
-        {{-- Hamburger --}}
-        <svg
-            class="w-6 h-6 text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16"
-            />
-        </svg>
-
-    </button>
-
-@endif
-                            {{-- ===================================== --}}
-                            {{-- PROFILE DROPDOWN --}}
-                            {{-- ===================================== --}}
-
-                            <div
-                                id="user-dropdown"
-                                class="hidden absolute right-0 mt-2 w-64
-                                       rounded-2xl bg-gray-800
-                                       border border-white/10
-                                       shadow-2xl overflow-hidden z-50"
-                            >
 
 
-                                {{-- ================================= --}}
-                                {{-- PROFILE HEADER --}}
-                                {{-- ================================= --}}
-                                @if(session('logged_in'))
-                                <div class="px-4 py-4 bg-gray-800/80">
+            {{-- ================================================= --}}
+            {{-- DESKTOP --}}
+            {{-- ================================================= --}}
 
-                                    <div class="flex items-center gap-3">
+            <div class="hidden md:flex items-center">
 
-                                        {{-- Avatar Desktop Dropdown Header --}}
-                                        <img
-                                            class="w-11 h-11 rounded-full border border-white/20 object-cover"
-                                            src="{{ $avatarUrl }}"
-                                            alt="Profile"
-                                        >
-
-                                        <div class="min-w-0">
-
-                                            <div class="font-semibold text-white truncate">
-                                                {{ session('username') }}
-                                            </div>
-
-                                            <div class="text-xs text-gray-400 uppercase">
-                                                {{ session('user_role') }}
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                                @endif
-                                @if(session('logged_in') && $layoutStores->count() > 1)
-
-                                    <div class="border-t border-white/10 py-2">
-
-                                        <div class="px-4 py-1.5 text-xs
-                                                    font-semibold text-gray-500 uppercase">
-                                            Toko Aktif
-                                        </div>
-
-                                        @foreach($layoutStores as $store)
-
-                                            <form
-                                                action="{{ route('store.switch', $store->id) }}"
-                                                method="POST"
-                                            >
-                                                @csrf
-
-                                                <button
-                                                    type="submit"
-                                                    class="dropdown-link"
-                                                >
-                                                    <span>🏪</span>
-
-                                                    <span class="flex-1 text-left truncate">
-                                                        {{ $store->name }}
-                                                    </span>
-
-                                                    @if($store->id == $activeStoreId)
-                                                        <span class="text-emerald-400 font-bold">
-                                                            ✓
-                                                        </span>
-                                                    @endif
-
-                                                </button>
-
-                                            </form>
-
-                                        @endforeach
-
-                                    </div>
-
-                                @endif
+                <div class="relative">
 
 
-                                {{-- ================================= --}}
-                                {{-- NAVIGASI --}}
-                                {{-- ================================= --}}
+                    {{-- ========================================= --}}
+                    {{-- USER LOGIN --}}
+                    {{-- ========================================= --}}
 
-                                <div class="border-t border-white/10 py-2">
+                    @if(session('logged_in'))
 
-                                    <div class="px-4 py-1.5 text-xs
-                                                font-semibold text-gray-500 uppercase">
-                                        Navigasi
-                                    </div>
-
-                                    {{-- Dashboard --}}
-                                        <a
-                                            href="{{ route('dashboard') }}"
-                                            class="dropdown-link"
-                                        >
-                                            <span>🏠</span>
-                                            <span>Dashboard</span>
-                                        </a>
-
-                                    {{-- Kasir --}}
-                                    <a
-                                        href="{{ route('kasir.index') }}"
-                                        class="dropdown-link"
-                                    >
-                                        <span>🛒</span>
-                                        <span>Kasir</span>
-                                    </a>
+                        <div class="flex items-center gap-2">
 
 
-                                    {{-- Produk --}}
-                                    <a
-                                        href="{{ route('produk.index') }}"
-                                        class="dropdown-link"
-                                    >
-                                        <span>📦</span>
-                                        <span>Produk</span>
-                                    </a>
+                            {{-- ================================= --}}
+                            {{-- STORE SWITCHER --}}
+                            {{-- ================================= --}}
 
-
-                                    {{-- Pengeluaran --}}
-                                    <a
-                                        href="{{ route('pengeluaran') }}"
-                                        class="dropdown-link"
-                                    >
-                                        <span>💸</span>
-                                        <span>Pengeluaran</span>
-                                    </a>
-                                    
-                                    {{-- Laporan --}}
-                                    <a
-                                        href="{{ route('laporan') }}"
-                                        class="dropdown-link"
-                                    >
-                                        <span>📊</span>
-                                        <span>Laporan</span>
-                                    </a>
-
-                                    {{-- Riwayat --}}
-                                    <a
-                                        href="{{ route('riwayat') }}"
-                                        class="dropdown-link"
-                                    >
-                                        <span>🧾</span>
-                                        <span>Riwayat Transaksi</span>
-                                    </a>
-
-                                   @if(session('logged_in'))
-
-                                  {{-- Profil Saya --}}
-                                  <a
-                                      href="{{ route('profil') }}"
-                                      class="dropdown-link"
-                                  >
-                                      <span>👤</span>
-                                      <span>Profil Saya</span>
-                                  </a>
-                              
-                              @else
-                              
-                                  {{-- Masuk / Daftar --}}
-                                  <a
-                                      href="{{ route('login') }}"
-                                      class="dropdown-link"
-                                  >
-                                      <span>🔐</span>
-                                      <span>Masuk / Daftar</span>
-                                  </a>
-                              
-                              @endif
-
-                                </div>
-
-
-                                {{-- ================================= --}}
-                                {{-- MENU ADMIN --}}
-                                {{-- ================================= --}}
+                            @if($activeStore)
 
                                 @if(session('user_role') === 'admin')
 
-                                    <div class="border-t border-white/10 py-2">
+                                    <div class="relative">
 
-                                        <div class="px-4 py-1.5 text-xs
-                                                    font-semibold text-gray-500 uppercase">
-                                            Administrator
+                                        <button
+                                            type="button"
+                                            onclick="toggleStoreDropdown(event)"
+                                            class="text-right rounded-xl px-3 py-2
+                                                   hover:bg-gray-700 transition
+                                                   focus:outline-none
+                                                   focus:ring-2
+                                                   focus:ring-emerald-500"
+                                        >
+
+                                            <div
+                                                class="text-sm font-semibold
+                                                       text-emerald-400
+                                                       truncate max-w-[180px]"
+                                            >
+                                                🏪 {{ $activeStore->name }} ▾
+                                            </div>
+
+                                            <div class="text-xs text-gray-400">
+                                                Toko aktif
+                                            </div>
+
+                                        </button>
+
+
+                                        <div
+                                            id="desktop-store-dropdown"
+                                            class="hidden absolute right-0 mt-2
+                                                   w-56 rounded-2xl
+                                                   bg-gray-800
+                                                   border border-white/10
+                                                   shadow-2xl
+                                                   overflow-hidden z-50"
+                                        >
+
+                                            @foreach($layoutStores as $store)
+
+                                                <form
+                                                    action="{{ route('store.switch', $store->id) }}"
+                                                    method="POST"
+                                                >
+
+                                                    @csrf
+
+                                                    <button
+                                                        type="submit"
+                                                        class="dropdown-link"
+                                                    >
+
+                                                        <span>
+                                                            🏪
+                                                        </span>
+
+                                                        <span
+                                                            class="flex-1
+                                                                   text-left
+                                                                   truncate"
+                                                        >
+                                                            {{ $store->name }}
+                                                        </span>
+
+                                                        @if($store->id == $activeStoreId)
+
+                                                            <span
+                                                                class="text-emerald-400
+                                                                       font-bold"
+                                                            >
+                                                                ✓
+                                                            </span>
+
+                                                        @endif
+
+                                                    </button>
+
+                                                </form>
+
+                                            @endforeach
+
+
+                                            <a
+                                                href="{{ route('store.create') }}"
+                                                class="dropdown-link
+                                                       border-t
+                                                       border-white/10"
+                                            >
+
+                                                <span>
+                                                    ➕
+                                                </span>
+
+                                                <span class="flex-1 text-left">
+                                                    Tambah Toko/Cabang
+                                                </span>
+
+                                            </a>
+
                                         </div>
 
+                                    </div>
 
-                                        {{-- Manajemen Admin --}}
-                                        <a
-                                            href="{{ route('admin.index') }}"
-                                            class="dropdown-link"
-                                        >
-                                            <span>👥</span>
-                                            <span>Manajemen Admin</span>
-                                        </a>
+                                @else
 
-                                        {{-- Setting --}}
-                                        <a
-                                            href="{{ route('setting') }}"
-                                            class="dropdown-link"
+                                    <div class="text-right">
+
+                                        <div
+                                            class="text-sm font-semibold
+                                                   text-emerald-400
+                                                   truncate max-w-[180px]"
                                         >
-                                            <span>⚙️</span>
-                                            <span>Pengaturan</span>
-                                        </a>
+                                            🏪 {{ $activeStore->name }}
+                                        </div>
+
+                                        <div class="text-xs text-gray-400">
+                                            Toko aktif
+                                        </div>
 
                                     </div>
 
                                 @endif
 
-
-                                {{-- ================================= --}}
-                                {{-- LOGOUT --}}
-                                {{-- ================================= --}}
-                            @if(session('logged_in'))
-                                <div class="border-t border-white/10 py-2">
-
-                                    <a
-                                        href="{{ route('logout') }}"
-                                        class="dropdown-link text-red-400
-                                               hover:bg-red-500/10
-                                               hover:text-red-300"
-                                    >
-                                        <span>🚪</span>
-                                        <span>Keluar</span>
-                                    </a>
-
-                                </div> @endif
-
-                            </div>
-
-                        </div>
-                </div>
+                            @endif
 
 
-                {{-- ================================================= --}}
-                {{-- MOBILE --}}
-                {{-- ================================================= --}}
 
-                <div class="md:hidden">
+                            {{-- ================================= --}}
+                            {{-- PROFILE BUTTON --}}
+                            {{-- ================================= --}}
 
-                   @if(session('logged_in'))
-
-    {{-- USER LOGIN --}}
-
-    <button
-        onclick="toggleMobileMenu()"
-        type="button"
-        class="flex items-center gap-3 rounded-xl px-3 py-2
-               hover:bg-gray-700 transition
-               focus:outline-none focus:ring-2
-               focus:ring-indigo-500"
-    >
-
-        {{-- User Info --}}
-        <div class="text-right">
-
-            <div class="text-sm font-medium text-white">
-                {{ session('username') }}
-            </div>
-
-            <div class="text-xs text-gray-400 uppercase">
-                {{ session('user_role') }}
-            </div>
-
-        </div>
-
-        {{-- Avatar --}}
-        <img
-            class="w-9 h-9 rounded-full border border-white/20 object-cover"
-            src="{{ $avatarUrl }}"
-            alt="Profile"
-        >
-
-        {{-- Arrow --}}
-        <svg
-            class="w-4 h-4 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-            />
-        </svg>
-
-    </button>
-
-@else
-
-    {{-- GUEST / PENGUNJUNG --}}
-
-    <button
-        onclick="toggleMobileMenu()"
-        type="button"
-        class="flex items-center justify-center
-               w-11 h-11 rounded-xl
-               hover:bg-gray-700 transition
-               focus:outline-none focus:ring-2
-               focus:ring-indigo-500"
-        aria-label="Menu"
-    >
-
-        {{-- Hamburger --}}
-        <svg
-            class="w-6 h-6 text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16"
-            />
-        </svg>
-
-    </button>
-
-@endif
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        {{-- ========================================================= --}}
-        {{-- MOBILE PROFILE MENU --}}
-        {{-- ========================================================= --}}
-
-
-            <div
-                id="mobile-menu"
-                class="hidden absolute
-                       top-16 left-0 right-0 px-4"
-            >
-
-                <div
-                    class="bg-gray-800
-                           border border-white/10
-                           rounded-2xl
-                           shadow-2xl
-                           overflow-hidden"
-                >
-
-
-                    {{-- ============================================= --}}
-                    {{-- PROFILE --}}
-                    {{-- ============================================= --}}
-                   @if(session('logged_in'))   
-                    <div class="p-4">
-
-                        <div class="flex items-center gap-3">
-
-                            {{-- Avatar Mobile Dropdown Header --}}
-                            <img
-                                class="w-11 h-11 rounded-full border border-white/20 object-cover"
-                                src="{{ $avatarUrl }}"
-                                alt="Profile"
+                            <button
+                                onclick="toggleUserDropdown()"
+                                type="button"
+                                class="flex items-center gap-3
+                                       rounded-xl px-3 py-2
+                                       hover:bg-gray-700 transition
+                                       focus:outline-none
+                                       focus:ring-2
+                                       focus:ring-indigo-500"
                             >
 
-                            <div>
+                                <div class="text-right">
 
-                                <div class="font-semibold text-white">
-                                    {{ session('username') }}
+                                    <div
+                                        class="text-sm font-semibold
+                                               text-white"
+                                    >
+                                        {{ session('username') }}
+                                    </div>
+
+                                    <div class="text-xs text-gray-400">
+                                        {{ session('user_role') }}
+                                    </div>
+
                                 </div>
 
-                                <div class="text-xs text-gray-400 uppercase">
-                                    {{ session('user_role') }}
+                                <img
+                                    class="w-9 h-9 rounded-full
+                                           border border-white/20
+                                           object-cover"
+                                    src="{{ $avatarUrl }}"
+                                    alt="Profile"
+                                >
+
+                                <svg
+                                    class="w-4 h-4 text-gray-400"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19 9l-7 7-7-7"
+                                    />
+
+                                </svg>
+
+                            </button>
+
+                        </div>
+
+
+                    @else
+
+                        {{-- GUEST --}}
+
+                        <button
+                            onclick="toggleUserDropdown()"
+                            type="button"
+                            class="flex items-center justify-center
+                                   w-11 h-11 rounded-xl
+                                   hover:bg-gray-700 transition
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-indigo-500"
+                            aria-label="Menu"
+                        >
+
+                            <svg
+                                class="w-6 h-6 text-gray-300"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                />
+
+                            </svg>
+
+                        </button>
+
+                    @endif
+
+
+
+                    {{-- ========================================= --}}
+                    {{-- DESKTOP PROFILE DROPDOWN --}}
+                    {{-- ========================================= --}}
+
+                    <div
+                        id="user-dropdown"
+                        class="hidden absolute right-0 mt-2 w-64
+                               rounded-2xl bg-gray-800
+                               border border-white/10
+                               shadow-2xl overflow-hidden z-50"
+                    >
+
+                        @if(session('logged_in'))
+
+                            <div class="px-4 py-4 bg-gray-800/80">
+
+                                <div class="flex items-center gap-3">
+
+                                    <img
+                                        class="w-11 h-11 rounded-full
+                                               border border-white/20
+                                               object-cover"
+                                        src="{{ $avatarUrl }}"
+                                        alt="Profile"
+                                    >
+
+                                    <div class="min-w-0">
+
+                                        <div
+                                            class="font-semibold text-white
+                                                   truncate"
+                                        >
+                                            {{ session('username') }}
+                                        </div>
+
+                                        <div
+                                            class="text-xs text-gray-400
+                                                   uppercase"
+                                        >
+                                            {{ session('user_role') }}
+                                        </div>
+
+                                    </div>
+
                                 </div>
 
                             </div>
 
-                        </div>
-
-                    </div> @endif
-                    @if(session('logged_in') && $layoutStores->count() > 1)
-
-                                    <div class="border-t border-white/10 py-2">
-
-                                        <div class="px-4 py-1.5 text-xs
-                                                    font-semibold text-gray-500 uppercase">
-                                            Toko Aktif
-                                        </div>
-
-                                        @foreach($layoutStores as $store)
-
-                                            <form
-                                                action="{{ route('store.switch', $store->id) }}"
-                                                method="POST"
-                                            >
-                                                @csrf
-
-                                                <button
-                                                    type="submit"
-                                                    class="dropdown-link"
-                                                >
-                                                    <span>🏪</span>
-
-                                                    <span class="flex-1 text-left truncate">
-                                                        {{ $store->name }}
-                                                    </span>
-
-                                                    @if($store->id == $activeStoreId)
-                                                        <span class="text-emerald-400 font-bold">
-                                                            ✓
-                                                        </span>
-                                                    @endif
-
-                                                </button>
-
-                                            </form>
-
-                                        @endforeach
-
-                                    </div>
-
-                                @endif
+                        @endif
 
 
-                    {{-- ============================================= --}}
-                    {{-- NAVIGASI --}}
-                    {{-- ============================================= --}}
+                        {{-- NAVIGASI DESKTOP --}}
 
-                    <div class="border-t border-white/10 py-2">
+                        <div class="border-t border-white/10 py-2">
 
-                        <div class="px-4 py-1.5 text-xs
-                                    font-semibold text-gray-500 uppercase">
-                            Navigasi
-                        </div>
+                            <div
+                                class="px-4 py-1.5 text-xs
+                                       font-semibold text-gray-500
+                                       uppercase"
+                            >
+                                Navigasi
+                            </div>
 
-                        {{-- Dashboard --}}
                             <a
                                 href="{{ route('dashboard') }}"
                                 class="dropdown-link"
@@ -630,36 +424,30 @@
                                 <span>Dashboard</span>
                             </a>
 
-                        {{-- Kasir --}}
-                        <a
-                            href="{{ route('kasir.index') }}"
-                            class="dropdown-link"
-                        >
-                            <span>🛒</span>
-                            <span>Kasir</span>
-                        </a>
+                            <a
+                                href="{{ route('kasir.index') }}"
+                                class="dropdown-link"
+                            >
+                                <span>🛒</span>
+                                <span>Kasir</span>
+                            </a>
 
+                            <a
+                                href="{{ route('produk.index') }}"
+                                class="dropdown-link"
+                            >
+                                <span>📦</span>
+                                <span>Produk</span>
+                            </a>
 
-                        {{-- Produk --}}
-                        <a
-                            href="{{ route('produk.index') }}"
-                            class="dropdown-link"
-                        >
-                            <span>📦</span>
-                            <span>Produk</span>
-                        </a>
+                            <a
+                                href="{{ route('pengeluaran') }}"
+                                class="dropdown-link"
+                            >
+                                <span>💸</span>
+                                <span>Pengeluaran</span>
+                            </a>
 
-
-                        {{-- Pengeluaran --}}
-                        <a
-                            href="{{ route('pengeluaran') }}"
-                            class="dropdown-link"
-                        >
-                            <span>💸</span>
-                            <span>Pengeluaran</span>
-                        </a>
-                        
-                                                    {{-- Laporan --}}
                             <a
                                 href="{{ route('laporan') }}"
                                 class="dropdown-link"
@@ -668,337 +456,939 @@
                                 <span>Laporan</span>
                             </a>
 
-                        {{-- Riwayat --}}
-                        <a
-                            href="{{ route('riwayat') }}"
-                            class="dropdown-link"
-                        >
-                            <span>🧾</span>
-                            <span>Riwayat Transaksi</span>
-                        </a>
-                          
-                           @if(session('logged_in'))
+                            <a
+                                href="{{ route('riwayat') }}"
+                                class="dropdown-link"
+                            >
+                                <span>🧾</span>
+                                <span>Riwayat Transaksi</span>
+                            </a>
 
-                                  {{-- Profil Saya --}}
-                                  <a
-                                      href="{{ route('profil') }}"
-                                      class="dropdown-link"
-                                  >
-                                      <span>👤</span>
-                                      <span>Profil Saya</span>
-                                  </a>
-                              
-                              @else
-                              
-                                  {{-- Masuk / Daftar --}}
-                                  <a
-                                      href="{{ route('login') }}"
-                                      class="dropdown-link"
-                                  >
-                                      <span>🔐</span>
-                                      <span>Masuk / Daftar</span>
-                                  </a>
-                              
-                              @endif
+                            @if(session('logged_in'))
+
+                                <a
+                                    href="{{ route('profil') }}"
+                                    class="dropdown-link"
+                                >
+                                    <span>👤</span>
+                                    <span>Profil Saya</span>
+                                </a>
+
+                            @else
+
+                                <a
+                                    href="{{ route('login') }}"
+                                    class="dropdown-link"
+                                >
+                                    <span>🔐</span>
+                                    <span>Masuk / Daftar</span>
+                                </a>
+
+                            @endif
+
+                        </div>
+
+
+                        {{-- ADMIN DESKTOP --}}
+
+                        @if(session('user_role') === 'admin')
+
+                            <div class="border-t border-white/10 py-2">
+
+                                <div
+                                    class="px-4 py-1.5 text-xs
+                                           font-semibold text-gray-500
+                                           uppercase"
+                                >
+                                    Administrator
+                                </div>
+
+                                <a
+                                    href="{{ route('admin.index') }}"
+                                    class="dropdown-link"
+                                >
+                                    <span>👥</span>
+                                    <span>Manajemen Admin</span>
+                                </a>
+
+                                <a
+                                    href="{{ route('setting') }}"
+                                    class="dropdown-link"
+                                >
+                                    <span>⚙️</span>
+                                    <span>Pengaturan</span>
+                                </a>
+
+                            </div>
+
+                        @endif
+
+
+                        {{-- LOGOUT DESKTOP --}}
+
+                        @if(session('logged_in'))
+
+                            <div
+                                class="border-t border-white/10 py-2"
+                            >
+
+                                <a
+                                    href="{{ route('logout') }}"
+                                    class="dropdown-link text-red-400
+                                           hover:bg-red-500/10
+                                           hover:text-red-300"
+                                >
+                                    <span>🚪</span>
+                                    <span>Keluar</span>
+                                </a>
+
+                            </div>
+
+                        @endif
 
                     </div>
 
+                </div>
 
-                    {{-- ============================================= --}}
-                    {{-- ADMIN --}}
-                    {{-- ============================================= --}}
+            </div>
 
-                    @if(session('user_role') === 'admin')
 
-                        <div class="border-t border-white/10 py-2">
 
-                            <div class="px-4 py-1.5 text-xs
-                                        font-semibold text-gray-500 uppercase">
-                                Administrator
+            {{-- ================================================= --}}
+            {{-- MOBILE — RADIKAL --}}
+            {{-- ================================================= --}}
+
+            <div class="md:hidden flex items-center gap-1">
+
+                @if(session('logged_in'))
+
+
+                    {{-- ========================================= --}}
+                    {{-- MOBILE STORE --}}
+                    {{-- ========================================= --}}
+
+                    @if($activeStore)
+
+                        @if(session('user_role') === 'admin')
+
+                            <div class="relative">
+
+                                <button
+                                    type="button"
+                                    onclick="toggleMobileStoreDropdown(event)"
+                                    class="flex items-center gap-1
+                                           rounded-xl px-2 py-2
+                                           hover:bg-gray-700 transition
+                                           focus:outline-none
+                                           focus:ring-2
+                                           focus:ring-emerald-500"
+                                >
+
+                                    <div class="text-right">
+
+                                        <div
+                                            class="text-sm font-semibold
+                                                   text-emerald-400
+                                                   max-w-[135px]
+                                                   truncate"
+                                        >
+                                            🏪 {{ $activeStore->name }}
+                                        </div>
+
+                                        <div
+                                            class="text-[10px]
+                                                   text-gray-500"
+                                        >
+                                            Toko aktif
+                                        </div>
+
+                                    </div>
+
+                                    <span
+                                        class="text-xs text-gray-400"
+                                    >
+                                        ▾
+                                    </span>
+
+                                </button>
+
+
+                                {{-- MOBILE STORE DROPDOWN --}}
+
+                                <div
+                                    id="mobile-store-dropdown"
+                                    class="hidden absolute right-0 top-full mt-2
+                                           w-60 rounded-2xl
+                                           bg-gray-800
+                                           border border-white/10
+                                           shadow-2xl
+                                           overflow-hidden z-[60]"
+                                >
+
+                                    <div
+                                        class="px-4 py-3
+                                               border-b border-white/10"
+                                    >
+
+                                        <div
+                                            class="text-xs
+                                                   text-gray-500
+                                                   uppercase
+                                                   font-semibold"
+                                        >
+                                            Pilih Toko
+                                        </div>
+
+                                    </div>
+
+
+                                    @foreach($layoutStores as $store)
+
+                                        <form
+                                            action="{{ route('store.switch', $store->id) }}"
+                                            method="POST"
+                                        >
+
+                                            @csrf
+
+                                            <button
+                                                type="submit"
+                                                class="dropdown-link"
+                                            >
+
+                                                <span>🏪</span>
+
+                                                <span
+                                                    class="flex-1
+                                                           text-left
+                                                           truncate"
+                                                >
+                                                    {{ $store->name }}
+                                                </span>
+
+                                                @if($store->id == $activeStoreId)
+
+                                                    <span
+                                                        class="text-emerald-400
+                                                               font-bold"
+                                                    >
+                                                        ✓
+                                                    </span>
+
+                                                @endif
+
+                                            </button>
+
+                                        </form>
+
+                                    @endforeach
+
+
+                                    <a
+                                        href="{{ route('store.create') }}"
+                                        class="dropdown-link
+                                               border-t border-white/10"
+                                    >
+
+                                        <span>➕</span>
+
+                                        <span class="flex-1 text-left">
+                                            Tambah Toko/Cabang
+                                        </span>
+
+                                    </a>
+
+                                </div>
+
                             </div>
 
+                        @else
 
-                            {{-- Manajemen Admin --}}
-                            <a
-                                href="{{ route('admin.index') }}"
-                                class="dropdown-link"
-                            >
-                                <span>👥</span>
-                                <span>Manajemen Admin</span>
-                            </a>
+                            {{-- MOBILE KASIR --}}
 
+                            <div class="px-2">
 
+                                <div
+                                    class="text-sm font-semibold
+                                           text-emerald-400
+                                           max-w-[135px]
+                                           truncate"
+                                >
+                                    🏪 {{ $activeStore->name }}
+                                </div>
 
+                                <div
+                                    class="text-[10px]
+                                           text-gray-500"
+                                >
+                                    Toko aktif
+                                </div>
 
+                            </div>
 
-                            {{-- Setting --}}
-                            <a
-                                href="{{ route('setting') }}"
-                                class="dropdown-link"
-                            >
-                                <span>⚙️</span>
-                                <span>Pengaturan</span>
-                            </a>
-
-                        </div>
+                        @endif
 
                     @endif
 
 
-                    {{-- ============================================= --}}
-                    {{-- LOGOUT --}}
-                    {{-- ============================================= --}}
-                  @if(session('logged_in'))
-                    <div class="border-t border-white/10 py-2">
 
-                        <a
-                            href="{{ route('logout') }}"
-                            onclick="localStorage.removeItem('smart_pos_cart')"
-                            class="dropdown-link text-red-400
-                                   hover:bg-red-500/10
-                                   hover:text-red-300"
+                    {{-- ========================================= --}}
+                    {{-- MOBILE PROFILE BUTTON --}}
+                    {{-- ========================================= --}}
+
+                    <button
+                        type="button"
+                        onclick="toggleMobileMenu()"
+                        class="flex items-center justify-center
+                               w-10 h-10
+                               rounded-xl
+                               hover:bg-gray-700
+                               transition
+                               focus:outline-none
+                               focus:ring-2
+                               focus:ring-indigo-500"
+                        aria-label="Menu profil"
+                    >
+
+                        <img
+                            class="w-8 h-8 rounded-full
+                                   border border-white/20
+                                   object-cover"
+                            src="{{ $avatarUrl }}"
+                            alt="Profile"
                         >
-                            <span>🚪</span>
-                            <span>Keluar</span>
-                        </a>
 
-                    </div> @endif
+                    </button>
 
-                </div>
+
+                @else
+
+                    {{-- ========================================= --}}
+                    {{-- MOBILE GUEST --}}
+                    {{-- ========================================= --}}
+
+                    <button
+                        onclick="toggleMobileMenu()"
+                        type="button"
+                        class="flex items-center justify-center
+                               w-11 h-11 rounded-xl
+                               hover:bg-gray-700 transition
+                               focus:outline-none
+                               focus:ring-2
+                               focus:ring-indigo-500"
+                        aria-label="Menu"
+                    >
+
+                        <svg
+                            class="w-6 h-6 text-gray-300"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"
+                            />
+
+                        </svg>
+
+                    </button>
+
+                @endif
 
             </div>
 
-    </nav>
+        </div>
 
+    </div>
 
-    {{-- ========================================================= --}}
-    {{-- HEADER HALAMAN --}}
-    {{-- ========================================================= --}}
-
-        <header class="relative bg-gray-800/50 border-b border-white/10">
-
-            <div
-                class="mx-auto max-w-7xl
-                       px-4 py-4
-                       sm:px-6
-                       lg:px-8"
-            >
-
-                <h1
-                    class="text-2xl
-                           sm:text-3xl
-                           font-bold
-                           tracking-tight
-                           text-white"
-                >
-                    @yield('header', 'Dashboard')
-                </h1>
-
-            </div>
-
-        </header>
 
 
     {{-- ========================================================= --}}
-    {{-- MAIN CONTENT --}}
+    {{-- MOBILE PROFILE MENU --}}
     {{-- ========================================================= --}}
 
-    <main class="flex-grow">
+    <div
+        id="mobile-menu"
+        class="hidden absolute
+               top-16 left-0 right-0 px-4"
+    >
 
         <div
-            class="mx-auto max-w-7xl
-                   px-4 py-6
-                   sm:px-6
-                   lg:px-8"
+            class="bg-gray-800
+                   border border-white/10
+                   rounded-2xl
+                   shadow-2xl
+                   overflow-hidden"
         >
 
-            {{-- Error --}}
-            @if(session('error'))
 
-                <div
-                    class="mb-5
-                           rounded-xl
-                           border border-red-500/20
-                           bg-red-500/10
-                           px-4 py-3
-                           text-sm
-                           text-red-300"
-                >
-                    {{ session('error') }}
+            {{-- ============================================= --}}
+            {{-- PROFILE --}}
+            {{-- ============================================= --}}
+
+            @if(session('logged_in'))
+
+                <div class="p-4">
+
+                    <div class="flex items-center gap-3">
+
+                        <img
+                            class="w-11 h-11 rounded-full
+                                   border border-white/20
+                                   object-cover"
+                            src="{{ $avatarUrl }}"
+                            alt="Profile"
+                        >
+
+                        <div>
+
+                            <div class="font-semibold text-white">
+                                {{ session('username') }}
+                            </div>
+
+                            <div
+                                class="text-xs text-gray-400 uppercase"
+                            >
+                                {{ session('user_role') }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
             @endif
 
-            @yield('content')
+
+
+            {{-- ============================================= --}}
+            {{-- NAVIGASI MOBILE --}}
+            {{-- ============================================= --}}
+
+            <div class="border-t border-white/10 py-2">
+
+                <div
+                    class="px-4 py-1.5 text-xs
+                           font-semibold text-gray-500
+                           uppercase"
+                >
+                    Navigasi
+                </div>
+
+
+                <a
+                    href="{{ route('dashboard') }}"
+                    class="dropdown-link"
+                >
+                    <span>🏠</span>
+                    <span>Dashboard</span>
+                </a>
+
+
+                <a
+                    href="{{ route('kasir.index') }}"
+                    class="dropdown-link"
+                >
+                    <span>🛒</span>
+                    <span>Kasir</span>
+                </a>
+
+
+                <a
+                    href="{{ route('produk.index') }}"
+                    class="dropdown-link"
+                >
+                    <span>📦</span>
+                    <span>Produk</span>
+                </a>
+
+
+                <a
+                    href="{{ route('pengeluaran') }}"
+                    class="dropdown-link"
+                >
+                    <span>💸</span>
+                    <span>Pengeluaran</span>
+                </a>
+
+
+                <a
+                    href="{{ route('laporan') }}"
+                    class="dropdown-link"
+                >
+                    <span>📊</span>
+                    <span>Laporan</span>
+                </a>
+
+
+                <a
+                    href="{{ route('riwayat') }}"
+                    class="dropdown-link"
+                >
+                    <span>🧾</span>
+                    <span>Riwayat Transaksi</span>
+                </a>
+
+
+                @if(session('logged_in'))
+
+                    <a
+                        href="{{ route('profil') }}"
+                        class="dropdown-link"
+                    >
+                        <span>👤</span>
+                        <span>Profil Saya</span>
+                    </a>
+
+                @else
+
+                    <a
+                        href="{{ route('login') }}"
+                        class="dropdown-link"
+                    >
+                        <span>🔐</span>
+                        <span>Masuk / Daftar</span>
+                    </a>
+
+                @endif
+
+            </div>
+
+
+
+            {{-- ============================================= --}}
+            {{-- ADMIN MOBILE --}}
+            {{-- ============================================= --}}
+
+            @if(session('user_role') === 'admin')
+
+                <div class="border-t border-white/10 py-2">
+
+                    <div
+                        class="px-4 py-1.5 text-xs
+                               font-semibold text-gray-500
+                               uppercase"
+                    >
+                        Administrator
+                    </div>
+
+
+                    <a
+                        href="{{ route('admin.index') }}"
+                        class="dropdown-link"
+                    >
+                        <span>👥</span>
+                        <span>Manajemen Admin</span>
+                    </a>
+
+
+                    <a
+                        href="{{ route('setting') }}"
+                        class="dropdown-link"
+                    >
+                        <span>⚙️</span>
+                        <span>Pengaturan</span>
+                    </a>
+
+                </div>
+
+            @endif
+
+
+
+            {{-- ============================================= --}}
+            {{-- LOGOUT --}}
+            {{-- ============================================= --}}
+
+            @if(session('logged_in'))
+
+                <div class="border-t border-white/10 py-2">
+
+                    <a
+                        href="{{ route('logout') }}"
+                        onclick="localStorage.removeItem('smart_pos_cart')"
+                        class="dropdown-link text-red-400
+                               hover:bg-red-500/10
+                               hover:text-red-300"
+                    >
+
+                        <span>🚪</span>
+                        <span>Keluar</span>
+
+                    </a>
+
+                </div>
+
+            @endif
 
         </div>
 
-    </main>
+    </div>
+
+</nav>
 
 
-    {{-- ========================================================= --}}
-    {{-- FOOTER --}}
-    {{-- ========================================================= --}}
 
-    <footer
-        class="bg-gray-800
-               border-t border-white/10
-               py-4 mt-auto"
+{{-- ========================================================= --}}
+{{-- HEADER HALAMAN --}}
+{{-- ========================================================= --}}
+
+<header
+    class="relative bg-gray-800/50
+           border-b border-white/10"
+>
+
+    <div
+        class="mx-auto max-w-7xl
+               px-4 py-4
+               sm:px-6
+               lg:px-8"
     >
 
-        <div
-            class="mx-auto max-w-7xl
-                   px-4
-                   sm:px-6
-                   lg:px-8
-                   text-center
-                   text-xs
-                   text-gray-400"
+        <h1
+            class="text-2xl
+                   sm:text-3xl
+                   font-bold
+                   tracking-tight
+                   text-white"
         >
-            &copy; 2026 KasirKU
-        </div>
+            @yield('header', 'Dashboard')
+        </h1>
 
-    </footer>
+    </div>
+
+</header>
 
 
-    {{-- ========================================================= --}}
-    {{-- JAVASCRIPT --}}
-    {{-- ========================================================= --}}
 
-    <script>
+{{-- ========================================================= --}}
+{{-- MAIN CONTENT --}}
+{{-- ========================================================= --}}
 
-        /*
-        |--------------------------------------------------------------------------
-        | DESKTOP PROFILE DROPDOWN
-        |--------------------------------------------------------------------------
-        */
+<main class="flex-grow">
 
-        function toggleUserDropdown() {
+    <div
+        class="mx-auto max-w-7xl
+               px-4 py-6
+               sm:px-6
+               lg:px-8"
+    >
 
-            const dropdown =
-                document.getElementById('user-dropdown');
+        @if(session('error'))
 
-            if (!dropdown) return;
+            <div
+                class="mb-5
+                       rounded-xl
+                       border border-red-500/20
+                       bg-red-500/10
+                       px-4 py-3
+                       text-sm
+                       text-red-300"
+            >
+                {{ session('error') }}
+            </div>
 
-            dropdown.classList.toggle('hidden');
+        @endif
+
+        @yield('content')
+
+    </div>
+
+</main>
+
+
+
+{{-- ========================================================= --}}
+{{-- FOOTER --}}
+{{-- ========================================================= --}}
+
+<footer
+    class="bg-gray-800
+           border-t border-white/10
+           py-4 mt-auto"
+>
+
+    <div
+        class="mx-auto max-w-7xl
+               px-4
+               sm:px-6
+               lg:px-8
+               text-center
+               text-xs
+               text-gray-400"
+    >
+
+        &copy; 2026 KasirKU
+
+    </div>
+
+</footer>
+
+
+
+{{-- ========================================================= --}}
+{{-- JAVASCRIPT --}}
+{{-- ========================================================= --}}
+
+<script>
+
+
+/*
+|--------------------------------------------------------------------------
+| DESKTOP PROFILE DROPDOWN
+|--------------------------------------------------------------------------
+*/
+
+function toggleUserDropdown() {
+
+    const dropdown =
+        document.getElementById('user-dropdown');
+
+    if (!dropdown) return;
+
+    dropdown.classList.toggle('hidden');
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| DESKTOP STORE DROPDOWN
+|--------------------------------------------------------------------------
+*/
+
+function toggleStoreDropdown(event) {
+
+    event.stopPropagation();
+
+    const dropdown =
+        document.getElementById('desktop-store-dropdown');
+
+    if (!dropdown) return;
+
+    dropdown.classList.toggle('hidden');
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| MOBILE PROFILE MENU
+|--------------------------------------------------------------------------
+*/
+
+function toggleMobileMenu() {
+
+    const menu =
+        document.getElementById('mobile-menu');
+
+    if (!menu) return;
+
+    menu.classList.toggle('hidden');
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| MOBILE STORE DROPDOWN
+|--------------------------------------------------------------------------
+*/
+
+function toggleMobileStoreDropdown(event) {
+
+    event.stopPropagation();
+
+    const dropdown =
+        document.getElementById(
+            'mobile-store-dropdown'
+        );
+
+    if (!dropdown) return;
+
+    dropdown.classList.toggle('hidden');
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| KLIK DI LUAR DROPDOWN
+|--------------------------------------------------------------------------
+*/
+
+window.addEventListener('click', function (event) {
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DESKTOP PROFILE
+    |--------------------------------------------------------------------------
+    */
+
+    const userDropdown =
+        document.getElementById('user-dropdown');
+
+    if (userDropdown) {
+
+        const userButton =
+            userDropdown.parentElement
+                ?.querySelector(
+                    'button[onclick="toggleUserDropdown()"]'
+                );
+
+        if (
+            !userDropdown.contains(event.target) &&
+            !userButton?.contains(event.target)
+        ) {
+
+            userDropdown.classList.add('hidden');
 
         }
 
+    }
 
-        /*
-        |--------------------------------------------------------------------------
-        | MOBILE PROFILE MENU
-        |--------------------------------------------------------------------------
-        */
 
-        function toggleMobileMenu() {
+
+    /*
+    |--------------------------------------------------------------------------
+    | DESKTOP STORE
+    |--------------------------------------------------------------------------
+    */
+
+    const storeDropdown =
+        document.getElementById(
+            'desktop-store-dropdown'
+        );
+
+    if (storeDropdown) {
+
+        const storeButton =
+            storeDropdown.parentElement
+                ?.querySelector(
+                    'button[onclick="toggleStoreDropdown(event)"]'
+                );
+
+        if (
+            !storeDropdown.contains(event.target) &&
+            !storeButton?.contains(event.target)
+        ) {
+
+            storeDropdown.classList.add('hidden');
+
+        }
+
+    }
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | MOBILE STORE
+    |--------------------------------------------------------------------------
+    */
+
+    const mobileStoreDropdown =
+        document.getElementById(
+            'mobile-store-dropdown'
+        );
+
+    if (mobileStoreDropdown) {
+
+        const mobileStoreButton =
+            mobileStoreDropdown.parentElement
+                ?.querySelector(
+                    'button[onclick="toggleMobileStoreDropdown(event)"]'
+                );
+
+        if (
+            !mobileStoreDropdown.contains(event.target) &&
+            !mobileStoreButton?.contains(event.target)
+        ) {
+
+            mobileStoreDropdown.classList.add('hidden');
+
+        }
+
+    }
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| TUTUP MOBILE MENU SETELAH KLIK LINK
+|--------------------------------------------------------------------------
+*/
+
+document
+    .querySelectorAll('#mobile-menu a')
+    .forEach(function (link) {
+
+        link.addEventListener('click', function () {
 
             const menu =
                 document.getElementById('mobile-menu');
 
-            if (!menu) return;
+            if (menu) {
 
-            menu.classList.toggle('hidden');
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | CLOSE DESKTOP DROPDOWN KETIKA KLIK DI LUAR
-        |--------------------------------------------------------------------------
-        */
-
-        window.addEventListener('click', function (event) {
-
-            const dropdown =
-                document.getElementById('user-dropdown');
-
-            if (dropdown) {
-
-                const button =
-                    dropdown.previousElementSibling;
-
-                if (
-                    button &&
-                    !button.contains(event.target) &&
-                    !dropdown.contains(event.target)
-                ) {
-
-                    dropdown.classList.add('hidden');
-
-                }
+                menu.classList.add('hidden');
 
             }
 
         });
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | TUTUP MOBILE MENU SETELAH MEMILIH LINK
-        |--------------------------------------------------------------------------
-        */
-
-        document.querySelectorAll('#mobile-menu a')
-            .forEach(function (link) {
-
-                link.addEventListener('click', function () {
-
-                    const menu =
-                        document.getElementById('mobile-menu');
-
-                    if (menu) {
-
-                        menu.classList.add('hidden');
-
-                    }
-
-                });
-
-            });
-
-    </script>
+    });
 
 
-    {{-- ========================================================= --}}
-    {{-- STYLE --}}
-    {{-- ========================================================= --}}
-
-    <style>
-
-        .dropdown-link {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 0.75rem;
-
-            width: 100%;
-
-            padding: 0.65rem 1rem;
-
-            font-size: 0.875rem;
-
-            font-weight: 500;
-
-            color: rgb(209 213 219);
-
-            transition: all 0.2s ease;
-
-        }
+</script>
 
 
-        .dropdown-link:hover {
 
-            background: rgb(55 65 81);
+{{-- ========================================================= --}}
+{{-- STYLE --}}
+{{-- ========================================================= --}}
 
-            color: white;
+<style>
 
-        }
+.dropdown-link {
 
-    </style>
+    display: flex;
+
+    align-items: center;
+
+    gap: 0.75rem;
+
+    width: 100%;
+
+    padding: 0.65rem 1rem;
+
+    font-size: 0.875rem;
+
+    font-weight: 500;
+
+    color: rgb(209 213 219);
+
+    transition: all 0.2s ease;
+
+}
+
+
+.dropdown-link:hover {
+
+    background: rgb(55 65 81);
+
+    color: white;
+
+}
+
+</style>
+
 
 </body>
 

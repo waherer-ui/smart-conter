@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
+use App\Models\Store;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProductController;
@@ -37,6 +39,77 @@ Route::get('/produk-image/{path}', function ($path) {
     );
 
 })->where('path', '.*')->name('produk.image');
+
+// Halaman Registrasi
+Route::get('/register', function () {
+
+    if (session('logged_in')) {
+        return redirect()->route('dashboard');
+    }
+
+    return view('register');
+
+})->name('register');
+
+// PROSES REGISTRASI
+Route::post('/proses-register', function (Request $request) {
+
+    $request->validate([
+    'name' => 'required|string|max:255',
+    'email' => 'required|email|max:255|unique:users,email',
+    'password' => 'required|string|min:8|confirmed',
+
+    'store_name' => 'required|string|max:255',
+    'store_address' => 'nullable|string|max:500',
+    'store_phone' => 'nullable|string|max:30',
+]);
+
+$result = DB::transaction(function () use ($request) {
+
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => 'admin',
+    ]);
+
+    $store = Store::create([
+        'owner_id' => $user->id,
+        'name' => $request->store_name,
+        'address' => $request->store_address,
+        'phone' => $request->store_phone,
+        'is_active' => true,
+    ]);
+
+    $user->stores()->attach($store->id, [
+        'role' => 'owner',
+    ]);
+
+    return compact('user', 'store');
+});
+
+$user = $result['user'];
+$store = $result['store'];
+
+$request->session()->regenerate();
+
+$request->session()->put([
+    'logged_in' => true,
+    'user_id' => $user->id,
+    'username' => $user->name,
+    'user_role' => $user->role,
+    'active_store_id' => $store->id,
+]);
+
+return redirect()
+    ->route('dashboard')
+    ->with(
+        'success',
+        'Selamat datang, ' . $user->name . '! Toko Anda berhasil dibuat.'
+    );
+
+})->name('register.process');
+
 
 
 // Halaman Login
@@ -130,17 +203,23 @@ Route::post('/proses-login', function (Request $request) {
     |--------------------------------------------------------------------------
     */
 
-    $request->session()->put([
+    $activeStore = $user->stores()
+    ->orderBy('stores.id')
+    ->first();
 
-        'logged_in' => true,
+$request->session()->put([
 
-        'user_id' => $user->id,
+    'logged_in' => true,
 
-        'username' => $user->name,
+    'user_id' => $user->id,
 
-        'user_role' => $user->role,
+    'username' => $user->name,
 
-    ]);
+    'user_role' => $user->role,
+
+    'active_store_id' => $activeStore?->id,
+
+]);
 
 
     /*
@@ -202,6 +281,18 @@ Route::post(
     [StoreController::class, 'switch']
 )->middleware('auth.role')
 ->name('store.switch');
+
+Route::get(
+    '/tambah-toko',
+    [StoreController::class, 'create']
+)->middleware('auth.role:admin')
+->name('store.create');
+
+Route::post(
+    '/tambah-toko',
+    [StoreController::class, 'store']
+)->middleware('auth.role:admin')
+->name('store.store');
 
 
 /*
