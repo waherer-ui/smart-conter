@@ -1,18 +1,11 @@
 @extends('layouts.app')
 
-@section('header', 'Kasir & Transaksi Penjualan')
+@section('header', '🛒 Kasir')
 
-@section('content')
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12">
-
-    {{-- ============================================================
-         BAGIAN KIRI : KATALOG PRODUK
-    ============================================================ --}}
-    <div class="lg:col-span-2 space-y-4">
-
-        {{-- PENCARIAN --}}
-        <div class="bg-gray-800/80 border border-white/10 rounded-2xl p-4 shadow-xl backdrop-blur-md">
+@section('header_tools')
+<div class="mt-1">
+   {{-- PENCARIAN --}}
+        <div class="bg-gray-800/80 border border-white/10 rounded-xl p-1 shadow-xl backdrop-blur-md">
 
             <form action="{{ route('kasir.index') }}" method="GET" class="flex gap-2">
 
@@ -21,19 +14,19 @@
                     name="search"
                     value="{{ request('search') }}"
                     placeholder="Cari nama barang, kategori, atau kode SKU..."
-                    class="w-full bg-gray-900 border border-white/10 rounded-xl px-4 py-2.5 text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                    class="w-full bg-gray-900 border border-white/10 rounded-xl px-1 py-0.5 text-white text-sm focus:ring-1 focus:ring-indigo-500 outline-none"
                 >
                                 <button
                     type="button"
                     onclick="openQrScanner()"
-                    class="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+                    class="px-1 py-0.5 bg-black text-white rounded-lg hover:bg-gray-800"
                 >
                     📷
                 </button>
 
                 <button
                     type="submit"
-                    class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-xs font-medium transition shadow"
+                    class="bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded-xl text-xs font-medium transition shadow"
                 >
                     Cari
                 </button>
@@ -42,7 +35,7 @@
 
                     <a
                         href="{{ route('kasir.index') }}"
-                        class="bg-gray-700 hover:bg-gray-600 text-gray-300 px-3 py-2.5 rounded-xl text-xs font-medium flex items-center transition"
+                        class="bg-gray-700 hover:bg-gray-600 text-gray-300 px-1 py-1 rounded-xl text-xs font-medium flex items-center transition"
                     >
                         Reset
                     </a>
@@ -52,10 +45,21 @@
             </form>
 
         </div>
+</div>
 
+@endsection
+
+@section('content')
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-12">
+
+    {{-- ============================================================
+         BAGIAN KIRI : KATALOG PRODUK
+    ============================================================ --}}
+    <div class="lg:col-span-2 space-y-4">
 
         {{-- KATEGORI --}}
-        <div class="bg-gray-800/80 border border-white/10 rounded-2xl p-4 shadow-xl backdrop-blur-md">
+        <div class="bg-gray-800/80 border border-white/10 rounded-xl p-1 shadow-xl backdrop-blur-md">
 
             <form
                 action="{{ route('kasir.index') }}"
@@ -82,7 +86,7 @@
                     <select
                         name="category"
                         onchange="document.getElementById('kasirCategoryForm').submit()"
-                        class="w-full bg-gray-900 border border-white/10 rounded-xl px-4 py-2 text-white text-xs outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                        class="w-full bg-gray-900 border border-white/10 rounded-xl px-1 py-2 text-white text-xs outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
                     >
 
                         <option

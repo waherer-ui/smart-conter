@@ -1,7 +1,88 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard')
-@section('header', 'Dashboard')
+@section('header', '🏠')
+
+@section('header_tools')
+
+{{-- PENCARIAN DASHBOARD --}}
+<div class="mt-1">
+
+    <div class="bg-gray-800/80 border border-white/10 rounded-xl p-1 shadow-xl backdrop-blur-md">
+
+        <form
+            action="{{ route('dashboard') }}"
+            method="GET"
+            class="flex gap-1"
+        >
+
+            <div class="relative flex-1">
+
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                    🔎
+                </span>
+
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ request('search') }}"
+                    placeholder="Cari nama produk / SKU..."
+                    autocomplete="off"
+                    class="w-full
+                           bg-gray-600
+                           border border-white/10
+                           rounded-xl
+                           pl-10 pr-4
+                           py-1
+                           text-white
+                           text-sm
+                           outline-none
+                           focus:ring-1
+                           focus:ring-indigo-500"
+                >
+
+            </div>
+
+            <button
+                type="button"
+                onclick="openQrScanner()"
+                class="w-7 shrink-0
+                       bg-gray-600
+                       border border-white/10
+                       rounded-xl
+                       text-xl
+                       flex items-center justify-center
+                       hover:bg-gray-700
+                       active:scale-95
+                       transition"
+                title="Scan QR / Barcode"
+            >
+                📷
+            </button>
+
+            <button
+                type="submit"
+                class="px-1
+                       bg-indigo-600
+                       hover:bg-indigo-500
+                       active:scale-95
+                       text-white
+                       text-sm
+                       font-semibold
+                       rounded-xl
+                       transition"
+            >
+                Cari
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+@endsection
+
 
 @section('content')
 
@@ -74,90 +155,9 @@
     </div>
     
     {{-- =========================================================
-     PENCARIAN PRODUK
-========================================================== --}}
-<div class="bg-gray-800/80 border border-white/10 rounded-2xl p-4 shadow-xl backdrop-blur-md">
-
-    <form
-        action="{{ route('dashboard') }}"
-        method="GET"
-        class="flex gap-2"
-    >
-
-        {{-- SEARCH --}}
-        <div class="relative flex-1">
-
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                🔎
-            </span>
-
-            <input
-                type="text"
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Cari nama produk / SKU..."
-                autocomplete="off"
-                class="w-full
-                       bg-gray-900
-                       border border-white/10
-                       rounded-xl
-                       pl-10 pr-4
-                       py-3
-                       text-white
-                       text-sm
-                       outline-none
-                       focus:ring-2
-                       focus:ring-indigo-500"
-            >
-
-        </div>
-
-
-        {{-- KAMERA --}}
-        <button
-            type="button"
-            onclick="openQrScanner()"
-            class="w-12
-                   shrink-0
-                   bg-gray-900
-                   border border-white/10
-                   rounded-xl
-                   text-xl
-                   flex items-center justify-center
-                   hover:bg-gray-700
-                   active:scale-95
-                   transition"
-            title="Scan QR / Barcode"
-        >
-            📷
-        </button>
-
-
-        {{-- CARI --}}
-        <button
-            type="submit"
-            class="px-5
-                   bg-indigo-600
-                   hover:bg-indigo-500
-                   active:scale-95
-                   text-white
-                   text-sm
-                   font-semibold
-                   rounded-xl
-                   transition"
-        >
-            Cari
-        </button>
-
-    </form>
-
-</div>
-
-
-    {{-- =========================================================
          FILTER KATEGORI
     ========================================================== --}}
-    <div class="bg-gray-800/80 border border-white/10 rounded-2xl p-4 shadow-xl backdrop-blur-md">
+    <div class="bg-gray-800/80 border border-white/10 rounded-xl p-1 shadow-xl backdrop-blur-md">
 
         <form
             action="{{ route('dashboard') }}"
@@ -182,7 +182,7 @@
                 <select
                     name="category"
                     onchange="document.getElementById('dashboardCategoryForm').submit()"
-                    class="w-full bg-gray-900 border border-white/10 rounded-xl px-4 py-2.5 text-white text-xs outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+                    class="w-full bg-gray-900 border border-white/10 rounded-xl px-1 py-1 text-white text-xs outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
                 >
 
                     <option
@@ -239,15 +239,15 @@
     {{-- =========================================================
          DAFTAR PRODUK
     ========================================================== --}}
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
 
         @forelse($products as $p)
 
             <div
                 class="product-card bg-gray-800/80
                        border border-white/10
-                       rounded-2xl
-                       p-4
+                       rounded-xl
+                       p-2
                        shadow-lg
                        flex flex-col
                        justify-between
@@ -344,7 +344,7 @@
 
 
                     {{-- Harga --}}
-                    <div class="mt-4">
+                    <div class="mt-2">
 
                         <p class="text-[11px] text-gray-500">
                             Harga Jual
@@ -362,7 +362,7 @@
                 {{-- =================================================
                      STOK + TOMBOL
                 ================================================== --}}
-                <div class="mt-4 pt-3 border-t border-white/10">
+                <div class="mt-2 pt-1 border-t border-white/10">
 
                     <div class="flex items-center justify-between mb-3">
 
@@ -374,7 +374,7 @@
                         @if($p->stock <= 0)
 
                             <span
-                                class="px-2.5 py-1
+                                class="px-1 py-0.7
                                        rounded-full
                                        text-[10px]
                                        font-semibold
@@ -388,7 +388,7 @@
                         @elseif($p->stock <= 5)
 
                             <span
-                                class="px-2.5 py-1
+                                class="px-1 py-0.7
                                        rounded-full
                                        text-[10px]
                                        font-semibold
@@ -402,7 +402,7 @@
                         @else
 
                             <span
-                                class="px-2.5 py-1
+                                class="px-1 py-0.7
                                        rounded-full
                                        text-[10px]
                                        font-semibold
@@ -441,7 +441,7 @@
                                    text-xs
                                    font-semibold
                                    rounded-xl
-                                   py-2.5
+                                   py-1
                                    transition"
                         >
                             🛒 Masukkan Keranjang
@@ -458,7 +458,7 @@
                                    text-xs
                                    font-semibold
                                    rounded-xl
-                                   py-2.5
+                                   py-1
                                    cursor-not-allowed"
                         >
                             Stok Habis
@@ -470,36 +470,249 @@
 
             </div>
 
-        @empty
+       @empty
 
-            {{-- =====================================================
-                 TIDAK ADA PRODUK
-            ====================================================== --}}
+    {{-- =====================================================
+         PROMO UNTUK PENGUNJUNG
+    ====================================================== --}}
+    @if(!session('logged_in'))
+
+        <div
+            class="col-span-full
+                   relative
+                   overflow-hidden
+                   bg-gradient-to-br
+                   from-indigo-600
+                   via-blue-600
+                   to-emerald-500
+                   rounded-2xl
+                   p-6
+                   sm:p-8
+                   shadow-xl"
+        >
+
+            {{-- DEKORASI --}}
             <div
-                class="col-span-full
-                       bg-gray-800/50
-                       border border-white/10
-                       rounded-2xl
-                       py-14
-                       px-6
-                       text-center"
-            >
+                class="absolute
+                       -top-16
+                       -right-16
+                       w-40
+                       h-40
+                       bg-white/10
+                       rounded-full
+                       blur-3xl"
+            ></div>
 
-                <div class="text-4xl mb-3">
-                    📦
+            <div
+                class="absolute
+                       -bottom-20
+                       -left-10
+                       w-40
+                       h-40
+                       bg-emerald-300/10
+                       rounded-full
+                       blur-3xl"
+            ></div>
+
+
+            <div class="relative">
+
+                {{-- LABEL --}}
+                <div
+                    class="inline-flex
+                           items-center
+                           gap-2
+                           px-3
+                           py-1.5
+                           rounded-full
+                           bg-white/10
+                           border border-white/10
+                           text-xs
+                           font-semibold
+                           text-white"
+                >
+                    <span>✨</span>
+                    KasirKU untuk UMKM
                 </div>
 
-                <h3 class="text-white font-semibold">
-                    Belum ada produk
+
+                {{-- JUDUL --}}
+                <h3
+                    class="mt-4
+                           text-2xl
+                           sm:text-3xl
+                           font-bold
+                           tracking-tight
+                           text-white"
+                >
+                    Punya Usaha?
+                    <span class="text-emerald-300">
+                        Saatnya Naik Level!
+                    </span>
                 </h3>
 
-                <p class="text-sm text-gray-500 mt-1">
-                    Belum ada produk pada kategori yang dipilih.
+
+                {{-- DESKRIPSI --}}
+                <p
+                    class="mt-3
+                           max-w-xl
+                           text-sm
+                           sm:text-base
+                           leading-6
+                           text-blue-50"
+                >
+                    Kelola produk, stok, transaksi, dan laporan
+                    toko Anda lebih mudah dalam satu aplikasi.
+                </p>
+
+
+                {{-- FITUR --}}
+                <div
+                    class="grid
+                           grid-cols-3
+                           gap-2
+                           mt-6
+                           max-w-lg"
+                >
+
+                    <div
+                        class="rounded-xl
+                               bg-black/10
+                               border border-white/10
+                               p-3"
+                    >
+                        <div class="text-xl">
+                            📦
+                        </div>
+
+                        <p
+                            class="mt-1
+                                   text-[11px]
+                                   sm:text-xs
+                                   font-medium
+                                   text-white"
+                        >
+                            Produk & Stok
+                        </p>
+                    </div>
+
+
+                    <div
+                        class="rounded-xl
+                               bg-black/10
+                               border border-white/10
+                               p-3"
+                    >
+                        <div class="text-xl">
+                            🛒
+                        </div>
+
+                        <p
+                            class="mt-1
+                                   text-[11px]
+                                   sm:text-xs
+                                   font-medium
+                                   text-white"
+                        >
+                            Kasir & Transaksi
+                        </p>
+                    </div>
+
+
+                    <div
+                        class="rounded-xl
+                               bg-black/10
+                               border border-white/10
+                               p-3"
+                    >
+                        <div class="text-xl">
+                            📊
+                        </div>
+
+                        <p
+                            class="mt-1
+                                   text-[11px]
+                                   sm:text-xs
+                                   font-medium
+                                   text-white"
+                        >
+                            Laporan
+                        </p>
+                    </div>
+
+                </div>
+
+
+                {{-- CTA --}}
+                <a
+                    href="{{ route('register') }}"
+                    class="inline-flex
+                           items-center
+                           justify-center
+                           gap-2
+                           mt-6
+                           px-5
+                           py-3
+                           bg-white
+                           text-indigo-700
+                           rounded-xl
+                           text-sm
+                           font-bold
+                           shadow-lg
+                           hover:bg-gray-100
+                           active:scale-95
+                           transition"
+                >
+                    🚀 Buat Toko Gratis
+                    <span>→</span>
+                </a>
+
+
+                {{-- TAGLINE --}}
+                <p
+                    class="mt-3
+                           text-[11px]
+                           text-blue-50/80"
+                >
+                    Cocok untuk UMKM, toko kecil, dan usaha berkembang.
                 </p>
 
             </div>
 
-        @endforelse
+        </div>
+
+    @else
+
+        {{-- =================================================
+             TOKO SUDAH LOGIN TAPI BELUM ADA PRODUK
+        ================================================== --}}
+        <div
+            class="col-span-full
+                   bg-gray-800/50
+                   border border-white/10
+                   rounded-2xl
+                   py-14
+                   px-6
+                   text-center"
+        >
+
+            <div class="text-4xl mb-3">
+                📦
+            </div>
+
+            <h3 class="text-white font-semibold">
+                Belum ada produk
+            </h3>
+
+            <p class="text-sm text-gray-500 mt-1">
+                Belum ada produk pada kategori yang dipilih.
+            </p>
+
+        </div>
+
+    @endif
+
+@endforelse
 
     </div>
 

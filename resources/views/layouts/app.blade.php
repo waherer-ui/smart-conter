@@ -1045,20 +1045,34 @@ $activeStore = $layoutStores->firstWhere(
 
     <div
         class="mx-auto max-w-7xl
-               px-4 py-4
+               px-4 py-3
                sm:px-6
                lg:px-8"
     >
 
-        <h1
-            class="text-2xl
-                   sm:text-3xl
-                   font-bold
-                   tracking-tight
-                   text-white"
-        >
-            @yield('header', 'Dashboard')
-        </h1>
+        <div class="flex items-center gap-4">
+
+            {{-- JUDUL --}}
+            <h1
+                class="text-2xl
+                       sm:text-3xl
+                       font-bold
+                       tracking-tight
+                       text-white
+                       shrink-0"
+            >
+                @yield('header', 'Dashboard')
+            </h1>
+
+
+            {{-- FITUR HALAMAN --}}
+            <div class="flex-1 min-w-0">
+
+                @yield('header_tools')
+
+            </div>
+
+        </div>
 
     </div>
 

@@ -1,6 +1,35 @@
 @extends('layouts.app')
 
-@section('header', 'Manajemen Stok & Layanan Konter')
+@section('header', '📦 Produk')
+
+@section('header_tools')
+<div class="mt-1">
+   <div class="flex flex-wrap gap-1">
+
+        {{-- CETAK LABEL HARGA --}}
+        <a
+            href="{{ route('cetaklabel') }}"
+            class="bg-emerald-600 hover:bg-emerald-500
+                   text-white text-xs font-medium
+                   px-2 py-1 rounded-xl transition shadow
+                   inline-flex items-center gap-2"
+        >
+            🏷️ Cetak Label
+        </a>
+
+        {{-- TAMBAH PRODUK --}}
+        <button
+            onclick="toggleProductModal()"
+            class="bg-indigo-600 hover:bg-indigo-500
+                   text-white text-xs font-medium
+                   px-2 py-1 rounded-xl transition shadow"
+        >
+            + Tambah Produk / Servis
+        </button>
+
+    </div>
+</div>
+@endsection
 
 @section('content')
 
@@ -22,54 +51,6 @@
     </div>
 @endif
 
-
-{{-- =========================================================
-     HEADER AKSI
-========================================================== --}}
-
-<div class="flex flex-col sm:flex-row
-            justify-between items-start sm:items-center
-            gap-4 bg-gray-800/80 border border-white/10
-            rounded-2xl p-4 shadow-xl backdrop-blur-md">
-
-    <div>
-        <h3 class="text-base font-semibold text-white">
-            Daftar Inventaris Konter HP
-        </h3>
-
-        <p class="text-xs text-gray-400 mt-1">
-            Atur harga jual, stok fisik, dan jenis layanan servis di sini.
-        </p>
-    </div>
-
-    <div class="flex flex-wrap gap-2">
-
-        {{-- CETAK LABEL HARGA --}}
-        <a
-            href="{{ route('cetaklabel') }}"
-            class="bg-emerald-600 hover:bg-emerald-500
-                   text-white text-xs font-medium
-                   px-4 py-2.5 rounded-xl transition shadow
-                   inline-flex items-center gap-2"
-        >
-            🏷️ Cetak Label
-        </a>
-
-        {{-- TAMBAH PRODUK --}}
-        <button
-            onclick="toggleProductModal()"
-            class="bg-indigo-600 hover:bg-indigo-500
-                   text-white text-xs font-medium
-                   px-4 py-2.5 rounded-xl transition shadow"
-        >
-            + Tambah Produk / Servis
-        </button>
-
-    </div>
-
-</div>
-
-
 {{-- =========================================================
      PENCARIAN & FILTER
 ========================================================== --}}
@@ -81,7 +62,7 @@
         action="{{ route('produk.index') }}"
         method="GET"
         id="filterForm"
-        class="flex flex-col sm:flex-row gap-2"
+        class="flex gap-2 w-full"
     >
 
         {{-- Search --}}
@@ -89,20 +70,27 @@
             type="text"
             name="search"
             value="{{ request('search') }}"
-            placeholder="Cari nama, kategori, atau SKU..."
-            class="w-full bg-gray-900 border border-white/10
-                   rounded-xl px-4 py-2.5 text-white text-xs
-                   outline-none focus:ring-2 focus:ring-indigo-500"
+            placeholder="Cari produk..."
+            class="flex-1 min-w-0
+                   bg-gray-900 border border-white/10
+                   rounded-xl px-3 sm:px-4 py-2.5
+                   text-white text-xs
+                   outline-none
+                   focus:ring-2 focus:ring-indigo-500"
         >
+
 
         {{-- Category --}}
         <select
             name="category"
             onchange="document.getElementById('filterForm').submit()"
-            class="bg-gray-900 border border-white/10
-                   rounded-xl px-4 py-2.5 text-white text-xs
-                   outline-none focus:ring-2 focus:ring-indigo-500
-                   cursor-pointer sm:w-56"
+            class="w-32 sm:w-56 shrink-0
+                   bg-gray-900 border border-white/10
+                   rounded-xl px-2 sm:px-4 py-2.5
+                   text-white text-xs
+                   outline-none
+                   focus:ring-2 focus:ring-indigo-500
+                   cursor-pointer"
         >
 
             <option
@@ -130,12 +118,16 @@
         </select>
 
 
-        {{-- Search Button --}}
+        {{-- Cari --}}
         <button
             type="submit"
-            class="bg-indigo-600 hover:bg-indigo-500
-                   text-white px-5 py-2.5
-                   rounded-xl text-xs font-medium transition"
+            class="shrink-0
+                   bg-indigo-600 hover:bg-indigo-500
+                   text-white
+                   px-3 sm:px-5 py-2.5
+                   rounded-xl
+                   text-xs font-medium
+                   transition"
         >
             Cari
         </button>
@@ -149,10 +141,14 @@
 
             <a
                 href="{{ route('produk.index') }}"
-                class="bg-gray-700 hover:bg-gray-600
-                       text-gray-300 px-3 py-2.5
-                       rounded-xl text-xs font-medium
-                       flex items-center justify-center transition"
+                class="shrink-0
+                       bg-gray-700 hover:bg-gray-600
+                       text-gray-300
+                       px-3 py-2.5
+                       rounded-xl
+                       text-xs font-medium
+                       flex items-center justify-center
+                       transition"
             >
                 Reset
             </a>
@@ -175,11 +171,12 @@
 
         <div>
             <h3 class="text-base font-semibold text-white">
-                Stok Produk
+                Daftar Inventaris / Manejeman Stok
             </h3>
 
             <p class="text-xs text-gray-400 mt-1">
                 Indikator menunjukkan kondisi stok saat ini.
+                Atur harga jual, stok fisik, dan jenis layanan di sini.
             </p>
         </div>
 
@@ -723,7 +720,7 @@
                            text-white px-3 py-1.5
                            rounded-xl text-xs font-medium transition"
                 >
-                    Terapkan
+                    Cari
                 </button>
 
             </div>
@@ -1006,7 +1003,7 @@ MODAL TAMBAH PRODUK
     >
 
         <h3 class="text-lg font-semibold text-white">
-            Tambah Produk / Servis Baru
+            Tambah Produk Inventaris Anda!
         </h3>
 
         <button

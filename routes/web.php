@@ -594,8 +594,7 @@ Route::get('/', function () {
 
     if (!session('logged_in')) {
 
-        return redirect()
-            ->route('dashboard');
+        return view('welcome.welcome');
     }
 
 

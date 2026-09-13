@@ -19,10 +19,24 @@
     {{-- =========================================================
          RINGKASAN HARI INI
     ========================================================== --}}
+    <div class="mb-5">
 
-    <div class="grid grid-cols-1 md:grid-cols-2
+            <h2 class="text-lg font-semibold text-white">
+                Ringkasan Hari Ini
+            </h2>
+
+            <p class="text-sm text-gray-400 mt-1">
+                {{ $startDate->format('d/m/Y') }}
+                -
+                {{ $endDate->format('d/m/Y') }}
+            </p>
+
+        </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-2
                 {{ $isAdmin ? 'lg:grid-cols-6' : 'lg:grid-cols-3' }}
-                gap-4">
+                gap-1">
+      
 
 
         {{-- =====================================================
@@ -195,7 +209,7 @@
 
 <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
 
-    <div class="mb-5">
+    <div class="mb-2">
 
         <h2 class="text-lg font-semibold text-white">
             Filter Laporan
@@ -217,7 +231,7 @@
         action="{{ route('laporan') }}"
         class="grid grid-cols-1
                {{ $isAdmin ? 'md:grid-cols-4' : 'md:grid-cols-3' }}
-               gap-4"
+               gap-2 sm:gap-4"
     >
 
         {{-- =====================================================
@@ -240,7 +254,7 @@
                     id="cashier_id"
                     name="cashier_id"
                     class="w-full bg-gray-900 border border-white/10
-                           rounded-lg px-4 py-2.5 text-white
+                           rounded-lg px-4 py-0.5 sm:py-2.5 text-white
                            focus:outline-none focus:border-blue-500"
                 >
 
@@ -287,7 +301,7 @@
                 name="start_date"
                 value="{{ request('start_date', $startDate->format('Y-m-d')) }}"
                 class="w-full bg-gray-900 border border-white/10
-                       rounded-lg px-4 py-2.5 text-white
+                       rounded-lg px-2 py-0.5 sm:py-2.5 text-white
                        focus:outline-none focus:border-blue-500"
             >
 
@@ -313,7 +327,7 @@
                 name="end_date"
                 value="{{ request('end_date', $endDate->format('Y-m-d')) }}"
                 class="w-full bg-gray-900 border border-white/10
-                       rounded-lg px-4 py-2.5 text-white
+                       rounded-lg px-2 py-0.5 sm:py-2.5 text-white
                        focus:outline-none focus:border-blue-500"
             >
 
@@ -324,13 +338,14 @@
              TOMBOL
         ====================================================== --}}
 
-        <div class="flex items-end gap-2">
+        <div class="flex items-end gap-1">
 
             <button
                 type="submit"
                 class="flex-1 bg-blue-600 hover:bg-blue-700
                        text-white font-medium rounded-lg
-                       px-4 py-2.5 transition"
+                       px-2 sm:px-4 py-1 sm:py-2.5 transition
+                       text-xs sm:text-sm"
             >
                 Tampilkan Laporan
             </button>
@@ -339,7 +354,8 @@
                 href="{{ route('laporan') }}"
                 class="bg-gray-700 hover:bg-gray-600
                        text-white font-medium rounded-lg
-                       px-4 py-2.5 transition"
+                       px-2 sm:px-4 py-2.5 transition
+                       text-xs sm:text-sm"
             >
                 Reset
             </a>
@@ -379,8 +395,8 @@
 
         @if($isAdmin)
 
-            <div class="grid grid-cols-1 md:grid-cols-2
-                        lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-2
+                        lg:grid-cols-4 gap-1">
 
 
                 {{-- Omzet --}}
