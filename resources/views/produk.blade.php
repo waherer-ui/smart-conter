@@ -279,13 +279,13 @@
 
 @if($p->image)
     <a
-        href="{{ asset('products/' . $p->image) }}"
+        href="{{ Storage::disk('s3')->url($p->image) }}"
         target="_blank"
         class="block shrink-0"
         title="Lihat gambar produk"
     >
         <img
-            src="{{ asset('products/' . $p->image) }}"
+            src="{{ Storage::disk('s3')->url($p->image) }}"
             alt="{{ $p->name }}"
             class="w-10 h-10 rounded-lg object-cover border border-white/10"
         >

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -139,18 +139,26 @@ class AuthController extends Controller
 
         // Update Foto Avatar jika ada yang di-upload
         if ($request->hasFile('avatar')) {
-            // Hapus avatar lama jika ada
-            if ($user->avatar && File::exists(public_path('avatars/' . $user->avatar))) {
-                File::delete(public_path('avatars/' . $user->avatar));
+        
+            // Hapus avatar lama dari R2
+            if ($user->avatar) {
+                Storage::disk('s3')->delete($user->avatar);
             }
-
+        
             $file = $request->file('avatar');
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            
-            // Pindahkan file ke folder public/avatars
-            $file->move(public_path('avatars'), $filename);
-            
-            $user->avatar = $filename;
+        
+            $filename = time() . '_' . uniqid() . '.' .
+                $file->getClientOriginalExtension();
+        
+            // Upload avatar baru ke R2
+            Storage::disk('s3')->putFileAs(
+                'avatars',
+                $file,
+                $filename
+            );
+        
+            // Simpan path R2 ke database
+            $user->avatar = 'avatars/' . $filename;
         }
 
         $user->save();

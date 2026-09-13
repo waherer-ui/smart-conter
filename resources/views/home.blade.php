@@ -306,7 +306,7 @@
                         @if($p->image)
 
                             <img
-                                src="{{ asset('products/' . $p->image) }}"
+                                src="{{ Storage::disk('s3')->url($p->image) }}"
                                 alt="{{ $p->name }}"
                                 class="w-full h-full object-cover transition duration-300"
                             >
@@ -1602,8 +1602,8 @@ function openProductModal(
 
     if (image) {
 
-        imageElement.src =
-            "{{ asset('products') }}/" + image;
+    imageElement.src =
+        "{{ Storage::disk('s3')->url('') }}" + image;
 
         imageElement.alt =
             name;

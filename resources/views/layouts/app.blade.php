@@ -33,7 +33,7 @@ $layoutUser = session('logged_in')
     : null;
 
 $avatarUrl = ($layoutUser && $layoutUser->avatar)
-    ? asset('avatars/' . $layoutUser->avatar)
+    ? \Illuminate\Support\Facades\Storage::disk('s3')->url($layoutUser->avatar)
     : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100';
 
 $layoutStores = $layoutUser

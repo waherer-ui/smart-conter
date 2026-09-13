@@ -1,3 +1,7 @@
+@php
+    use Illuminate\Support\Facades\Storage;
+@endphp
+
 @extends('layouts.app')
 
 @section('header', 'Cetak Label Harga')
@@ -187,7 +191,7 @@
                     @if($product->image)
 
                         <img
-                            src="{{ asset('products/' . $product->image) }}"
+                            src="{{ Storage::disk('s3')->url($product->image) }}"
                             alt="{{ $product->name }}"
                         >
 

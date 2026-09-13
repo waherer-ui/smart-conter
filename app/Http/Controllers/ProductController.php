@@ -505,10 +505,14 @@ $categories = Product::where(
             $file = $request->file('image');
             $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             
-            $file->move(public_path('products'), $filename);
-            
-            $imagePath = $filename;
-        }
+            Storage::disk('s3')->putFileAs(
+                  'products',
+                  $file,
+                  $filename
+              );
+              
+              $imagePath = 'products/' . $filename;
+                      }
 
 
 
@@ -573,27 +577,22 @@ $categories = Product::where(
             }
 
 
-            /*
-            /*
-            |--------------------------------------------------------------------------
-            | Update Gambar
-            |--------------------------------------------------------------------------
-            */
-
-            if ($imagePath) {
-
-                if (
-                    $existingProduct->image &&
-                    file_exists(public_path('products/' . $existingProduct->image))
-                ) {
-                    @unlink(public_path('products/' . $existingProduct->image));
-                }
-
-                $existingProduct->image =
-                    $imagePath;
-            }
-
-            $existingProduct->save();
+           /*
+          |--------------------------------------------------------------------------
+          | Update Gambar
+          |--------------------------------------------------------------------------
+          */
+          
+          if ($imagePath) {
+          
+              if ($existingProduct->image) {
+                  Storage::disk('s3')->delete($existingProduct->image);
+              }
+          
+              $existingProduct->image = $imagePath;
+          }
+          
+          $existingProduct->save();
 
 
 
@@ -898,41 +897,45 @@ $categories = Product::where(
             $username;
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | GANTI GAMBAR
-        |--------------------------------------------------------------------------
-        */
+      /*
+|--------------------------------------------------------------------------
+| GANTI GAMBAR
+|--------------------------------------------------------------------------
+*/
 
-        $imagePath =
-            $product->image;
+$imagePath = $product->image;
 
-                if ($request->hasFile('image')) {
+if ($request->hasFile('image')) {
 
-            /*
-            |--------------------------------------------------------------------------
-            | Hapus gambar lama
-            |--------------------------------------------------------------------------
-            */
+    /*
+    |--------------------------------------------------------------------------
+    | Hapus gambar lama dari R2
+    |--------------------------------------------------------------------------
+    */
 
-            if ($imagePath && file_exists(public_path('products/' . $imagePath))) {
-                @unlink(public_path('products/' . $imagePath));
-            }
+    if ($imagePath) {
+        Storage::disk('s3')->delete($imagePath);
+    }
 
-            /*
-            |--------------------------------------------------------------------------
-            | Simpan gambar baru ke public/products
-            |--------------------------------------------------------------------------
-            */
+    /*
+    |--------------------------------------------------------------------------
+    | Simpan gambar baru ke R2
+    |--------------------------------------------------------------------------
+    */
 
-            $file = $request->file('image');
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            
-            $file->move(public_path('products'), $filename);
-            
-            $imagePath = $filename;
-        }
+    $file = $request->file('image');
 
+    $filename = time() . '_' . uniqid() . '.' .
+        $file->getClientOriginalExtension();
+
+    Storage::disk('s3')->putFileAs(
+        'products',
+        $file,
+        $filename
+    );
+
+    $imagePath = 'products/' . $filename;
+}
 
 
         /*
@@ -1185,16 +1188,8 @@ $categories = Product::where(
         |--------------------------------------------------------------------------
         */
 
-        if (
-            $image &&
-            Storage::disk('product_images')->exists(
-                $image
-            )
-        ) {
-
-            Storage::disk('product_images')->delete(
-                $image
-            );
+        if ($image) {
+            Storage::disk('s3')->delete($image);
         }
 
 

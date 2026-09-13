@@ -147,7 +147,7 @@
         <div class="w-full h-24 mb-2 bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center border border-white/5">
 @if($p->image)
     <img
-        src="{{ asset('products/' . $p->image) }}"
+        src="{{ Storage::disk('s3')->url($p->image) }}"
         alt="{{ $p->name }}"
         class="w-10 h-10 rounded-lg object-cover border border-white/10 shrink-0"
     >

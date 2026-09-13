@@ -22,14 +22,17 @@
             <div class="flex flex-col items-center mb-6">
                 <div class="w-20 h-20 rounded-full overflow-hidden bg-gray-700 border border-white/10 mb-3 flex items-center justify-center">
                     @if($user->avatar ?? false)
-                        <a href="{{ asset('avatars/' . $user->avatar) }}" target="_blank">
-                  <img
-                      src="{{ asset('avatars/' . $user->avatar) }}"
-                      alt="Avatar"
-                      class="w-full h-full object-cover"
+                  <a
+                      href="{{ Storage::disk('s3')->url($user->avatar) }}"
+                      target="_blank"
                   >
-              </a>
-                    @else
+                      <img
+                          src="{{ Storage::disk('s3')->url($user->avatar) }}"
+                          alt="Avatar"
+                          class="w-full h-full object-cover"
+                      >
+                  </a>
+              @else
                         <span class="text-2xl text-gray-400">👤</span>
                     @endif
                 </div>
