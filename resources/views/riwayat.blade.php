@@ -432,6 +432,19 @@
                             </div>
 
                         </div>
+                        
+                        {{-- TOMBOL STRUK --}}
+              <div class="mt-4 pt-3 border-t border-white/10">
+              
+                  <a
+                      href="{{ route('transaksi.struk.pdf', $transaction->id) }}"
+                      target="_blank"
+                      class="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-xl text-xs font-semibold transition"
+                  >
+                      🧾 Cetak Struk
+                  </a>
+              
+              </div>
 
                     </div>
 

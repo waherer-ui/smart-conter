@@ -365,6 +365,33 @@ class TransactionController extends Controller
             ], 422);
         }
     }
+    
+    /**
+ * Menampilkan struk transaksi dalam bentuk PDF.
+ */
+public function receiptPdf($id)
+{
+    $transaction = Transaction::where(
+        'store_id',
+        $this->activeStoreId()
+    )
+    ->with([
+        'user',
+        'items',
+    ])
+    ->findOrFail($id);
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
+        'kasir.receipt-pdf',
+        compact('transaction')
+    );
+
+    $pdf->setPaper([0, 0, 226.77, 600], 'portrait');
+
+    return $pdf->stream(
+        'struk-' . $transaction->invoice_number . '.pdf'
+    );
+}
 
     /**
      * Menampilkan riwayat transaksi.

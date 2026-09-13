@@ -1122,25 +1122,24 @@ $activeStore = $layoutStores->firstWhere(
 {{-- ========================================================= --}}
 
 <footer
-    class="bg-gray-800
-           border-t border-white/10
-           py-4 mt-auto"
+    class="mt-10 pt-6
+                  border-t border-white/5
+                  flex flex-col sm:flex-row
+                  items-center
+                  justify-between
+                  gap-3"
 >
-
-    <div
-        class="mx-auto max-w-7xl
-               px-4
-               sm:px-6
-               lg:px-8
-               text-center
-               text-xs
-               text-gray-400"
-    >
-
-        &copy; 2026 KasirKU
-
-    </div>
-
+          <a href="{{ route('register') }}"
+             class="text-xs text-gray-600
+                    hover:text-emerald-400
+                    transition duration-200
+                    cursor-pointer">
+              © {{ date('Y') }} KasirKU. Semua hak dilindungi.
+          </a>
+      
+          <p class="text-xs text-gray-600">
+              Solusi kasir untuk usaha Anda.
+          </p>
 </footer>
 
 

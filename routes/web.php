@@ -392,11 +392,18 @@ Route::post(
 
 
     // Simpan transaksi
-    Route::post(
-        '/transaksi',
-        [TransactionController::class, 'store']
-    )->middleware('auth.role')
-    ->name('transaksi.store');
+Route::post(
+    '/transaksi',
+    [TransactionController::class, 'store']
+)->middleware('auth.role')
+->name('transaksi.store');
+
+// Cetak / tampilkan struk PDF
+Route::get(
+    '/transaksi/{id}/struk-pdf',
+    [TransactionController::class, 'receiptPdf']
+)->middleware('auth.role')
+->name('transaksi.struk.pdf');
 
 
     /*

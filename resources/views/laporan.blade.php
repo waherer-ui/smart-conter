@@ -347,7 +347,7 @@
                        px-2 sm:px-4 py-1 sm:py-2.5 transition
                        text-xs sm:text-sm"
             >
-                Tampilkan Laporan
+                Cari
             </button>
 
             <a

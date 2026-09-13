@@ -1249,11 +1249,6 @@ function calculateChange() {
 }
 
 
-/*
-|--------------------------------------------------------------------------
-| SUBMIT TRANSAKSI
-|--------------------------------------------------------------------------
-*/
 
 /*
 |--------------------------------------------------------------------------
@@ -1384,7 +1379,7 @@ async function submitTransaction() {
                 'Transaksi gagal disimpan.'
             );
         }
-
+      window.lastTransactionId = result.transaction_id;
 
         /*
         |--------------------------------------------------------------------------
@@ -1588,16 +1583,65 @@ async function submitTransaction() {
 
 function printReceipt() {
 
+    const transactionId =
+        window.lastTransactionId;
+
+    // Pastikan ID transaksi tersedia
+    if (!transactionId) {
+
+        alert(
+            'Data transaksi tidak ditemukan.'
+        );
+
+        return;
+    }
+
+
     /*
     |--------------------------------------------------------------------------
-    | Print hanya dipanggil ketika user menekan tombol.
+    | DETEKSI MEDIAN APP
+    |--------------------------------------------------------------------------
+    */
+
+    const isMedianApp =
+        navigator.userAgent
+            .toLowerCase()
+            .includes('median');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | MEDIAN → PDF
+    |--------------------------------------------------------------------------
+    */
+
+    if (isMedianApp) {
+
+        const pdfUrl =
+            @json(route('transaksi.struk.pdf', ['id' => '__ID__']))
+            .replace(
+                '__ID__',
+                transactionId
+            );
+
+        window.open(
+            pdfUrl,
+            '_blank'
+        );
+
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BROWSER → PRINT BIASA
     |--------------------------------------------------------------------------
     */
 
     window.print();
 
 }
-
 
 /*
 |--------------------------------------------------------------------------
