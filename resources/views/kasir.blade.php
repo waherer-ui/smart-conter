@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('header', '🛒 Kasir')
+@section('mobile_action', 'scan')
 
 @section('header_tools')
 <div class="mt-1">
@@ -717,6 +718,10 @@ let cart = [];
 let transactionProcessing = false;
 
 const CART_STORAGE_KEY = 'smart_pos_cart';
+
+const scanUrlTemplate = @json(
+    route('produk.scan', ['sku' => '__SKU__'])
+);
 
 
 /*
@@ -1779,9 +1784,93 @@ document.addEventListener(
         
         loadCart();
         renderCart();
+        handlePendingScan();
 
     }
 );
+
+// ======================================================
+// HANDLE GLOBAL SCAN DARI HALAMAN LAIN
+// ======================================================
+
+async function handlePendingScan() {
+
+    const params = new URLSearchParams(
+        window.location.search
+    );
+
+    const scanSku = params.get('scan_sku');
+
+    if (!scanSku) {
+        return;
+    }
+
+    // Bersihkan URL agar scan tidak diproses ulang
+    window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+    );
+
+    const sku = String(scanSku).trim();
+
+    if (!sku) {
+        return;
+    }
+
+    try {
+
+        const url = scanUrlTemplate.replace(
+            '__SKU__',
+            encodeURIComponent(sku)
+        );
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            alert(
+                data.message ||
+                'Produk hasil scan tidak ditemukan.'
+            );
+
+            return;
+        }
+
+        const product = data.product;
+
+        // Masukkan produk ke keranjang
+        addToCart(
+            product.id,
+            product.name,
+            product.price,
+            product.stock
+        );
+
+        console.log(
+            'Produk dari Global Scanner:',
+            product
+        );
+
+    } catch (error) {
+
+        console.error(
+            'Pending Scan Error:',
+            error
+        );
+
+        alert(
+            'Gagal mengambil produk hasil scan.'
+        );
+    }
+}
 
 // ======================================================
 // QR SCANNER
@@ -1791,9 +1880,6 @@ let html5QrCode = null;
 let qrScanning = false;
 let qrProcessing = false;
 
-const scanUrlTemplate = @json(
-    route('produk.scan', ['sku' => '__SKU__'])
-);
 
 
 function openQrScanner() {

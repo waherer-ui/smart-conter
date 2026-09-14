@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Riwayat Transaksi')
+@section('mobile_action', 'scan')
 
 @section('header', 'Riwayat Transaksi')
 

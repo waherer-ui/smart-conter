@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Laporan Penjualan')
+@section('mobile_action', 'scan')
 @section('header', 'Rekap Laporan Keuangan')
 
 @section('content')

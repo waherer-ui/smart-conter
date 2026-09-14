@@ -1142,6 +1142,122 @@ $activeStore = $layoutStores->firstWhere(
           </p>
 </footer>
 
+{{-- ========================================================= --}}
+{{-- GLOBAL QR SCANNER --}}
+{{-- ========================================================= --}}
+
+@if(
+    session('logged_in') &&
+    !request()->routeIs('dashboard') &&
+    !request()->routeIs('kasir.index')
+)
+
+    <div
+        id="globalQrScannerModal"
+        class="fixed inset-0 z-[120]
+               hidden items-center justify-center
+               bg-black/80 p-4"
+    >
+
+        <div
+            class="w-full max-w-md
+                   rounded-2xl
+                   bg-gray-800
+                   border border-white/10
+                   shadow-2xl
+                   overflow-hidden"
+        >
+
+            {{-- HEADER --}}
+
+            <div
+                class="flex items-center justify-between
+                       px-4 py-3
+                       border-b border-white/10"
+            >
+
+                <div>
+
+                    <h3 class="font-semibold text-white">
+                        📷 Scan Produk
+                    </h3>
+
+                    <p class="text-xs text-gray-400">
+                        Scan QR / barcode produk
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    onclick="closeGlobalQrScanner()"
+                    class="w-9 h-9
+                           flex items-center justify-center
+                           rounded-xl
+                           bg-gray-700
+                           text-gray-300
+                           hover:bg-gray-600"
+                >
+                    ✕
+                </button>
+
+            </div>
+
+
+            {{-- CAMERA --}}
+
+            <div class="p-4">
+
+                <div
+                    id="global-qr-reader"
+                    class="w-full overflow-hidden rounded-xl bg-black"
+                ></div>
+
+
+                <div
+                    id="global-qr-scan-status"
+                    class="mt-3
+                           text-sm text-gray-400
+                           text-center"
+                >
+                    Menyiapkan kamera...
+                </div>
+
+            </div>
+
+
+            {{-- FOOTER --}}
+
+            <div class="px-4 pb-4">
+
+                <button
+                    type="button"
+                    onclick="closeGlobalQrScanner()"
+                    class="w-full
+                           rounded-xl
+                           bg-gray-700
+                           hover:bg-gray-600
+                           py-2.5
+                           text-sm
+                           font-semibold
+                           text-white
+                           transition"
+                >
+                    Tutup
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+@endif
+
 
 
 {{-- ========================================================= --}}
@@ -1225,6 +1341,347 @@ function toggleMobileStoreDropdown(event) {
     if (!dropdown) return;
 
     dropdown.classList.toggle('hidden');
+
+}
+
+/*
+|--------------------------------------------------------------------------
+| GLOBAL QR SCANNER
+|--------------------------------------------------------------------------
+| Dipakai halaman selain Dashboard dan Kasir.
+| Tidak menggunakan openQrScanner() agar tidak bentrok.
+|--------------------------------------------------------------------------
+*/
+
+let globalQrScanner = null;
+let globalQrScanning = false;
+let globalQrProcessing = false;
+
+const globalScanUrlTemplate =
+    @json(route('produk.scan', ['sku' => '__SKU__']));
+
+
+function openGlobalQrScanner() {
+
+    const modal =
+        document.getElementById('globalQrScannerModal');
+
+    const status =
+        document.getElementById('global-qr-scan-status');
+
+    if (!modal || !status) {
+        console.error('Global QR Scanner tidak tersedia.');
+        return;
+    }
+
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+
+    document.body.classList.add('overflow-hidden');
+
+    status.innerText =
+        'Mengaktifkan kamera...';
+
+    startGlobalQrScanner();
+
+}
+
+
+async function startGlobalQrScanner() {
+
+    const status =
+        document.getElementById('global-qr-scan-status');
+
+    if (typeof Html5Qrcode === 'undefined') {
+
+        if (status) {
+            status.innerText =
+                'Scanner gagal dimuat. Periksa koneksi internet.';
+        }
+
+        return;
+    }
+
+
+    if (globalQrScanning) {
+        return;
+    }
+
+
+    globalQrProcessing = false;
+
+
+    try {
+
+        globalQrScanner =
+            new Html5Qrcode('global-qr-reader');
+
+
+        await globalQrScanner.start(
+
+            { facingMode: 'environment' },
+
+            {
+                fps: 10,
+                qrbox: {
+                    width: 250,
+                    height: 180
+                }
+            },
+
+            function(decodedText) {
+
+                handleGlobalScannedSku(decodedText);
+
+            },
+
+            function(errorMessage) {
+                // Abaikan error scanning biasa
+            }
+
+        );
+
+
+        globalQrScanning = true;
+
+
+        if (status) {
+
+            status.innerText =
+                'Arahkan kamera ke QR / barcode produk.';
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            'Global QR Scanner Error:',
+            error
+        );
+
+
+        if (status) {
+
+            status.innerText =
+                'Kamera tidak dapat digunakan.';
+
+        }
+
+    }
+
+}
+
+
+async function handleGlobalScannedSku(decodedText) {
+
+    if (globalQrProcessing) {
+        return;
+    }
+
+
+    globalQrProcessing = true;
+
+
+    const sku =
+        String(decodedText || '').trim();
+
+
+    if (!sku) {
+
+        globalQrProcessing = false;
+
+        return;
+
+    }
+
+
+    const status =
+        document.getElementById(
+            'global-qr-scan-status'
+        );
+
+
+    if (status) {
+
+        status.innerText =
+            'Mencari produk ' + sku + '...';
+
+    }
+
+
+    try {
+
+        await stopGlobalQrScanner();
+
+
+        const url =
+            globalScanUrlTemplate.replace(
+                '__SKU__',
+                encodeURIComponent(sku)
+            );
+
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !data.success
+        ) {
+
+            alert(
+                data.message ||
+                'Produk tidak ditemukan.'
+            );
+
+            globalQrProcessing = false;
+
+            return;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PRODUK DITEMUKAN
+        |--------------------------------------------------------------------------
+        |
+        | Simpan SKU ke URL Kasir.
+        | Kasir akan mengambil produk tersebut
+        | lalu memasukkannya ke cart.
+        |
+        */
+
+        const kasirUrl =
+            @json(route('kasir.index'));
+
+
+        window.location.href =
+            kasirUrl +
+            '?scan_sku=' +
+            encodeURIComponent(
+                data.product.sku
+            );
+
+
+    } catch (error) {
+
+        console.error(
+            'Global QR Scanner Error:',
+            error
+        );
+
+
+        alert(
+            'Terjadi kesalahan saat membaca produk.'
+        );
+
+
+        globalQrProcessing = false;
+
+    }
+
+}
+
+
+async function stopGlobalQrScanner() {
+
+    if (
+        globalQrScanner &&
+        globalQrScanning
+    ) {
+
+        try {
+
+            await globalQrScanner.stop();
+
+            await globalQrScanner.clear();
+
+        } catch (error) {
+
+            console.warn(
+                'Gagal menghentikan global scanner:',
+                error
+            );
+
+        }
+
+    }
+
+
+    globalQrScanning = false;
+
+}
+
+
+async function closeGlobalQrScanner() {
+
+    await stopGlobalQrScanner();
+
+
+    globalQrProcessing = false;
+
+
+    const modal =
+        document.getElementById(
+            'globalQrScannerModal'
+        );
+
+
+    if (modal) {
+
+        modal.classList.add('hidden');
+
+        modal.classList.remove('flex');
+
+    }
+
+
+    document.body.classList.remove(
+        'overflow-hidden'
+    );
+
+
+    const reader =
+        document.getElementById(
+            'global-qr-reader'
+        );
+
+
+    if (reader) {
+
+        reader.innerHTML = '';
+
+    }
+
+
+    const status =
+        document.getElementById(
+            'global-qr-scan-status'
+        );
+
+
+    if (status) {
+
+        status.innerText =
+            'Arahkan kamera ke QR / barcode produk.';
+
+    }
 
 }
 
@@ -1400,8 +1857,285 @@ document
 
 }
 
+.mobile-bottom-item {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 3px;
+
+    min-width: 58px;
+
+    height: 58px;
+
+    border-radius: 14px;
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    color: rgb(156 163 175);
+
+    transition: all 0.2s ease;
+
+}
+
+
+.mobile-bottom-item:hover {
+
+    color: white;
+
+    background: rgb(31 41 55 / 0.7);
+
+}
+
+
+.mobile-bottom-active {
+
+    color: rgb(52 211 153);
+
+}
+
+
+.mobile-bottom-action {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 2px;
+
+    width: 58px;
+
+    height: 58px;
+
+    margin-top: -18px;
+
+    border-radius: 18px;
+
+    background: rgb(16 185 129);
+
+    color: white;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    border: 4px solid rgb(17 24 39);
+
+    box-shadow:
+        0 8px 25px rgb(16 185 129 / 0.25);
+
+    transition: all 0.2s ease;
+
+}
+
+
+.mobile-bottom-action:hover {
+
+    transform: translateY(-2px);
+
+}
+
 </style>
 
+{{-- ========================================================= --}}
+{{-- MOBILE BOTTOM NAVIGATION --}}
+{{-- ========================================================= --}}
+
+@if(session('logged_in'))
+
+    @php
+        $mobileAction = trim($__env->yieldContent('mobile_action', 'scan'));
+    @endphp
+
+    <nav
+        class="md:hidden fixed bottom-0 left-0 right-0 z-[70]
+               bg-gray-900/95 backdrop-blur-xl
+               border-t border-white/10
+               shadow-2xl"
+    >
+
+        <div
+            class="mx-auto max-w-md
+                   h-[68px]
+                   px-2
+                   flex items-center justify-around"
+        >
+
+            {{-- ============================================= --}}
+            {{-- BERANDA --}}
+            {{-- ============================================= --}}
+
+            <a
+                href="{{ route('dashboard') }}"
+                class="mobile-bottom-item
+                       {{ request()->routeIs('dashboard')
+                            ? 'mobile-bottom-active'
+                            : '' }}"
+            >
+
+                <span class="text-xl leading-none">
+                    🏠
+                </span>
+
+                <span>
+                    Beranda
+                </span>
+
+            </a>
+
+
+
+            {{-- ============================================= --}}
+            {{-- RIWAYAT --}}
+            {{-- ============================================= --}}
+
+            <a
+                href="{{ route('riwayat') }}"
+                class="mobile-bottom-item
+                       {{ request()->routeIs('riwayat')
+                            ? 'mobile-bottom-active'
+                            : '' }}"
+            >
+
+                <span class="text-xl leading-none">
+                    🧾
+                </span>
+
+                <span>
+                    Riwayat
+                </span>
+
+            </a>
+
+
+
+{{-- ============================================= --}}
+{{-- QUICK ACTION --}}
+{{-- ============================================= --}}
+
+@if($mobileAction === 'tambah')
+
+    <button
+        type="button"
+        onclick="toggleProductModal()"
+        class="mobile-bottom-action"
+    >
+        <span>➕</span>
+        <span>Tambah</span>
+    </button>
+
+@elseif($mobileAction === 'kasir')
+
+    <a
+        href="{{ route('kasir.index') }}"
+        class="mobile-bottom-action"
+    >
+        <span>🛒</span>
+        <span>Kasir</span>
+    </a>
+
+@elseif($mobileAction === 'scan')
+
+    @if(request()->routeIs('dashboard') || request()->routeIs('kasir.index'))
+
+        {{-- Scanner milik Dashboard / Kasir --}}
+        <button
+            type="button"
+            onclick="openQrScanner()"
+            class="mobile-bottom-action"
+        >
+            <span>📷</span>
+            <span>Scan</span>
+        </button>
+
+    @else
+
+        {{-- Scanner Global untuk halaman lainnya --}}
+        <button
+            type="button"
+            onclick="openGlobalQrScanner()"
+            class="mobile-bottom-action"
+        >
+            <span>📷</span>
+            <span>Scan</span>
+        </button>
+
+    @endif
+
+@else
+
+    {{-- Default --}}
+    <button
+        type="button"
+        onclick="openGlobalQrScanner()"
+        class="mobile-bottom-action"
+    >
+        <span>📷</span>
+        <span>Scan</span>
+    </button>
+
+@endif
+
+            {{-- ============================================= --}}
+            {{-- LAPORAN --}}
+            {{-- ============================================= --}}
+
+            <a
+                href="{{ route('laporan') }}"
+                class="mobile-bottom-item
+                       {{ request()->routeIs('laporan')
+                            ? 'mobile-bottom-active'
+                            : '' }}"
+            >
+
+                <span class="text-xl leading-none">
+                    📊
+                </span>
+
+                <span>
+                    Laporan
+                </span>
+
+            </a>
+
+
+
+            {{-- ============================================= --}}
+            {{-- LAINNYA --}}
+            {{-- ============================================= --}}
+
+            <button
+                type="button"
+                onclick="toggleMobileMenu()"
+                class="mobile-bottom-item"
+            >
+
+                <span class="text-xl leading-none">
+                    ⋯
+                </span>
+
+                <span>
+                    Lainnya
+                </span>
+
+            </button>
+
+        </div>
+
+    </nav>
+
+@endif
 
 </body>
 

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('header', '📦 Produk')
+@section('mobile_action', 'tambah')
 
 @section('header_tools')
 <div class="mt-1">

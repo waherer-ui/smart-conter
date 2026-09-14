@@ -2,6 +2,7 @@
 
 @section('title', 'Dashboard')
 @section('header', '🏠')
+@section('mobile_action', 'scan')
 
 @section('header_tools')
 
