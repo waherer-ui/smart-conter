@@ -365,12 +365,36 @@ class TransactionController extends Controller
             ], 422);
         }
     }
-    
+
     /**
  * Menampilkan struk transaksi dalam bentuk PDF.
  */
 public function receiptPdf($id)
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Toko Aktif
+    |--------------------------------------------------------------------------
+    */
+
+    $store = \App\Models\Store::find(
+        $this->activeStoreId()
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Batas Riwayat Sesuai Paket
+    |--------------------------------------------------------------------------
+    */
+
+    $historyDays = $store?->getLimit('history_days');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ambil Transaksi
+    |--------------------------------------------------------------------------
+    */
+
     $transaction = Transaction::where(
         'store_id',
         $this->activeStoreId()
@@ -381,15 +405,52 @@ public function receiptPdf($id)
     ])
     ->findOrFail($id);
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cek Batas Riwayat
+    |--------------------------------------------------------------------------
+    */
+
+    if ($historyDays !== null) {
+
+        $historyLimitDate = now()
+            ->subDays($historyDays)
+            ->startOfDay();
+
+        if (
+            $transaction->created_at
+                ->lt($historyLimitDate)
+        ) {
+
+            return redirect()
+                ->route('riwayat')
+                ->with(
+                    'error',
+                    'Struk transaksi ini berada di luar batas riwayat paket Anda. Silakan upgrade paket untuk mengakses transaksi lama.'
+                );
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Generate PDF
+    |--------------------------------------------------------------------------
+    */
+
     $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
         'kasir.receipt-pdf',
         compact('transaction')
     );
 
-    $pdf->setPaper([0, 0, 226.77, 600], 'portrait');
+    $pdf->setPaper(
+        [0, 0, 226.77, 600],
+        'portrait'
+    );
 
     return $pdf->stream(
-        'struk-' . $transaction->invoice_number . '.pdf'
+        'struk-' .
+        $transaction->invoice_number .
+        '.pdf'
     );
 }
 
@@ -397,22 +458,48 @@ public function receiptPdf($id)
      * Menampilkan riwayat transaksi.
      */
     public function index(Request $request)
-    {
-        /*
-        |--------------------------------------------------------------------------
-        | Query Transaksi Toko Aktif
-        |--------------------------------------------------------------------------
-        */
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Paket Toko Aktif
+    |--------------------------------------------------------------------------
+    */
 
-        $query = Transaction::where(
-            'store_id',
-            $this->activeStoreId()
-        )
-        ->with([
-            'user',
-            'items'
-        ])
-        ->latest();
+    $store = \App\Models\Store::find(
+        $this->activeStoreId()
+    );
+
+    $historyDays = $store?->getLimit('history_days');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Query Transaksi Toko Aktif
+    |--------------------------------------------------------------------------
+    */
+
+    $query = Transaction::where(
+        'store_id',
+        $this->activeStoreId()
+    )
+    ->with([
+        'user',
+        'items'
+    ])
+    ->latest();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Batas Riwayat Sesuai Paket
+    |--------------------------------------------------------------------------
+    */
+
+    if ($historyDays !== null) {
+        $query->where(
+            'created_at',
+            '>=',
+            now()->subDays($historyDays)->startOfDay()
+        );
+    }
 
         /*
         |--------------------------------------------------------------------------
@@ -445,19 +532,89 @@ public function receiptPdf($id)
             });
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Filter Tanggal
-        |--------------------------------------------------------------------------
-        */
+/*
+|--------------------------------------------------------------------------
+| Filter Periode
+|--------------------------------------------------------------------------
+*/
 
-        if ($request->filled('date')) {
+if ($request->filled('period')) {
+
+    switch ($request->period) {
+
+        case 'today':
 
             $query->whereDate(
                 'created_at',
-                $request->date
+                today()
             );
-        }
+
+            break;
+
+        case '7days':
+
+            $query->where(
+                'created_at',
+                '>=',
+                now()->subDays(6)->startOfDay()
+            );
+
+            break;
+
+        case '1month':
+
+            $query->where(
+                'created_at',
+                '>=',
+                now()->subMonth()->startOfDay()
+            );
+
+            break;
+
+        case '1year':
+
+            $query->where(
+                'created_at',
+                '>=',
+                now()->subYear()->startOfDay()
+            );
+
+            break;
+
+        case '3years':
+
+            $query->where(
+                'created_at',
+                '>=',
+                now()->subYears(3)->startOfDay()
+            );
+
+            break;
+
+        case 'custom':
+
+            if (
+                $request->filled('start_date') &&
+                $request->filled('end_date')
+            ) {
+
+                $query->whereBetween(
+                    'created_at',
+                    [
+                        \Carbon\Carbon::parse(
+                            $request->start_date
+                        )->startOfDay(),
+
+                        \Carbon\Carbon::parse(
+                            $request->end_date
+                        )->endOfDay(),
+                    ]
+                );
+            }
+
+            break;
+    }
+}
 
         /*
         |--------------------------------------------------------------------------
@@ -466,12 +623,58 @@ public function receiptPdf($id)
         */
 
         $transactions = $query
-            ->paginate(10)
-            ->withQueryString();
+    ->paginate(10)
+    ->withQueryString();
 
-        return view(
-            'riwayat',
-            compact('transactions')
-        );
+/*
+|--------------------------------------------------------------------------
+| Status Riwayat Di Luar Batas Paket
+|--------------------------------------------------------------------------
+*/
+
+$historyRestricted = false;
+
+if (
+    $historyDays !== null &&
+    $request->filled('period')
+) {
+
+    if ($request->period === 'custom') {
+
+        if (
+            $request->filled('start_date') &&
+            $request->filled('end_date')
+        ) {
+
+            $historyLimitDate = now()
+                ->subDays($historyDays)
+                ->startOfDay();
+
+            $requestedEndDate = \Carbon\Carbon::parse(
+                $request->end_date
+            )->endOfDay();
+
+            if ($requestedEndDate->lt($historyLimitDate)) {
+                $historyRestricted = true;
+            }
+        }
+    }
+
+    if (in_array($request->period, [
+        '1year',
+        '3years'
+    ])) {
+        $historyRestricted = true;
+    }
+}
+
+return view(
+    'riwayat',
+    compact(
+        'transactions',
+        'historyDays',
+        'historyRestricted'
+    )
+);
     }
 }

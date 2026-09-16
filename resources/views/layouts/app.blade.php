@@ -398,6 +398,15 @@ $activeStore = $layoutStores->firstWhere(
                                     </div>
 
                                 </div>
+                                {{-- ========================================= --}}
+                            {{-- INFORMASI PAKET --}}
+                            {{-- ========================================= --}}
+
+                            <div class="px-4 pb-4">
+
+                                 <x-plan-info :active-store="$activeStore" />
+
+                            </div>
 
                             </div>
 
@@ -439,6 +448,22 @@ $activeStore = $layoutStores->firstWhere(
                                 <span>📦</span>
                                 <span>Produk</span>
                             </a>
+
+                            <a
+                                href="{{ route('pelanggan.index') }}"
+                                class="dropdown-link"
+                            >
+                                <span>👥</span>
+                                <span>Pelanggan</span>
+                            </a>
+
+                            <a
+                              href="{{ route('supplier.index') }}"
+                              class="dropdown-link"
+                          >
+                              <span>🚚</span>
+                              <span>Supplier</span>
+                          </a>
 
                             <a
                                 href="{{ route('pengeluaran') }}"
@@ -818,12 +843,13 @@ $activeStore = $layoutStores->firstWhere(
     >
 
         <div
-            class="bg-gray-800
-                   border border-white/10
-                   rounded-2xl
-                   shadow-2xl
-                   overflow-hidden"
-        >
+    class="bg-gray-800
+           border border-white/10
+           rounded-2xl
+           shadow-2xl
+           overflow-y-auto
+           max-h-[75vh]"
+    >
 
 
             {{-- ============================================= --}}
@@ -864,7 +890,17 @@ $activeStore = $layoutStores->firstWhere(
 
             @endif
 
+            {{-- ============================================= --}}
+          {{-- INFORMASI PAKET MOBILE --}}
+          {{-- ============================================= --}}
 
+          @if(session('logged_in'))
+
+              <div class="px-4 pb-4">
+                   <x-plan-info :active-store="$activeStore" />
+              </div>
+
+          @endif
 
             {{-- ============================================= --}}
             {{-- NAVIGASI MOBILE --}}
@@ -879,16 +915,6 @@ $activeStore = $layoutStores->firstWhere(
                 >
                     Navigasi
                 </div>
-
-
-                <a
-                    href="{{ route('dashboard') }}"
-                    class="dropdown-link"
-                >
-                    <span>🏠</span>
-                    <span>Dashboard</span>
-                </a>
-
 
                 <a
                     href="{{ route('kasir.index') }}"
@@ -907,6 +933,14 @@ $activeStore = $layoutStores->firstWhere(
                     <span>Produk</span>
                 </a>
 
+                <a
+                    href="{{ route('supplier.index') }}"
+                    class="dropdown-link"
+                >
+                    <span>🚚</span>
+                    <span>Supplier</span>
+                </a>
+
 
                 <a
                     href="{{ route('pengeluaran') }}"
@@ -915,25 +949,6 @@ $activeStore = $layoutStores->firstWhere(
                     <span>💸</span>
                     <span>Pengeluaran</span>
                 </a>
-
-
-                <a
-                    href="{{ route('laporan') }}"
-                    class="dropdown-link"
-                >
-                    <span>📊</span>
-                    <span>Laporan</span>
-                </a>
-
-
-                <a
-                    href="{{ route('riwayat') }}"
-                    class="dropdown-link"
-                >
-                    <span>🧾</span>
-                    <span>Riwayat Transaksi</span>
-                </a>
-
 
                 @if(session('logged_in'))
 
@@ -1136,7 +1151,7 @@ $activeStore = $layoutStores->firstWhere(
                     cursor-pointer">
               © {{ date('Y') }} KasirKU. Semua hak dilindungi.
           </a>
-      
+
           <p class="text-xs text-gray-600">
               Solusi kasir untuk usaha Anda.
           </p>
@@ -2111,25 +2126,27 @@ document
 
 
 
-            {{-- ============================================= --}}
-            {{-- LAINNYA --}}
-            {{-- ============================================= --}}
+         {{-- ============================================= --}}
+              {{-- PELANGGAN --}}
+              {{-- ============================================= --}}
 
-            <button
-                type="button"
-                onclick="toggleMobileMenu()"
-                class="mobile-bottom-item"
-            >
+              <a
+                  href="{{ route('pelanggan.index') }}"
+                  class="mobile-bottom-item
+                         {{ request()->routeIs('pelanggan.*')
+                              ? 'mobile-bottom-active'
+                              : '' }}"
+              >
 
-                <span class="text-xl leading-none">
-                    ⋯
-                </span>
+                  <span class="text-xl leading-none">
+                      👥
+                  </span>
 
-                <span>
-                    Lainnya
-                </span>
+                  <span>
+                      Pelanggan
+                  </span>
 
-            </button>
+              </a>
 
         </div>
 

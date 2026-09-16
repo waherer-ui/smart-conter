@@ -4,18 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductHistory;
+use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-  /**
- * Mendapatkan ID toko aktif.
- */
-private function activeStoreId(): int
-{
-    return (int) session('active_store_id');
-}
+    /**
+     * Mendapatkan ID toko aktif.
+     */
+    private function activeStoreId(): int
+    {
+        return (int) session('active_store_id');
+    }
+
+
     /*
     |--------------------------------------------------------------------------
     | DAFTAR PRODUK
@@ -38,20 +41,35 @@ private function activeStoreId(): int
         */
 
         $query = Product::where(
-    'store_id',
-    $this->activeStoreId()
-);
+            'store_id',
+            $this->activeStoreId()
+        );
 
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%')
-                    ->orWhere('category', 'like', '%' . $search . '%')
-                    ->orWhere('sku', 'like', '%' . $search . '%');
+                $q->where(
+                    'name',
+                    'like',
+                    '%' . $search . '%'
+                )
+                ->orWhere(
+                    'category',
+                    'like',
+                    '%' . $search . '%'
+                )
+                ->orWhere(
+                    'sku',
+                    'like',
+                    '%' . $search . '%'
+                );
             });
         }
 
         if ($category && $category !== 'all') {
-            $query->where('category', $category);
+            $query->where(
+                'category',
+                $category
+            );
         }
 
         $products = $query
@@ -60,13 +78,14 @@ private function activeStoreId(): int
             ->withQueryString();
 
         $categories = Product::where(
-    'store_id',
-    $this->activeStoreId()
-)
-    ->select('category')
-    ->distinct()
-    ->orderBy('category')
-    ->pluck('category');
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->select('category')
+        ->distinct()
+        ->orderBy('category')
+        ->pluck('category');
+
 
         /*
         |--------------------------------------------------------------------------
@@ -75,12 +94,13 @@ private function activeStoreId(): int
         */
 
         $historyQuery = ProductHistory::where(
-    'store_id',
-    $this->activeStoreId()
-)->orderBy(
-    'created_at',
-    'desc'
-);
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->orderBy(
+            'created_at',
+            'desc'
+        );
 
         if ($dateFilter === 'today') {
 
@@ -158,6 +178,7 @@ private function activeStoreId(): int
                 return $item->created_at->format('Y-m-d');
             });
 
+
         return view(
             'produk',
             compact(
@@ -183,16 +204,19 @@ private function activeStoreId(): int
     public function destroyHistory($id)
     {
         $history = ProductHistory::where(
-    'store_id',
-    $this->activeStoreId()
-)->findOrFail($id);
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->findOrFail($id);
 
         $product = Product::where(
-    'store_id',
-    $this->activeStoreId()
-)->find(
-    $history->product_id
-);
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->find(
+            $history->product_id
+        );
+
 
         /*
         |--------------------------------------------------------------------------
@@ -210,6 +234,7 @@ private function activeStoreId(): int
 
             $product->save();
         }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -235,104 +260,105 @@ private function activeStoreId(): int
     */
 
     public function dashboard(Request $request)
-{
-    $category = $request->input('category');
-    $search = $request->input('search');
-
-    /*
-    |--------------------------------------------------------------------------
-    | QUERY PRODUK DASHBOARD
-    |--------------------------------------------------------------------------
-    */
-
-    $query = Product::where(
-    'store_id',
-    $this->activeStoreId()
-);
+    {
+        $category = $request->input('category');
+        $search = $request->input('search');
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | PENCARIAN
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | QUERY PRODUK DASHBOARD
+        |--------------------------------------------------------------------------
+        */
 
-    if ($search) {
+        $query = Product::where(
+            'store_id',
+            $this->activeStoreId()
+        );
 
-        $query->where(function ($q) use ($search) {
 
-            $q->where(
-                'name',
-                'like',
-                '%' . $search . '%'
-            )
-            ->orWhere(
+        /*
+        |--------------------------------------------------------------------------
+        | PENCARIAN
+        |--------------------------------------------------------------------------
+        */
+
+        if ($search) {
+
+            $query->where(function ($q) use ($search) {
+
+                $q->where(
+                    'name',
+                    'like',
+                    '%' . $search . '%'
+                )
+                ->orWhere(
+                    'category',
+                    'like',
+                    '%' . $search . '%'
+                )
+                ->orWhere(
+                    'sku',
+                    'like',
+                    '%' . $search . '%'
+                );
+
+            });
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FILTER KATEGORI
+        |--------------------------------------------------------------------------
+        */
+
+        if ($category && $category !== 'all') {
+
+            $query->where(
                 'category',
-                'like',
-                '%' . $search . '%'
-            )
-            ->orWhere(
-                'sku',
-                'like',
-                '%' . $search . '%'
+                $category
             );
-
-        });
-    }
+        }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | FILTER KATEGORI
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | AMBIL PRODUK
+        |--------------------------------------------------------------------------
+        */
 
-    if ($category && $category !== 'all') {
+        $products = $query
+            ->orderBy('name')
+            ->get();
 
-        $query->where(
-            'category',
-            $category
+
+        /*
+        |--------------------------------------------------------------------------
+        | KATEGORI
+        |--------------------------------------------------------------------------
+        */
+
+        $categories = Product::where(
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->select('category')
+        ->distinct()
+        ->orderBy('category')
+        ->pluck('category');
+
+
+        return view(
+            'home',
+            compact(
+                'products',
+                'categories',
+                'category',
+                'search'
+            )
         );
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | AMBIL PRODUK
-    |--------------------------------------------------------------------------
-    */
-
-    $products = $query
-        ->orderBy('name')
-        ->get();
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | KATEGORI
-    |--------------------------------------------------------------------------
-    */
-
-$categories = Product::where(
-    'store_id',
-    $this->activeStoreId()
-)
-    ->select('category')
-    ->distinct()
-    ->orderBy('category')
-    ->pluck('category');
-
-
-    return view(
-        'home',
-        compact(
-            'products',
-            'categories',
-            'category',
-            'search'
-        )
-    );
-}
 
 
     /*
@@ -347,9 +373,9 @@ $categories = Product::where(
         $category = $request->input('category');
 
         $query = Product::where(
-    'store_id',
-    $this->activeStoreId()
-);
+            'store_id',
+            $this->activeStoreId()
+        );
 
         if ($search) {
 
@@ -386,14 +412,15 @@ $categories = Product::where(
             ->orderBy('name')
             ->get();
 
-$categories = Product::where(
-    'store_id',
-    $this->activeStoreId()
-)
-    ->select('category')
-    ->distinct()
-    ->orderBy('category')
-    ->pluck('category');
+        $categories = Product::where(
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->select('category')
+        ->distinct()
+        ->orderBy('category')
+        ->pluck('category');
+
 
         return view(
             'kasir',
@@ -468,6 +495,7 @@ $categories = Product::where(
 
         ]);
 
+
         /*
         |--------------------------------------------------------------------------
         | Informasi Petugas
@@ -494,47 +522,61 @@ $categories = Product::where(
         |--------------------------------------------------------------------------
         | UPLOAD GAMBAR
         |--------------------------------------------------------------------------
-        |
-        | Semua gambar menggunakan disk product_images.
-        |
         */
 
-                $imagePath = null;
+        $imagePath = null;
 
         if ($request->hasFile('image')) {
+
             $file = $request->file('image');
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-            
+
+            $filename =
+                time() .
+                '_' .
+                uniqid() .
+                '.' .
+                $file->getClientOriginalExtension();
+
             Storage::disk('s3')->putFileAs(
-                  'products',
-                  $file,
-                  $filename
-              );
-              
-              $imagePath = 'products/' . $filename;
-                      }
+                'products',
+                $file,
+                $filename
+            );
+
+            $imagePath =
+                'products/' .
+                $filename;
+        }
 
 
+       /*
+|--------------------------------------------------------------------------
+| CEK PRODUK YANG SAMA
+|--------------------------------------------------------------------------
+|
+| Produk dianggap sama jika:
+| - berada di toko yang sama
+| - nama sama (tidak peduli huruf besar/kecil)
+| - kategori sama (tidak peduli huruf besar/kecil)
+|
+*/
 
-        /*
-        |--------------------------------------------------------------------------
-        | CEK PRODUK YANG SAMA
-        |--------------------------------------------------------------------------
-        */
+$productName = trim($request->name);
+$productCategory = trim($request->category);
 
-        $existingProduct = Product::where(
+$existingProduct = Product::where(
     'store_id',
     $this->activeStoreId()
-          )
-          ->where(
-              'name',
-              trim($request->name)
-          )
-          ->where(
-              'category',
-              trim($request->category)
-          )
-          ->first();
+)
+->whereRaw(
+    'LOWER(TRIM(name)) = ?',
+    [strtolower($productName)]
+)
+->whereRaw(
+    'LOWER(TRIM(category)) = ?',
+    [strtolower($productCategory)]
+)
+->first();
 
 
         /*
@@ -552,7 +594,8 @@ $categories = Product::where(
                 (int) $request->stock;
 
             $stockAfter =
-                $stockBefore + $addedStock;
+                $stockBefore +
+                $addedStock;
 
 
             /*
@@ -577,23 +620,26 @@ $categories = Product::where(
             }
 
 
-           /*
-          |--------------------------------------------------------------------------
-          | Update Gambar
-          |--------------------------------------------------------------------------
-          */
-          
-          if ($imagePath) {
-          
-              if ($existingProduct->image) {
-                  Storage::disk('s3')->delete($existingProduct->image);
-              }
-          
-              $existingProduct->image = $imagePath;
-          }
-          
-          $existingProduct->save();
+            /*
+            |--------------------------------------------------------------------------
+            | Update Gambar
+            |--------------------------------------------------------------------------
+            */
 
+            if ($imagePath) {
+
+                if ($existingProduct->image) {
+
+                    Storage::disk('s3')->delete(
+                        $existingProduct->image
+                    );
+                }
+
+                $existingProduct->image =
+                    $imagePath;
+            }
+
+            $existingProduct->save();
 
 
             /*
@@ -603,8 +649,9 @@ $categories = Product::where(
             */
 
             ProductHistory::create([
-              'store_id' =>
-        $this->activeStoreId(),
+
+                'store_id' =>
+                    $this->activeStoreId(),
 
                 'product_id' =>
                     $existingProduct->id,
@@ -641,6 +688,27 @@ $categories = Product::where(
 
         /*
         |--------------------------------------------------------------------------
+        | CEK LIMIT PRODUK SESUAI PAKET
+        |--------------------------------------------------------------------------
+        */
+
+        $store = Store::find(
+            $this->activeStoreId()
+        );
+
+        if (!$store || !$store->canAddProduct()) {
+
+            return redirect()
+                ->back()
+                ->with(
+                    'error',
+                    'Batas jumlah produk pada paket Anda sudah tercapai. Silakan upgrade paket untuk menambah produk baru.'
+                );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
         | PRODUK BARU
         |--------------------------------------------------------------------------
         */
@@ -664,21 +732,58 @@ $categories = Product::where(
 
         /*
         |--------------------------------------------------------------------------
-        | Generate SKU
+        | GENERATE SKU AMAN PER STORE
         |--------------------------------------------------------------------------
         */
 
-        $count = Product::where(
-    'store_id',
-    $this->activeStoreId()
-      )
-      ->where(
-          'category',
-          $request->category
-      )
-      ->count();
+        $existingSkus = Product::where(
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->where(
+            'category',
+            $request->category
+        )
+        ->where(
+            'sku',
+            'like',
+            $prefix . '-%'
+        )
+        ->pluck('sku');
 
-        $nextNumber = $count + 1;
+        $maxNumber = 0;
+
+        foreach ($existingSkus as $existingSku) {
+
+            if (
+                preg_match(
+                    '/^' .
+                    preg_quote(
+                        $prefix,
+                        '/'
+                    ) .
+                    '-(\d+)$/i',
+                    $existingSku,
+                    $matches
+                )
+            ) {
+
+                $number =
+                    (int) $matches[1];
+
+                if (
+                    $number >
+                    $maxNumber
+                ) {
+
+                    $maxNumber =
+                        $number;
+                }
+            }
+        }
+
+        $nextNumber =
+            $maxNumber + 1;
 
         $sku =
             $prefix .
@@ -693,13 +798,46 @@ $categories = Product::where(
 
         /*
         |--------------------------------------------------------------------------
-        | Buat Produk
+        | PENGAMAN SKU
+        |--------------------------------------------------------------------------
+        */
+
+        while (
+            Product::where(
+                'store_id',
+                $this->activeStoreId()
+            )
+            ->where(
+                'sku',
+                $sku
+            )
+            ->exists()
+        ) {
+
+            $nextNumber++;
+
+            $sku =
+                $prefix .
+                '-' .
+                str_pad(
+                    $nextNumber,
+                    3,
+                    '0',
+                    STR_PAD_LEFT
+                );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | BUAT PRODUK
         |--------------------------------------------------------------------------
         */
 
         $product = Product::create([
-              'store_id' =>
-        $this->activeStoreId(),
+
+            'store_id' =>
+                $this->activeStoreId(),
 
             'sku' =>
                 $sku,
@@ -730,13 +868,14 @@ $categories = Product::where(
 
         /*
         |--------------------------------------------------------------------------
-        | Simpan Riwayat Produk Baru
+        | SIMPAN RIWAYAT PRODUK BARU
         |--------------------------------------------------------------------------
         */
 
         ProductHistory::create([
-          'store_id' =>
-    $this->activeStoreId(),
+
+            'store_id' =>
+                $this->activeStoreId(),
 
             'product_id' =>
                 $product->id,
@@ -840,9 +979,10 @@ $categories = Product::where(
         */
 
         $product = Product::where(
-    'store_id',
-    $this->activeStoreId()
-)->findOrFail($id);
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->findOrFail($id);
 
 
         /*
@@ -879,17 +1019,15 @@ $categories = Product::where(
         |--------------------------------------------------------------------------
         */
 
-        $username =
-            session(
-                'username',
-                'Tidak diketahui'
-            );
+        $username = session(
+            'username',
+            'Tidak diketahui'
+        );
 
-        $role =
-            session(
-                'user_role',
-                'tidak diketahui'
-            );
+        $role = session(
+            'user_role',
+            'tidak diketahui'
+        );
 
         $petugas =
             ucfirst($role) .
@@ -897,45 +1035,57 @@ $categories = Product::where(
             $username;
 
 
-      /*
-|--------------------------------------------------------------------------
-| GANTI GAMBAR
-|--------------------------------------------------------------------------
-*/
+        /*
+        |--------------------------------------------------------------------------
+        | GANTI GAMBAR
+        |--------------------------------------------------------------------------
+        */
 
-$imagePath = $product->image;
+        $imagePath =
+            $product->image;
 
-if ($request->hasFile('image')) {
+        if ($request->hasFile('image')) {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Hapus gambar lama dari R2
-    |--------------------------------------------------------------------------
-    */
+            /*
+            |--------------------------------------------------------------------------
+            | Hapus gambar lama dari R2
+            |--------------------------------------------------------------------------
+            */
 
-    if ($imagePath) {
-        Storage::disk('s3')->delete($imagePath);
-    }
+            if ($imagePath) {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Simpan gambar baru ke R2
-    |--------------------------------------------------------------------------
-    */
+                Storage::disk('s3')->delete(
+                    $imagePath
+                );
+            }
 
-    $file = $request->file('image');
 
-    $filename = time() . '_' . uniqid() . '.' .
-        $file->getClientOriginalExtension();
+            /*
+            |--------------------------------------------------------------------------
+            | Simpan gambar baru ke R2
+            |--------------------------------------------------------------------------
+            */
 
-    Storage::disk('s3')->putFileAs(
-        'products',
-        $file,
-        $filename
-    );
+            $file =
+                $request->file('image');
 
-    $imagePath = 'products/' . $filename;
-}
+            $filename =
+                time() .
+                '_' .
+                uniqid() .
+                '.' .
+                $file->getClientOriginalExtension();
+
+            Storage::disk('s3')->putFileAs(
+                'products',
+                $file,
+                $filename
+            );
+
+            $imagePath =
+                'products/' .
+                $filename;
+        }
 
 
         /*
@@ -972,7 +1122,7 @@ if ($request->hasFile('image')) {
 
         /*
         |--------------------------------------------------------------------------
-        | Catat Perubahan
+        | CATAT PERUBAHAN
         |--------------------------------------------------------------------------
         */
 
@@ -1009,7 +1159,10 @@ if ($request->hasFile('image')) {
         }
 
 
-        if ($oldCapitalPrice != $product->capital_price) {
+        if (
+            $oldCapitalPrice !=
+            $product->capital_price
+        ) {
 
             $changes[] =
                 'Modal: ' .
@@ -1048,7 +1201,7 @@ if ($request->hasFile('image')) {
 
         /*
         |--------------------------------------------------------------------------
-        | Simpan Riwayat Jika Ada Perubahan
+        | SIMPAN RIWAYAT JIKA ADA PERUBAHAN
         |--------------------------------------------------------------------------
         */
 
@@ -1056,11 +1209,11 @@ if ($request->hasFile('image')) {
 
             ProductHistory::create([
 
-    'store_id' =>
-        $this->activeStoreId(),
+                'store_id' =>
+                    $this->activeStoreId(),
 
-    'product_id' =>
-        $product->id,
+                'product_id' =>
+                    $product->id,
 
                 'sku' =>
                     $product->sku,
@@ -1102,9 +1255,10 @@ if ($request->hasFile('image')) {
     public function destroy($id)
     {
         $product = Product::where(
-    'store_id',
-    $this->activeStoreId()
-)->findOrFail($id);
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->findOrFail($id);
 
 
         /*
@@ -1132,17 +1286,15 @@ if ($request->hasFile('image')) {
         |--------------------------------------------------------------------------
         */
 
-        $username =
-            session(
-                'username',
-                'Tidak diketahui'
-            );
+        $username = session(
+            'username',
+            'Tidak diketahui'
+        );
 
-        $role =
-            session(
-                'user_role',
-                'tidak diketahui'
-            );
+        $role = session(
+            'user_role',
+            'tidak diketahui'
+        );
 
         $petugas =
             ucfirst($role) .
@@ -1158,28 +1310,28 @@ if ($request->hasFile('image')) {
 
         ProductHistory::create([
 
-    'store_id' =>
-        $this->activeStoreId(),
+            'store_id' =>
+                $this->activeStoreId(),
 
-    'product_id' =>
-        $product->id,
+            'product_id' =>
+                $product->id,
 
-    'sku' =>
-        $sku,
+            'sku' =>
+                $sku,
 
-    'name' =>
-        $name,
+            'name' =>
+                $name,
 
-    'added_stock' =>
-        0,
+            'added_stock' =>
+                0,
 
-    'status_type' =>
-        'Hapus Produk | ' .
-        $petugas .
-        ' | Stok terakhir: ' .
-        $stock,
+            'status_type' =>
+                'Hapus Produk | ' .
+                $petugas .
+                ' | Stok terakhir: ' .
+                $stock,
 
-]);
+        ]);
 
 
         /*
@@ -1189,7 +1341,10 @@ if ($request->hasFile('image')) {
         */
 
         if ($image) {
-            Storage::disk('s3')->delete($image);
+
+            Storage::disk('s3')->delete(
+                $image
+            );
         }
 
 
@@ -1211,6 +1366,8 @@ if ($request->hasFile('image')) {
                 '" berhasil dihapus!'
             );
     }
+
+
     /*
     |--------------------------------------------------------------------------
     | SCAN PRODUK BERDASARKAN SKU
@@ -1220,32 +1377,40 @@ if ($request->hasFile('image')) {
     public function scanBySku(string $sku)
     {
         $product = Product::where(
-    'store_id',
-    $this->activeStoreId()
-)->where(
-    'sku',
-    $sku
-)->first();
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->where(
+            'sku',
+            $sku
+        )
+        ->first();
 
         if (!$product) {
 
             return response()->json([
+
                 'success' => false,
+
                 'message' =>
                     'Produk dengan SKU ' .
                     $sku .
                     ' tidak ditemukan.'
+
             ], 404);
         }
 
         if ($product->stock <= 0) {
 
             return response()->json([
+
                 'success' => false,
+
                 'message' =>
                     'Stok produk ' .
                     $product->name .
                     ' habis.'
+
             ], 422);
         }
 
@@ -1253,16 +1418,33 @@ if ($request->hasFile('image')) {
 
             'success' => true,
 
-          'product' => [
-    'id' => $product->id,
-    'name' => $product->name,
-    'sku' => $product->sku,
-    'category' => $product->category,
-    'brand' => $product->brand,
-    'price' => (float) $product->price,
-    'stock' => (int) $product->stock,
-    'image' => $product->image,
-]
+            'product' => [
+
+                'id' =>
+                    $product->id,
+
+                'name' =>
+                    $product->name,
+
+                'sku' =>
+                    $product->sku,
+
+                'category' =>
+                    $product->category,
+
+                'brand' =>
+                    $product->brand,
+
+                'price' =>
+                    (float) $product->price,
+
+                'stock' =>
+                    (int) $product->stock,
+
+                'image' =>
+                    $product->image,
+
+            ]
 
         ]);
     }

@@ -28,7 +28,7 @@ class StoreController extends Controller
                 'Berhasil pindah ke ' . $store->name
             );
     }
-    
+
     public function create()
 {
     return view('stores.create');
@@ -45,6 +45,23 @@ public function store(Request $request)
     $user = \App\Models\User::findOrFail(
         session('user_id')
     );
+    $activeStore = $user->stores()->first();
+
+$storeLimit = $activeStore?->getLimit('max_stores');
+
+$storeCount = $user->stores()->count();
+
+if (
+    $storeLimit !== null &&
+    $storeCount >= $storeLimit
+) {
+    return redirect()
+        ->back()
+        ->with(
+            'error',
+            'Batas jumlah toko pada paket Anda sudah tercapai. Silakan upgrade paket untuk menambah toko baru.'
+        );
+}
 
     $store = Store::create([
         'owner_id' => $user->id,

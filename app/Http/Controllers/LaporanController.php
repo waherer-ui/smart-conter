@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
+use App\Models\Debt;
 use App\Models\Expense;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
@@ -93,12 +95,42 @@ class LaporanController extends Controller
         */
 
         $startDate = $request->filled('start_date')
-            ? Carbon::parse($request->start_date)->startOfDay()
-            : Carbon::today()->startOfDay();
+    ? Carbon::parse($request->start_date)->startOfDay()
+    : Carbon::today()->startOfDay();
 
-        $endDate = $request->filled('end_date')
-            ? Carbon::parse($request->end_date)->endOfDay()
-            : Carbon::today()->endOfDay();
+$endDate = $request->filled('end_date')
+    ? Carbon::parse($request->end_date)->endOfDay()
+    : Carbon::today()->endOfDay();
+
+
+/*
+|--------------------------------------------------------------------------
+| BATAS RIWAYAT SESUAI PAKET
+|--------------------------------------------------------------------------
+*/
+
+$store = \App\Models\Store::find($storeId);
+
+$historyDays = $store?->getLimit('history_days');
+
+$historyRestricted = false;
+
+if ($historyDays !== null) {
+
+    $historyLimitDate = now()
+        ->subDays($historyDays)
+        ->startOfDay();
+
+    /*
+    | Jika seluruh periode yang diminta berada
+    | di luar batas riwayat paket.
+    */
+
+    if ($endDate->lt($historyLimitDate)) {
+        $historyRestricted = true;
+    }
+
+}
 
 
         /*
@@ -508,6 +540,8 @@ class LaporanController extends Controller
                 // Periode
                 'startDate',
                 'endDate',
+                'historyDays',
+                'historyRestricted',
 
                 // Penjualan
                 'transaksi',
@@ -557,6 +591,8 @@ class LaporanController extends Controller
             // Periode
             'startDate',
             'endDate',
+            'historyDays',
+            'historyRestricted',
 
             // Penjualan
             'transaksi',
@@ -579,5 +615,89 @@ class LaporanController extends Controller
             'totalPengeluaranHariIni',
             'kasBersihHariIni'
         ));
+    }
+
+        public function piutang()
+    {
+        $storeId = $this->activeStoreId();
+
+        $store = \App\Models\Store::find($storeId);
+
+        /*
+        |--------------------------------------------------------------------------
+        | CEK FITUR
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$store || !$store->hasFeature('receivable_report')) {
+            return redirect()
+                ->route('paket')
+                ->with(
+                    'error',
+                    'Laporan Piutang hanya tersedia pada paket Pro dan Premium.'
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | DATA PIUTANG
+        |--------------------------------------------------------------------------
+        */
+
+        $customers = Customer::where(
+            'store_id',
+            $storeId
+        )
+        ->with([
+            'debts' => function ($query) {
+                $query->latest('debt_date');
+            }
+        ])
+        ->latest()
+        ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | RINGKASAN
+        |--------------------------------------------------------------------------
+        */
+
+        $totalPiutang = 0;
+        $totalTerbayar = 0;
+        $jumlahPelanggan = 0;
+
+        foreach ($customers as $customer) {
+
+            $sisaPelanggan = $customer->debts->sum(
+                function ($debt) {
+                    return max(
+                        0,
+                        (float) $debt->amount -
+                        (float) $debt->paid_amount
+                    );
+                }
+            );
+
+            $terbayarPelanggan = $customer->debts->sum(
+                'paid_amount'
+            );
+
+            $totalPiutang += $sisaPelanggan;
+            $totalTerbayar += $terbayarPelanggan;
+
+            if ($sisaPelanggan > 0) {
+                $jumlahPelanggan++;
+            }
+        }
+
+        return view(
+            'laporan.piutang',
+            compact(
+                'customers',
+                'totalPiutang',
+                'totalTerbayar',
+                'jumlahPelanggan'
+            )
+        );
     }
 }

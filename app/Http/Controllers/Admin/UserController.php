@@ -62,6 +62,18 @@ class UserController extends Controller
                 'in:admin,kasir',
             ],
         ]);
+        $store = \App\Models\Store::find(
+              $this->activeStoreId()
+          );
+
+          if (!$store || !$store->canAddStaff()) {
+              return redirect()
+                  ->back()
+                  ->with(
+                      'error',
+                      'Batas jumlah akun pada paket Anda sudah tercapai. Silakan upgrade paket untuk menambah akun baru.'
+                  );
+          }
 
 
         /*
@@ -79,7 +91,7 @@ class UserController extends Controller
 
     'role' => $request->role,
       ]);
-      
+
       $user->stores()->attach(
           $this->activeStoreId(),
           [

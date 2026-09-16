@@ -17,14 +17,106 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\PlanController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\PurchaseController;
 
 
 
 /*
 |--------------------------------------------------------------------------
-| LOGIN - PUBLIK
+| CUSTOMER / SUPPLIER / PEMBELIAN
+| WAJIB LOGIN + TOKO AKTIF
 |--------------------------------------------------------------------------
 */
+
+Route::middleware(['auth.role', 'active.store'])->group(function () {
+
+    // =========================
+    // PELANGGAN
+    // =========================
+
+    Route::get('/pelanggan', [CustomerController::class, 'index'])
+        ->name('pelanggan.index');
+
+    Route::get('/pelanggan/tambah', [CustomerController::class, 'create'])
+        ->name('pelanggan.create');
+
+    Route::post('/pelanggan', [CustomerController::class, 'store'])
+        ->name('pelanggan.store');
+
+    Route::get('/pelanggan/{id}', [CustomerController::class, 'show'])
+        ->name('pelanggan.show');
+
+    // =========================
+    // PIUTANG / UTANG PELANGGAN
+    // =========================
+
+    Route::get('/pelanggan/{id}/utang/tambah', [CustomerController::class, 'createDebt'])
+        ->name('pelanggan.debt.create');
+
+    Route::post('/pelanggan/{id}/utang', [CustomerController::class, 'storeDebt'])
+        ->name('pelanggan.debt.store');
+
+    Route::get('/pelanggan/utang/{id}/bayar', [CustomerController::class, 'createDebtPayment'])
+        ->name('pelanggan.debt.payment.create');
+
+    Route::post('/pelanggan/utang/{id}/bayar', [CustomerController::class, 'storeDebtPayment'])
+        ->name('pelanggan.debt.payment.store');
+
+
+    // =========================
+    // SUPPLIER
+    // =========================
+
+    Route::get('/supplier', [SupplierController::class, 'index'])
+        ->name('supplier.index');
+
+    Route::get('/supplier/tambah', [SupplierController::class, 'create'])
+        ->name('supplier.create');
+
+    Route::post('/supplier', [SupplierController::class, 'store'])
+        ->name('supplier.store');
+
+    Route::get('/supplier/{id}', [SupplierController::class, 'show'])
+        ->name('supplier.show');
+
+    Route::get('/supplier/{id}/edit', [SupplierController::class, 'edit'])
+        ->name('supplier.edit');
+
+    Route::put('/supplier/{id}', [SupplierController::class, 'update'])
+        ->name('supplier.update');
+
+
+    // =========================
+    // PEMBELIAN
+    // =========================
+
+    Route::get('/pembelian', [PurchaseController::class, 'index'])
+        ->name('purchase.index');
+
+    Route::get('/pembelian/tambah', [PurchaseController::class, 'create'])
+        ->name('purchase.create');
+
+    Route::post('/pembelian', [PurchaseController::class, 'store'])
+        ->name('purchase.store');
+
+    Route::get('/pembelian/{id}', [PurchaseController::class, 'show'])
+        ->name('purchase.show');
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| PAKET / LANGGANAN
+| PUBLIK
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/paket', [PlanController::class, 'index'])
+    ->name('paket');
 
 Route::get('/produk-image/{path}', function ($path) {
 
@@ -353,7 +445,7 @@ Route::post(
     [ProductController::class, 'scanBySku']
 )->middleware('active.store')
 ->name('produk.scan');
-    
+
     // Edit Produk
     Route::put(
         '/produk/{id}',
@@ -456,7 +548,11 @@ Route::get(
     Route::get('/laporan', [LaporanController::class, 'index'])
     ->middleware('active.store')
     ->name('laporan');
-    
+
+    Route::get('/laporan/piutang', [LaporanController::class, 'piutang'])
+    ->middleware('active.store')
+    ->name('laporan.piutang');
+
 
 Route::middleware('auth.role')->group(function () {
 
@@ -475,13 +571,13 @@ Route::middleware('auth.role')->group(function () {
         '/profil',
         [AuthController::class, 'update']
     )->name('profile.update');
-    
+
         /*
       |--------------------------------------------------------------------------
       | CETAK LABEL QR
       |--------------------------------------------------------------------------
       */
-      
+
       Route::get(
           '/cetak-label',
           [LabelController::class, 'index']

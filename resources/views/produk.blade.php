@@ -509,7 +509,7 @@
                                     >
                                         Edit
                                     </button>
-                                    
+
                                     @if(session('user_role') === 'admin')
                                     {{-- HAPUS --}}
                                     <form
@@ -999,31 +999,98 @@ MODAL TAMBAH PRODUK
     class="hidden fixed inset-0 z-50
            flex items-center justify-center
            p-4 bg-black/60 backdrop-blur-sm"
-><div
-    class="bg-gray-800 border border-white/15
-           rounded-2xl w-full max-w-lg p-6
-           shadow-2xl relative"
 >
-
     <div
-        class="flex justify-between items-center
-               pb-3 border-b border-white/10 mb-4"
+        class="bg-gray-800 border border-white/15
+               rounded-2xl w-full max-w-lg p-6
+               shadow-2xl relative"
     >
 
-        <h3 class="text-lg font-semibold text-white">
-            Tambah Produk Inventaris Anda!
-        </h3>
-
-        <button
-            onclick="toggleProductModal()"
-            class="text-gray-400 hover:text-white
-                   text-sm font-bold px-2 py-1
-                   rounded-lg bg-gray-700/50"
+        {{-- HEADER MODAL --}}
+        <div
+            class="flex justify-between items-center
+                   pb-3 border-b border-white/10 mb-4"
         >
-            ✕
-        </button>
 
-    </div>
+            <h3 class="text-lg font-semibold text-white">
+                Tambah Produk Inventaris Anda!
+            </h3>
+
+            <button
+                onclick="toggleProductModal()"
+                class="text-gray-400 hover:text-white
+                       text-sm font-bold px-2 py-1
+                       rounded-lg bg-gray-700/50"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        {{-- =====================================================
+             PILIH CARA MENAMBAH PRODUK
+        ====================================================== --}}
+
+        <div class="mb-5">
+
+            <p class="text-[11px] text-gray-400 mb-2">
+                Pilih cara penambahan produk:
+            </p>
+
+            <div class="grid grid-cols-2 gap-2">
+
+                {{-- CARA CEPAT --}}
+                <button
+                    type="button"
+                    class="w-full
+                           bg-indigo-600/15
+                           hover:bg-indigo-600/25
+                           border border-indigo-500/30
+                           text-indigo-300
+                           rounded-xl
+                           px-3 py-2.5
+                           text-xs font-medium
+                           transition
+                           text-left"
+                >
+                    <div class="text-sm mb-0.5">
+                        ➕ Tambah Manual
+                    </div>
+
+                    <div class="text-[10px] text-gray-400">
+                        Input produk langsung
+                    </div>
+                </button>
+
+
+                {{-- PEMBELIAN / RESTOCK --}}
+                <a
+                    href="{{ route('purchase.create') }}"
+                    class="w-full
+                           bg-emerald-600/15
+                           hover:bg-emerald-600/25
+                           border border-emerald-500/30
+                           text-emerald-300
+                           rounded-xl
+                           px-3 py-2.5
+                           text-xs font-medium
+                           transition
+                           text-left
+                           block"
+                >
+                    <div class="text-sm mb-0.5">
+                        📦 Pembelian / Restock
+                    </div>
+
+                    <div class="text-[10px] text-gray-400">
+                        Dari supplier & pembelian
+                    </div>
+                </a>
+
+            </div>
+
+        </div>
 
 
     <form
@@ -1517,7 +1584,7 @@ JAVASCRIPT
 ========================================================== --}}
 
 <script>
-  
+
   /*
 |--------------------------------------------------------------------------
 | BLOKIR AKSI GUEST

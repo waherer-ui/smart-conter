@@ -2,7 +2,31 @@
 
 @section('title', 'Laporan Penjualan')
 @section('mobile_action', 'scan')
-@section('header', 'Rekap Laporan Keuangan')
+@section('header', 'Laporan Keuangan')
+@section('header_tools')
+
+    <div class="flex justify-end">
+
+        <a
+            href="{{ route('laporan.piutang') }}"
+            class="inline-flex items-center gap-2
+                   bg-emerald-500
+                   hover:bg-emerald-400
+                   text-gray-950
+                   px-3 py-2
+                   rounded-xl
+                   text-xs
+                   font-semibold
+                   transition
+                   whitespace-nowrap"
+        >
+            💰
+            <span>Laporan Piutang</span>
+        </a>
+
+    </div>
+
+@endsection
 
 @section('content')
 
@@ -37,7 +61,7 @@
     <div class="grid grid-cols-2 md:grid-cols-2
                 {{ $isAdmin ? 'lg:grid-cols-6' : 'lg:grid-cols-3' }}
                 gap-1">
-      
+
 
 
         {{-- =====================================================
@@ -372,6 +396,46 @@
     {{-- =========================================================
          RINGKASAN PERIODE
     ========================================================== --}}
+    @if($historyRestricted)
+
+<div class="bg-gray-800 rounded-xl border border-white/10 p-10 text-center">
+
+    <div class="text-4xl mb-3">
+        🔒
+    </div>
+
+    <h3 class="text-sm font-semibold text-white">
+        Laporan di Luar Batas Paket
+    </h3>
+
+    <p class="text-xs text-gray-400 mt-2">
+        Paket Anda hanya dapat mengakses
+        laporan {{ $historyDays }} hari terakhir.
+    </p>
+
+    <p class="text-xs text-gray-500 mt-2">
+        Data transaksi dan pengeluaran lama tetap tersimpan
+        dan tidak dihapus.
+    </p>
+
+    <a
+        href="{{ route('paket') }}"
+        class="inline-block mt-5
+               bg-emerald-500
+               hover:bg-emerald-400
+               text-gray-950
+               px-5 py-2.5
+               rounded-xl
+               text-xs
+               font-semibold
+               transition"
+    >
+        🚀 Upgrade Paket
+    </a>
+
+</div>
+
+@else
 
     <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
 
@@ -630,7 +694,6 @@
     </div>
 
 
-
     {{-- =========================================================
          RIWAYAT PENJUALAN
     ========================================================== --}}
@@ -854,7 +917,7 @@
         </div>
 
     </div>
-
+  @endif
 
 </div>
 

@@ -433,10 +433,10 @@
                             </div>
 
                         </div>
-                        
+
                         {{-- TOMBOL STRUK --}}
               <div class="mt-4 pt-3 border-t border-white/10">
-              
+
                   <a
                       href="{{ route('transaksi.struk.pdf', $transaction->id) }}"
                       target="_blank"
@@ -444,7 +444,7 @@
                   >
                       🧾 Cetak Struk
                   </a>
-              
+
               </div>
 
                     </div>
@@ -463,29 +463,84 @@
 
         @else
 
-            {{-- BELUM ADA TRANSAKSI --}}
-            <div class="p-10 text-center">
+    @if(isset($historyRestricted) && $historyRestricted)
 
-                <div class="text-4xl mb-3">
-                    🧾
-                </div>
+        {{-- RIWAYAT DI LUAR BATAS PAKET --}}
+        <div class="p-10 text-center">
 
-                <h3 class="text-sm font-semibold text-white">
-                    Belum Ada Transaksi
-                </h3>
-
-                <p class="text-xs text-gray-400 mt-1">
-                    Transaksi yang berhasil dilakukan akan muncul di sini.
-                </p>
-
-                <a
-                    href="{{ route('kasir.index') }}"
-                    class="inline-block mt-4 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-semibold transition"
-                >
-                    Mulai Transaksi
-                </a>
-
+            <div class="text-4xl mb-3">
+                🔒
             </div>
+
+            <h3 class="text-sm font-semibold text-white">
+                Riwayat di Luar Batas Paket
+            </h3>
+
+            <p class="text-xs text-gray-400 mt-2 max-w-md mx-auto">
+                Paket Anda hanya dapat mengakses
+                riwayat transaksi
+                {{ $historyDays }} hari terakhir.
+            </p>
+
+            <p class="text-xs text-gray-500 mt-2 max-w-md mx-auto">
+                Data transaksi lama tetap tersimpan dan
+                tidak dihapus. Upgrade paket untuk
+                mengakses riwayat yang lebih lama.
+            </p>
+
+            <a
+                href="{{ route('paket') }}"
+                class="inline-flex items-center justify-center
+                       mt-5
+                       bg-emerald-500
+                       hover:bg-emerald-400
+                       text-gray-950
+                       px-5 py-2.5
+                       rounded-xl
+                       text-xs
+                       font-semibold
+                       transition"
+            >
+                🚀 Upgrade Paket
+            </a>
+
+        </div>
+
+    @else
+
+        {{-- BELUM ADA TRANSAKSI --}}
+        <div class="p-10 text-center">
+
+            <div class="text-4xl mb-3">
+                🧾
+            </div>
+
+            <h3 class="text-sm font-semibold text-white">
+                Belum Ada Transaksi
+            </h3>
+
+            <p class="text-xs text-gray-400 mt-1">
+                Transaksi yang berhasil dilakukan akan muncul di sini.
+            </p>
+
+            <a
+                href="{{ route('kasir.index') }}"
+                class="inline-block mt-4
+                       bg-indigo-600
+                       hover:bg-indigo-500
+                       text-white
+                       px-4 py-2
+                       rounded-xl
+                       text-xs
+                       font-semibold
+                       transition"
+            >
+                Mulai Transaksi
+            </a>
+
+        </div>
+
+    @endif
 
         @endif
 
