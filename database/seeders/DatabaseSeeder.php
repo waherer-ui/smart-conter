@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         
                 // Membuat / memperbarui Akun Admin KasirKU
         User::updateOrCreate(
-            ['email' => 'admin@kasirku.id'],
+            ['email' => 'admin@kasirku.com'],
             [
                 'name' => 'Admin KasirKU',
                 'password' => Hash::make('password123'),
