@@ -19,18 +19,20 @@ class StoreSubscriptionSeeder extends Seeder
             return;
         }
 
-        $stores = Store::all();
+        $ownerIds = Store::query()
+            ->whereNotNull('owner_id')
+            ->distinct()
+            ->pluck('owner_id');
 
-        foreach ($stores as $store) {
+        foreach ($ownerIds as $ownerId) {
 
             $hasSubscription = DB::table('subscriptions')
-                ->where('store_id', $store->id)
-                ->where('status', 'active')
+                ->where('owner_id', $ownerId)
                 ->exists();
 
             if (!$hasSubscription) {
                 DB::table('subscriptions')->insert([
-                    'store_id' => $store->id,
+                    'owner_id' => $ownerId,
                     'plan_id' => $freePlan->id,
                     'starts_at' => now(),
                     'ends_at' => null,
@@ -41,6 +43,8 @@ class StoreSubscriptionSeeder extends Seeder
             }
         }
 
-        $this->command->info('Subscription Free untuk toko yang belum memiliki subscription berhasil dibuat.');
+        $this->command->info(
+            'Subscription Free untuk owner yang belum memiliki subscription berhasil dibuat.'
+        );
     }
 }
