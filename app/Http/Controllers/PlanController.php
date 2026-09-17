@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Plan;
 use App\Models\Store;
+use App\Models\Subscription;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 class PlanController extends Controller
 {
@@ -28,4 +31,36 @@ class PlanController extends Controller
             compact('plans', 'activeStore')
         );
     }
+    
+    public function select(Request $request, Plan $plan)
+{
+    $user = User::findOrFail(
+        session('user_id')
+    );
+
+    $subscription = $user->subscription;
+
+    if (!$subscription) {
+        return redirect()
+            ->route('paket')
+            ->with(
+                'error',
+                'Subscription Owner tidak ditemukan.'
+            );
+    }
+
+    $subscription->update([
+        'plan_id' => $plan->id,
+        'status' => 'active',
+        'starts_at' => now(),
+        'ends_at' => null,
+    ]);
+
+    return redirect()
+        ->route('paket')
+        ->with(
+            'success',
+            'Paket ' . $plan->name . ' berhasil dipilih.'
+        );
+}
 }

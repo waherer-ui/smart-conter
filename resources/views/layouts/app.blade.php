@@ -167,48 +167,94 @@ $activeStore = $layoutStores->firstWhere(
                                                    overflow-hidden z-50"
                                         >
 
-                                            @foreach($layoutStores as $store)
+@php
+    $storeLimit = $activeStore?->getLimit('max_stores');
+@endphp
 
-                                                <form
-                                                    action="{{ route('store.switch', $store->id) }}"
-                                                    method="POST"
-                                                >
+@foreach($layoutStores as $index => $store)
 
-                                                    @csrf
+    @php
+        $storeLocked =
+            $storeLimit !== null &&
+            $index >= $storeLimit;
+    @endphp
 
-                                                    <button
-                                                        type="submit"
-                                                        class="dropdown-link"
-                                                    >
+    @if($storeLocked)
 
-                                                        <span>
-                                                            🏪
-                                                        </span>
+        {{-- TOKO TERKUNCI --}}
+        <div
+            class="dropdown-link
+                   cursor-not-allowed
+                   opacity-60"
+        >
 
-                                                        <span
-                                                            class="flex-1
-                                                                   text-left
-                                                                   truncate"
-                                                        >
-                                                            {{ $store->name }}
-                                                        </span>
+            <span>
+                🏪
+            </span>
 
-                                                        @if($store->id == $activeStoreId)
+            <span
+                class="flex-1
+                       text-left
+                       truncate"
+            >
+                {{ $store->name }}
+            </span>
 
-                                                            <span
-                                                                class="text-emerald-400
-                                                                       font-bold"
-                                                            >
-                                                                ✓
-                                                            </span>
+            <span
+                class="text-xs
+                       text-amber-400
+                       font-semibold"
+            >
+                🔒
+            </span>
 
-                                                        @endif
+        </div>
 
-                                                    </button>
+    @else
 
-                                                </form>
+        {{-- TOKO BISA DIAKSES --}}
+        <form
+            action="{{ route('store.switch', $store->id) }}"
+            method="POST"
+        >
 
-                                            @endforeach
+            @csrf
+
+            <button
+                type="submit"
+                class="dropdown-link"
+            >
+
+                <span>
+                    🏪
+                </span>
+
+                <span
+                    class="flex-1
+                           text-left
+                           truncate"
+                >
+                    {{ $store->name }}
+                </span>
+
+                @if($store->id == $activeStoreId)
+
+                    <span
+                        class="text-emerald-400
+                               font-bold"
+                    >
+                        ✓
+                    </span>
+
+                @endif
+
+            </button>
+
+        </form>
+
+    @endif
+
+@endforeach
 
 
                                             <a
@@ -401,11 +447,11 @@ $activeStore = $layoutStores->firstWhere(
                                 {{-- ========================================= --}}
                             {{-- INFORMASI PAKET --}}
                             {{-- ========================================= --}}
-
+                            
                             <div class="px-4 pb-4">
-
+                            
                                  <x-plan-info :active-store="$activeStore" />
-
+                            
                             </div>
 
                             </div>
@@ -448,7 +494,7 @@ $activeStore = $layoutStores->firstWhere(
                                 <span>📦</span>
                                 <span>Produk</span>
                             </a>
-
+                            
                             <a
                                 href="{{ route('pelanggan.index') }}"
                                 class="dropdown-link"
@@ -456,7 +502,7 @@ $activeStore = $layoutStores->firstWhere(
                                 <span>👥</span>
                                 <span>Pelanggan</span>
                             </a>
-
+                            
                             <a
                               href="{{ route('supplier.index') }}"
                               class="dropdown-link"
@@ -667,46 +713,90 @@ $activeStore = $layoutStores->firstWhere(
                                     </div>
 
 
-                                    @foreach($layoutStores as $store)
+@php
+    $storeLimit = $activeStore?->getLimit('max_stores');
+@endphp
 
-                                        <form
-                                            action="{{ route('store.switch', $store->id) }}"
-                                            method="POST"
-                                        >
+@foreach($layoutStores as $index => $store)
 
-                                            @csrf
+    @php
+        $storeLocked =
+            $storeLimit !== null &&
+            $index >= $storeLimit;
+    @endphp
 
-                                            <button
-                                                type="submit"
-                                                class="dropdown-link"
-                                            >
+    @if($storeLocked)
 
-                                                <span>🏪</span>
+        {{-- TOKO TERKUNCI --}}
+        <div
+            class="dropdown-link
+                   cursor-not-allowed
+                   opacity-60"
+        >
 
-                                                <span
-                                                    class="flex-1
-                                                           text-left
-                                                           truncate"
-                                                >
-                                                    {{ $store->name }}
-                                                </span>
+            <span>🏪</span>
 
-                                                @if($store->id == $activeStoreId)
+            <span
+                class="flex-1
+                       text-left
+                       truncate"
+            >
+                {{ $store->name }}
+            </span>
 
-                                                    <span
-                                                        class="text-emerald-400
-                                                               font-bold"
-                                                    >
-                                                        ✓
-                                                    </span>
+            <span
+                class="text-xs
+                       text-amber-400
+                       font-semibold"
+            >
+                🔒
+            </span>
 
-                                                @endif
+        </div>
 
-                                            </button>
+    @else
 
-                                        </form>
+        {{-- TOKO BISA DIAKSES --}}
+        <form
+            action="{{ route('store.switch', $store->id) }}"
+            method="POST"
+        >
 
-                                    @endforeach
+            @csrf
+
+            <button
+                type="submit"
+                class="dropdown-link"
+            >
+
+                <span>🏪</span>
+
+                <span
+                    class="flex-1
+                           text-left
+                           truncate"
+                >
+                    {{ $store->name }}
+                </span>
+
+                @if($store->id == $activeStoreId)
+
+                    <span
+                        class="text-emerald-400
+                               font-bold"
+                    >
+                        ✓
+                    </span>
+
+                @endif
+
+            </button>
+
+        </form>
+
+    @endif
+
+@endforeach
 
 
                                     <a
@@ -889,17 +979,17 @@ $activeStore = $layoutStores->firstWhere(
                 </div>
 
             @endif
-
+            
             {{-- ============================================= --}}
           {{-- INFORMASI PAKET MOBILE --}}
           {{-- ============================================= --}}
-
+          
           @if(session('logged_in'))
-
+          
               <div class="px-4 pb-4">
                    <x-plan-info :active-store="$activeStore" />
               </div>
-
+          
           @endif
 
             {{-- ============================================= --}}
@@ -915,7 +1005,7 @@ $activeStore = $layoutStores->firstWhere(
                 >
                     Navigasi
                 </div>
-
+                
                 <a
                     href="{{ route('kasir.index') }}"
                     class="dropdown-link"
@@ -932,7 +1022,7 @@ $activeStore = $layoutStores->firstWhere(
                     <span>📦</span>
                     <span>Produk</span>
                 </a>
-
+                
                 <a
                     href="{{ route('supplier.index') }}"
                     class="dropdown-link"
@@ -1151,7 +1241,7 @@ $activeStore = $layoutStores->firstWhere(
                     cursor-pointer">
               © {{ date('Y') }} KasirKU. Semua hak dilindungi.
           </a>
-
+      
           <p class="text-xs text-gray-600">
               Solusi kasir untuk usaha Anda.
           </p>
@@ -2129,7 +2219,7 @@ document
          {{-- ============================================= --}}
               {{-- PELANGGAN --}}
               {{-- ============================================= --}}
-
+              
               <a
                   href="{{ route('pelanggan.index') }}"
                   class="mobile-bottom-item
@@ -2137,15 +2227,15 @@ document
                               ? 'mobile-bottom-active'
                               : '' }}"
               >
-
+              
                   <span class="text-xl leading-none">
                       👥
                   </span>
-
+              
                   <span>
                       Pelanggan
                   </span>
-
+              
               </a>
 
         </div>

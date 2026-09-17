@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'name',
     'email',
     'password',
     'role',
+    'is_platform_admin',
 ])]
 
 #[Hidden([
@@ -50,14 +52,20 @@ class User extends Authenticatable
               ->withPivot('role')
               ->withTimestamps();
       }
+      
+      public function subscription(): HasOne
+{
+    return $this->hasOne(Subscription::class, 'owner_id');
+}
     /**
      * Attribute casting.
      */
     protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+{
+    return [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'is_platform_admin' => 'boolean',
+    ];
+}
 }

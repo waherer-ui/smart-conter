@@ -29,6 +29,17 @@ class DatabaseSeeder extends Seeder
                 'role' => 'kasir',
             ]
         );
+        
+                // Membuat / memperbarui Akun Admin KasirKU
+        User::updateOrCreate(
+            ['email' => 'admin@kasirku.id'],
+            [
+                'name' => 'Admin KasirKU',
+                'password' => Hash::make('password123'),
+                'role' => 'admin',
+                'is_platform_admin' => true,
+            ]
+        );
 
         // Seeder Paket Subscription KasirKU
         $this->call([

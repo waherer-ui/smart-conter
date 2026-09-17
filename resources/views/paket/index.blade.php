@@ -197,17 +197,27 @@
 
 @else
 
-    <button
-        type="button"
-        class="mt-6 w-full px-4 py-2.5 rounded-xl
-               bg-emerald-500
-               hover:bg-emerald-400
-               text-gray-950
-               font-semibold
-               transition"
+    <form
+        action="{{ route('paket.select', $plan->id) }}"
+        method="POST"
+        class="mt-6"
     >
-        Pilih Paket
-    </button>
+
+        @csrf
+
+        <button
+            type="submit"
+            class="w-full px-4 py-2.5 rounded-xl
+                   bg-emerald-500
+                   hover:bg-emerald-400
+                   text-gray-950
+                   font-semibold
+                   transition"
+        >
+            Pilih Paket
+        </button>
+
+    </form>
 
 @endif
 

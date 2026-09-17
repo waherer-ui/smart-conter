@@ -8,26 +8,51 @@ use Illuminate\Http\Request;
 class StoreController extends Controller
 {
     public function switch(Request $request, $id)
-    {
-        $user = \App\Models\User::findOrFail(
-            session('user_id')
-        );
+{
+    $user = \App\Models\User::findOrFail(
+        session('user_id')
+    );
 
-        $store = $user->stores()
-            ->where('stores.id', $id)
-            ->firstOrFail();
+    $store = $user->stores()
+        ->where('stores.id', $id)
+        ->firstOrFail();
 
-        session([
-            'active_store_id' => $store->id,
-        ]);
+    // Batas toko mengikuti paket Owner
+    $storeLimit = $store->getLimit('max_stores');
 
+    // Urutan toko milik Owner berdasarkan ID
+    $storeIds = $user->stores()
+        ->orderBy('stores.id')
+        ->pluck('stores.id')
+        ->values();
+
+    $storeIndex = $storeIds->search($store->id);
+
+    // Jika toko berada di luar batas paket → kunci
+    if (
+        $storeLimit !== null &&
+        $storeIndex !== false &&
+        $storeIndex >= $storeLimit
+    ) {
         return redirect()
             ->back()
             ->with(
-                'success',
-                'Berhasil pindah ke ' . $store->name
+                'error',
+                'Toko ini terkunci pada paket Anda. Silakan upgrade paket untuk mengakses toko tersebut.'
             );
     }
+
+    session([
+        'active_store_id' => $store->id,
+    ]);
+
+    return redirect()
+        ->back()
+        ->with(
+            'success',
+            'Berhasil pindah ke ' . $store->name
+        );
+}
 
     public function create()
 {
@@ -56,7 +81,7 @@ if (
     $storeCount >= $storeLimit
 ) {
     return redirect()
-        ->back()
+        ->route('paket')
         ->with(
             'error',
             'Batas jumlah toko pada paket Anda sudah tercapai. Silakan upgrade paket untuk menambah toko baru.'

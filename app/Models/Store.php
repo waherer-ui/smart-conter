@@ -37,21 +37,9 @@ class Store extends Model
             ->withTimestamps();
     }
 
-    public function subscriptions()
-{
-    return $this->hasMany(Subscription::class);
-}
-
-public function activeSubscription()
-{
-    return $this->hasOne(Subscription::class)
-        ->where('status', 'active')
-        ->latestOfMany();
-}
-
 public function currentPlan()
 {
-    return $this->activeSubscription?->plan;
+    return $this->owner?->subscription?->plan;
 }
 
 public function hasFeature(string $featureSlug): bool

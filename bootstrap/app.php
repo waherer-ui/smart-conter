@@ -13,9 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // Pendaftaran alias middleware keamanan role
         $middleware->alias([
-            'auth.role' => \App\Http\Middleware\CheckRole::class,
-            'active.store' => \App\Http\Middleware\ActiveStore::class,
-        ]);
+    'auth.role' => \App\Http\Middleware\CheckRole::class,
+    'active.store' => \App\Http\Middleware\ActiveStore::class,
+    'platform.admin' => \App\Http\Middleware\PlatformAdmin::class,
+]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

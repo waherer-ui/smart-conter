@@ -7,6 +7,15 @@ use App\Models\User;
 use App\Models\Store;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use App\Models\Subscription;
+use App\Models\Plan;
+
+use App\Http\Controllers\AdminKasirku\DashboardController;
+use App\Http\Controllers\AdminKasirku\SettingsController;
+use App\Http\Controllers\AdminKasirku\UserController as PlatformUserController;
+use App\Http\Controllers\AdminKasirku\StoreController as PlatformStoreController;
+use App\Http\Controllers\AdminKasirku\SubscriptionController;
+use App\Http\Controllers\AdminKasirku\PlanController as PlatformPlanController;
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProductController;
@@ -24,6 +33,81 @@ use App\Http\Controllers\PurchaseController;
 
 
 
+/*
+|--------------------------------------------------------------------------
+| ADMIN KASIRKU
+| PLATFORM ADMIN
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('platform.admin')->group(function () {
+
+    Route::get(
+        '/admin-kasirku',
+        [DashboardController::class, 'index']
+    )->name('admin-kasirku.dashboard');
+
+    Route::get(
+        '/admin-kasirku/pengaturan',
+        [SettingsController::class, 'index']
+    )->name('admin-kasirku.settings');
+
+    Route::put(
+        '/admin-kasirku/pengaturan/profil',
+        [SettingsController::class, 'updateProfile']
+    )->name('admin-kasirku.settings.profile');
+
+    Route::put(
+        '/admin-kasirku/pengaturan/password',
+        [SettingsController::class, 'updatePassword']
+    )->name('admin-kasirku.settings.password');
+    
+    Route::get(
+    '/admin-kasirku/pengguna',
+    [PlatformUserController::class, 'index']
+)->name('admin-kasirku.users.index');
+
+Route::get(
+    '/admin-kasirku/toko',
+    [PlatformStoreController::class, 'index']
+)->name('admin-kasirku.stores.index');
+
+Route::get(
+    '/admin-kasirku/langganan',
+    [SubscriptionController::class, 'index']
+)->name('admin-kasirku.subscriptions.index');
+
+Route::get(
+    '/admin-kasirku/langganan/{subscription}',
+    [SubscriptionController::class, 'show']
+)->name('admin-kasirku.subscriptions.show');
+
+Route::get(
+    '/admin-kasirku/langganan/{subscription}/edit',
+    [SubscriptionController::class, 'edit']
+)->name('admin-kasirku.subscriptions.edit');
+
+Route::put(
+    '/admin-kasirku/langganan/{subscription}',
+    [SubscriptionController::class, 'update']
+)->name('admin-kasirku.subscriptions.update');
+
+Route::get(
+    '/admin-kasirku/paket',
+    [PlatformPlanController::class, 'index']
+)->name('admin-kasirku.plans.index');
+
+Route::get(
+    '/admin-kasirku/paket/{plan}/edit',
+    [PlatformPlanController::class, 'edit']
+)->name('admin-kasirku.plans.edit');
+
+Route::put(
+    '/admin-kasirku/paket/{plan}',
+    [PlatformPlanController::class, 'update']
+)->name('admin-kasirku.plans.update');
+
+});
 /*
 |--------------------------------------------------------------------------
 | CUSTOMER / SUPPLIER / PEMBELIAN
@@ -117,6 +201,9 @@ Route::middleware(['auth.role', 'active.store'])->group(function () {
 
 Route::get('/paket', [PlanController::class, 'index'])
     ->name('paket');
+    
+    Route::post('/paket/{plan}/pilih', [PlanController::class, 'select'])
+    ->name('paket.select');
 
 Route::get('/produk-image/{path}', function ($path) {
 
@@ -176,6 +263,16 @@ $result = DB::transaction(function () use ($request) {
     $user->stores()->attach($store->id, [
         'role' => 'owner',
     ]);
+    
+    $freePlan = Plan::where('slug', 'free')->firstOrFail();
+
+Subscription::create([
+    'owner_id' => $user->id,
+    'plan_id' => $freePlan->id,
+    'starts_at' => now(),
+    'ends_at' => null,
+    'status' => 'active',
+]);
 
     return compact('user', 'store');
 });
@@ -209,14 +306,18 @@ Route::get('/login', function () {
 
     if (session('logged_in')) {
 
-        if (session('user_role') === 'admin') {
-            return redirect()->route('dashboard');
-        }
-
-        if (session('user_role') === 'kasir') {
-            return redirect()->route('kasir.index');
-        }
+    if (session('is_platform_admin')) {
+        return redirect()->route('admin-kasirku.dashboard');
     }
+
+    if (session('user_role') === 'admin') {
+        return redirect()->route('dashboard');
+    }
+
+    if (session('user_role') === 'kasir') {
+        return redirect()->route('kasir.index');
+    }
+}
 
     return view('login');
 
@@ -280,37 +381,57 @@ Route::post('/proses-login', function (Request $request) {
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Regenerasi Session
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| Regenerasi Session
+|--------------------------------------------------------------------------
+*/
 
-    $request->session()->regenerate();
+$request->session()->regenerate();
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Simpan Data User
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| ADMIN KASIRKU
+|--------------------------------------------------------------------------
+*/
 
-    $activeStore = $user->stores()
+if ($user->is_platform_admin) {
+
+    $request->session()->put([
+        'logged_in' => true,
+        'user_id' => $user->id,
+        'username' => $user->name,
+        'user_role' => $user->role,
+        'is_platform_admin' => true,
+    ]);
+
+    return redirect()
+        ->route('admin-kasirku.dashboard')
+        ->with(
+            'success',
+            'Selamat datang di Dashboard Admin KasirKU!'
+        );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| USER TOKO
+|--------------------------------------------------------------------------
+*/
+
+$activeStore = $user->stores()
     ->orderBy('stores.id')
     ->first();
 
 $request->session()->put([
-
     'logged_in' => true,
-
     'user_id' => $user->id,
-
     'username' => $user->name,
-
     'user_role' => $user->role,
-
     'active_store_id' => $activeStore?->id,
-
+    'is_platform_admin' => false,
 ]);
 
 
@@ -445,7 +566,7 @@ Route::post(
     [ProductController::class, 'scanBySku']
 )->middleware('active.store')
 ->name('produk.scan');
-
+    
     // Edit Produk
     Route::put(
         '/produk/{id}',
@@ -548,11 +669,11 @@ Route::get(
     Route::get('/laporan', [LaporanController::class, 'index'])
     ->middleware('active.store')
     ->name('laporan');
-
+    
     Route::get('/laporan/piutang', [LaporanController::class, 'piutang'])
     ->middleware('active.store')
     ->name('laporan.piutang');
-
+    
 
 Route::middleware('auth.role')->group(function () {
 
@@ -571,13 +692,13 @@ Route::middleware('auth.role')->group(function () {
         '/profil',
         [AuthController::class, 'update']
     )->name('profile.update');
-
+    
         /*
       |--------------------------------------------------------------------------
       | CETAK LABEL QR
       |--------------------------------------------------------------------------
       */
-
+      
       Route::get(
           '/cetak-label',
           [LabelController::class, 'index']
