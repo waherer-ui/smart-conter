@@ -10,13 +10,13 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::table('subscriptions', function (Blueprint $table) {
-            $table->dropIndex('subscriptions_store_id_status_index');
-            $table->dropForeign(['store_id']);
-            $table->dropColumn('store_id');
-        });
-    }
+{
+    Schema::table('subscriptions', function (Blueprint $table) {
+        $table->dropForeign(['store_id']);
+        $table->dropIndex('subscriptions_store_id_status_index');
+        $table->dropColumn('store_id');
+    });
+}
 
     /**
      * Reverse the migrations.
