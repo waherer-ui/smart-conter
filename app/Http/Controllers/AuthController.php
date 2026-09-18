@@ -102,12 +102,36 @@ class AuthController extends Controller
     */
 
     public function edit()
-    {
-        // Ambil data user berdasarkan session ID yang sedang aktif
-        $user = User::findOrFail(session('user_id'));
+{
+    // Ambil data user berdasarkan session ID yang sedang aktif
+    $user = User::findOrFail(session('user_id'));
 
-        return view('profile', compact('user'));
+    // Ambil kode referral milik owner
+    $referral = $user->referral;
+
+    // Buat kode referral otomatis jika belum punya
+    if (!$referral) {
+
+        do {
+            $code = 'KASIR' . strtoupper(
+                \Illuminate\Support\Str::random(6)
+            );
+        } while (
+            \App\Models\Referral::where('code', $code)->exists()
+        );
+
+        $referral = \App\Models\Referral::create([
+            'owner_id' => $user->id,
+            'code' => $code,
+            'is_active' => true,
+        ]);
     }
+
+    return view(
+        'profile',
+        compact('user', 'referral')
+    );
+}
 
 
     /*

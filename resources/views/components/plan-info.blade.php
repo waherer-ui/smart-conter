@@ -146,7 +146,8 @@
         @if($plan->slug !== 'premium')
 
             <a
-                href="#"
+                <a
+                 href="{{ route('paket') }}"
                 class="mt-4 block w-full text-center
                        px-4 py-2.5 rounded-xl
                        bg-emerald-500

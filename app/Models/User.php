@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+
 #[Fillable([
     'name',
     'email',
@@ -56,6 +57,11 @@ class User extends Authenticatable
       public function subscription(): HasOne
 {
     return $this->hasOne(Subscription::class, 'owner_id');
+}
+
+public function referral(): HasOne
+{
+    return $this->hasOne(Referral::class, 'owner_id');
 }
     /**
      * Attribute casting.

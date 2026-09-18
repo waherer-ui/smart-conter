@@ -39,7 +39,13 @@ class Store extends Model
 
 public function currentPlan()
 {
-    return $this->owner?->subscription?->plan;
+    $subscription = $this->owner?->subscription;
+
+    if (!$subscription || !$subscription->isActive()) {
+        return Plan::where('slug', 'free')->first();
+    }
+
+    return $subscription->plan;
 }
 
 public function hasFeature(string $featureSlug): bool

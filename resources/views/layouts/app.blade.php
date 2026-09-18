@@ -2077,166 +2077,301 @@ document
                    flex items-center justify-around"
         >
 
-            {{-- ============================================= --}}
-            {{-- BERANDA --}}
-            {{-- ============================================= --}}
+            {{-- ================================================= --}}
+            {{-- ADMIN KASIRKU --}}
+            {{-- ================================================= --}}
 
-            <a
-                href="{{ route('dashboard') }}"
-                class="mobile-bottom-item
-                       {{ request()->routeIs('dashboard')
-                            ? 'mobile-bottom-active'
-                            : '' }}"
-            >
+            @if(request()->routeIs('admin-kasirku.*'))
 
-                <span class="text-xl leading-none">
-                    🏠
-                </span>
+                {{-- DASHBOARD --}}
+                <a
+                    href="{{ route('admin-kasirku.dashboard') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('admin-kasirku.dashboard')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
 
-                <span>
-                    Beranda
-                </span>
+                    <span class="text-xl leading-none">
+                        🏠
+                    </span>
 
-            </a>
+                    <span>
+                        Dashboard
+                    </span>
 
-
-
-            {{-- ============================================= --}}
-            {{-- RIWAYAT --}}
-            {{-- ============================================= --}}
-
-            <a
-                href="{{ route('riwayat') }}"
-                class="mobile-bottom-item
-                       {{ request()->routeIs('riwayat')
-                            ? 'mobile-bottom-active'
-                            : '' }}"
-            >
-
-                <span class="text-xl leading-none">
-                    🧾
-                </span>
-
-                <span>
-                    Riwayat
-                </span>
-
-            </a>
+                </a>
 
 
+                {{-- PENGGUNA --}}
+                <a
+                    href="{{ route('admin-kasirku.users.index') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('admin-kasirku.users.*')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
 
-{{-- ============================================= --}}
-{{-- QUICK ACTION --}}
-{{-- ============================================= --}}
+                    <span class="text-xl leading-none">
+                        👤
+                    </span>
 
-@if($mobileAction === 'tambah')
+                    <span>
+                        Pengguna
+                    </span>
 
-    <button
-        type="button"
-        onclick="toggleProductModal()"
-        class="mobile-bottom-action"
-    >
-        <span>➕</span>
-        <span>Tambah</span>
-    </button>
-
-@elseif($mobileAction === 'kasir')
-
-    <a
-        href="{{ route('kasir.index') }}"
-        class="mobile-bottom-action"
-    >
-        <span>🛒</span>
-        <span>Kasir</span>
-    </a>
-
-@elseif($mobileAction === 'scan')
-
-    @if(request()->routeIs('dashboard') || request()->routeIs('kasir.index'))
-
-        {{-- Scanner milik Dashboard / Kasir --}}
-        <button
-            type="button"
-            onclick="openQrScanner()"
-            class="mobile-bottom-action"
-        >
-            <span>📷</span>
-            <span>Scan</span>
-        </button>
-
-    @else
-
-        {{-- Scanner Global untuk halaman lainnya --}}
-        <button
-            type="button"
-            onclick="openGlobalQrScanner()"
-            class="mobile-bottom-action"
-        >
-            <span>📷</span>
-            <span>Scan</span>
-        </button>
-
-    @endif
-
-@else
-
-    {{-- Default --}}
-    <button
-        type="button"
-        onclick="openGlobalQrScanner()"
-        class="mobile-bottom-action"
-    >
-        <span>📷</span>
-        <span>Scan</span>
-    </button>
-
-@endif
-
-            {{-- ============================================= --}}
-            {{-- LAPORAN --}}
-            {{-- ============================================= --}}
-
-            <a
-                href="{{ route('laporan') }}"
-                class="mobile-bottom-item
-                       {{ request()->routeIs('laporan')
-                            ? 'mobile-bottom-active'
-                            : '' }}"
-            >
-
-                <span class="text-xl leading-none">
-                    📊
-                </span>
-
-                <span>
-                    Laporan
-                </span>
-
-            </a>
+                </a>
 
 
+                {{-- TOKO --}}
+                <a
+                    href="{{ route('admin-kasirku.stores.index') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('admin-kasirku.stores.*')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
 
-         {{-- ============================================= --}}
-              {{-- PELANGGAN --}}
-              {{-- ============================================= --}}
-              
-              <a
-                  href="{{ route('pelanggan.index') }}"
-                  class="mobile-bottom-item
-                         {{ request()->routeIs('pelanggan.*')
-                              ? 'mobile-bottom-active'
-                              : '' }}"
-              >
-              
-                  <span class="text-xl leading-none">
-                      👥
-                  </span>
-              
-                  <span>
-                      Pelanggan
-                  </span>
-              
-              </a>
+                    <span class="text-xl leading-none">
+                        🏪
+                    </span>
+
+                    <span>
+                        Toko
+                    </span>
+
+                </a>
+
+
+                {{-- LANGGANAN --}}
+                <a
+                    href="{{ route('admin-kasirku.subscriptions.index') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('admin-kasirku.subscriptions.*')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+
+                    <span class="text-xl leading-none">
+                        💳
+                    </span>
+
+                    <span>
+                        Langganan
+                    </span>
+
+                </a>
+
+
+                {{-- PAKET --}}
+                <a
+                    href="{{ route('admin-kasirku.plans.index') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('admin-kasirku.plans.*')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+
+                    <span class="text-xl leading-none">
+                        📦
+                    </span>
+
+                    <span>
+                        Paket
+                    </span>
+
+                </a>
+
+
+            @else
+
+                {{-- ================================================= --}}
+                {{-- KASIRKU / TOKO --}}
+                {{-- ================================================= --}}
+
+                {{-- BERANDA --}}
+                <a
+                    href="{{ route('dashboard') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('dashboard')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+
+                    <span class="text-xl leading-none">
+                        🏠
+                    </span>
+
+                    <span>
+                        Beranda
+                    </span>
+
+                </a>
+
+
+                {{-- RIWAYAT --}}
+                <a
+                    href="{{ route('riwayat') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('riwayat')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+
+                    <span class="text-xl leading-none">
+                        🧾
+                    </span>
+
+                    <span>
+                        Riwayat
+                    </span>
+
+                </a>
+
+
+                {{-- QUICK ACTION --}}
+                @if($mobileAction === 'tambah')
+
+                    <button
+                        type="button"
+                        onclick="toggleProductModal()"
+                        class="mobile-bottom-action"
+                    >
+
+                        <span>
+                            ➕
+                        </span>
+
+                        <span>
+                            Tambah
+                        </span>
+
+                    </button>
+
+                @elseif($mobileAction === 'kasir')
+
+                    <a
+                        href="{{ route('kasir.index') }}"
+                        class="mobile-bottom-action"
+                    >
+
+                        <span>
+                            🛒
+                        </span>
+
+                        <span>
+                            Kasir
+                        </span>
+
+                    </a>
+
+                @elseif($mobileAction === 'scan')
+
+                    @if(
+                        request()->routeIs('dashboard') ||
+                        request()->routeIs('kasir.index')
+                    )
+
+                        {{-- Scanner Dashboard / Kasir --}}
+                        <button
+                            type="button"
+                            onclick="openQrScanner()"
+                            class="mobile-bottom-action"
+                        >
+
+                            <span>
+                                📷
+                            </span>
+
+                            <span>
+                                Scan
+                            </span>
+
+                        </button>
+
+                    @else
+
+                        {{-- Scanner Global --}}
+                        <button
+                            type="button"
+                            onclick="openGlobalQrScanner()"
+                            class="mobile-bottom-action"
+                        >
+
+                            <span>
+                                📷
+                            </span>
+
+                            <span>
+                                Scan
+                            </span>
+
+                        </button>
+
+                    @endif
+
+                @else
+
+                    {{-- DEFAULT --}}
+                    <button
+                        type="button"
+                        onclick="openGlobalQrScanner()"
+                        class="mobile-bottom-action"
+                    >
+
+                        <span>
+                            📷
+                        </span>
+
+                        <span>
+                            Scan
+                        </span>
+
+                    </button>
+
+                @endif
+
+
+                {{-- LAPORAN --}}
+                <a
+                    href="{{ route('laporan') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('laporan')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+
+                    <span class="text-xl leading-none">
+                        📊
+                    </span>
+
+                    <span>
+                        Laporan
+                    </span>
+
+                </a>
+
+
+                {{-- PELANGGAN --}}
+                <a
+                    href="{{ route('pelanggan.index') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('pelanggan.*')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+
+                    <span class="text-xl leading-none">
+                        👥
+                    </span>
+
+                    <span>
+                        Pelanggan
+                    </span>
+
+                </a>
+
+            @endif
 
         </div>
 
