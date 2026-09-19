@@ -68,9 +68,17 @@ Route::middleware('platform.admin')->group(function () {
 )->name('admin-kasirku.users.index');
 
 Route::get(
+    '/admin-kasirku/pengguna/{user}',
+    [PlatformUserController::class, 'show']
+)->name('admin-kasirku.users.show');
+
+Route::get(
     '/admin-kasirku/toko',
     [PlatformStoreController::class, 'index']
 )->name('admin-kasirku.stores.index');
+
+Route::get('/admin-kasirku/toko/{store}', [PlatformStoreController::class, 'show'])
+    ->name('admin-kasirku.stores.show');
 
 Route::get(
     '/admin-kasirku/langganan',

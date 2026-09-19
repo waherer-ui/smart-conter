@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\Purchase;
+use App\Models\Transaction;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -92,6 +93,11 @@ public function canAddProduct(): bool
     return $this->products()->count() < $limit;
 }
 
+public function transactions(): HasMany
+{
+    return $this->hasMany(Transaction::class);
+}
+
 public function canAddStaff(): bool
 {
     $limit = $this->getLimit('max_staff');
@@ -129,5 +135,10 @@ public function canAddCustomer(): bool
     }
 
     return $this->customers()->count() < $limit;
+}
+
+public function productHistories(): HasMany
+{
+    return $this->hasMany(ProductHistory::class);
 }
 }

@@ -25,18 +25,20 @@ class SubscriptionController extends Controller
     }
 
     public function show(Subscription $subscription)
-    {
-        $subscription->load([
-            'owner.stores',
-            'owner',
-            'plan',
-        ]);
+{
+$subscription->load([
+'owner.stores.users',
+'owner',
+'plan.features',
+'plan.limits',
+]);
 
-        return view(
-            'admin-kasirku.subscriptions.show',
-            compact('subscription')
-        );
-    }
+return view(
+    'admin-kasirku.subscriptions.show',
+    compact('subscription')
+);
+
+}
 
     public function edit(Subscription $subscription)
     {

@@ -59,6 +59,11 @@ class User extends Authenticatable
     return $this->hasOne(Subscription::class, 'owner_id');
 }
 
+public function ownedStores()
+{
+    return $this->hasMany(Store::class, 'owner_id');
+}
+
 public function referral(): HasOne
 {
     return $this->hasOne(Referral::class, 'owner_id');

@@ -111,7 +111,7 @@
 
                             <div class="flex items-center gap-3">
 
-                                <div class="w-8 h-8 rounded-lg
+                                <div class="w-8 h-8 shrink-0 rounded-lg
                                             bg-blue-500/10
                                             flex items-center justify-center">
                                     🏪
@@ -210,13 +210,26 @@
                 Status
             </p>
 
-            @if($subscription->status === 'active')
+            @if($subscription->status === 'active' && $subscription->isActive())
 
-                <span class="inline-flex px-2.5 py-1 rounded-lg
+                <span class="inline-flex items-center gap-1.5
+                             px-2.5 py-1 rounded-lg
                              bg-emerald-500/10
                              text-emerald-400
                              text-xs font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                     Aktif
+                </span>
+
+            @elseif($subscription->status === 'active' && !$subscription->isActive())
+
+                <span class="inline-flex items-center gap-1.5
+                             px-2.5 py-1 rounded-lg
+                             bg-red-500/10
+                             text-red-400
+                             text-xs font-medium">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                    Berakhir
                 </span>
 
             @elseif($subscription->status === 'pending')
@@ -235,6 +248,15 @@
                              text-red-400
                              text-xs font-medium">
                     Berakhir
+                </span>
+
+            @elseif($subscription->status === 'cancelled')
+
+                <span class="inline-flex px-2.5 py-1 rounded-lg
+                             bg-gray-500/10
+                             text-gray-400
+                             text-xs font-medium">
+                    Dibatalkan
                 </span>
 
             @else
@@ -305,6 +327,165 @@
             </p>
 
         </div>
+
+    </div>
+
+</div>
+
+
+{{-- FITUR & LIMIT PAKET --}}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+
+    {{-- FITUR --}}
+    <div class="bg-gray-800/80 border border-white/10
+                rounded-2xl p-5 shadow-xl">
+
+        <h2 class="text-lg font-semibold text-white mb-1">
+            Fitur Paket
+        </h2>
+
+        <p class="text-xs text-gray-500 mb-5">
+            Fitur yang tersedia pada paket
+            {{ $subscription->plan?->name ?? '—' }}.
+        </p>
+
+        @if($subscription->plan?->features?->count())
+
+            <div class="space-y-3">
+
+                @foreach($subscription->plan->features as $feature)
+
+                    <div class="flex items-center gap-3
+                                bg-gray-900/50
+                                border border-white/5
+                                rounded-xl
+                                px-3 py-2.5">
+
+                        <div class="w-7 h-7 shrink-0 rounded-lg
+                                    bg-emerald-500/10
+                                    flex items-center justify-center
+                                    text-emerald-400">
+                            ✓
+                        </div>
+
+                        <div class="min-w-0">
+
+                            <p class="text-sm text-gray-200 font-medium">
+                                {{ $feature->name }}
+                            </p>
+
+                            @if($feature->description)
+                                <p class="text-xs text-gray-500 mt-0.5">
+                                    {{ $feature->description }}
+                                </p>
+                            @endif
+
+                        </div>
+
+                    </div>
+
+                @endforeach
+
+            </div>
+
+        @else
+
+            <div class="py-8 text-center">
+
+                <p class="text-sm text-gray-500">
+                    Belum ada fitur yang terhubung ke paket ini.
+                </p>
+
+            </div>
+
+        @endif
+
+    </div>
+
+
+    {{-- LIMIT --}}
+    <div class="bg-gray-800/80 border border-white/10
+                rounded-2xl p-5 shadow-xl">
+
+        <h2 class="text-lg font-semibold text-white mb-1">
+            Limit Paket
+        </h2>
+
+        <p class="text-xs text-gray-500 mb-5">
+            Batas penggunaan yang berlaku pada paket ini.
+        </p>
+
+        @if($subscription->plan?->limits?->count())
+
+            <div class="space-y-3">
+
+                @foreach($subscription->plan->limits as $limit)
+
+                    @php
+                        $limitValue = $limit->value;
+                        $isUnlimited = is_null($limitValue);
+                    @endphp
+
+                    <div class="flex items-center justify-between gap-4
+                                bg-gray-900/50
+                                border border-white/5
+                                rounded-xl
+                                px-3 py-3">
+
+                        <div class="min-w-0">
+
+                            <p class="text-sm text-gray-200 font-medium">
+                                {{ $limit->key }}
+                            </p>
+
+                            @if($limit->description)
+                                <p class="text-xs text-gray-500 mt-0.5">
+                                    {{ $limit->description }}
+                                </p>
+                            @endif
+
+                        </div>
+
+                        @if($isUnlimited)
+
+                            <span class="shrink-0 inline-flex
+                                         px-2.5 py-1 rounded-lg
+                                         bg-emerald-500/10
+                                         text-emerald-400
+                                         text-xs font-medium">
+                                Unlimited
+                            </span>
+
+                        @else
+
+                            <span class="shrink-0 inline-flex
+                                         px-2.5 py-1 rounded-lg
+                                         bg-indigo-500/10
+                                         text-indigo-400
+                                         text-xs font-medium">
+                                {{ number_format((int) $limitValue, 0, ',', '.') }}
+                            </span>
+
+                        @endif
+
+                    </div>
+
+                @endforeach
+
+            </div>
+
+        @else
+
+            <div class="py-8 text-center">
+
+                <p class="text-sm text-gray-500">
+                    Belum ada limit yang terhubung ke paket ini.
+                </p>
+
+            </div>
+
+        @endif
 
     </div>
 
