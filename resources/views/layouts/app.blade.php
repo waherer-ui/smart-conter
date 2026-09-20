@@ -131,7 +131,7 @@ if ($layoutUser) {
                     @if(session('logged_in'))
 
                         <div class="flex items-center gap-2">
-
+                          
                           {{-- ================================= --}}
 {{-- QUICK HELP --}}
 {{-- ================================= --}}
@@ -535,11 +535,11 @@ if ($layoutUser) {
                                 {{-- ========================================= --}}
                             {{-- INFORMASI PAKET --}}
                             {{-- ========================================= --}}
-
+                            
                             <div class="px-4 pb-4">
-
+                            
                                  <x-plan-info :active-store="$activeStore" />
-
+                            
                             </div>
 
                             </div>
@@ -604,6 +604,17 @@ if ($layoutUser) {
             <span>📦</span>
             <span>Paket</span>
         </a>
+        
+        <a
+              href="{{ route('admin-kasirku.audit-log.index') }}"
+              class="dropdown-link
+                     {{ request()->routeIs('admin-kasirku.audit-log.*')
+                          ? 'bg-gray-700 text-white'
+                          : '' }}"
+          >
+              <span>📋</span>
+              <span>Semua Aktivitas</span>
+          </a>
 
     </div>
 
@@ -1250,17 +1261,17 @@ if ($layoutUser) {
                 </div>
 
             @endif
-
+            
             {{-- ============================================= --}}
           {{-- INFORMASI PAKET MOBILE --}}
           {{-- ============================================= --}}
-
+          
           @if(session('logged_in'))
-
+          
               <div class="px-4 pb-4">
                    <x-plan-info :active-store="$activeStore" />
               </div>
-
+          
           @endif
 
 {{-- ============================================= --}}
@@ -1342,6 +1353,23 @@ if ($layoutUser) {
             <span>📦</span>
             <span>Paket</span>
         </a>
+        
+        {{-- SEMUA AKTIVITAS --}}
+          <a
+              href="{{ route('admin-kasirku.audit-log.index') }}"
+              class="mobile-bottom-item
+                     {{ request()->routeIs('admin-kasirku.audit-log.*')
+                          ? 'mobile-bottom-active'
+                          : '' }}"
+          >
+              <span class="text-xl leading-none">
+                  📋
+              </span>
+          
+              <span>
+                  Aktivitas
+              </span>
+          </a>
 
     </div>
 
@@ -1730,7 +1758,7 @@ if ($layoutUser) {
                     cursor-pointer">
               © {{ date('Y') }} KasirKU. Semua hak dilindungi.
           </a>
-
+      
           <p class="text-xs text-gray-600">
               Solusi kasir untuk usaha Anda.
           </p>

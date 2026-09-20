@@ -64,7 +64,7 @@ Route::middleware('platform.admin')->group(function () {
         '/admin-kasirku/pengaturan/password',
         [SettingsController::class, 'updatePassword']
     )->name('admin-kasirku.settings.password');
-
+    
     Route::get(
     '/admin-kasirku/pengguna',
     [PlatformUserController::class, 'index']
@@ -248,10 +248,10 @@ Route::middleware(['auth.role', 'active.store'])->group(function () {
 
 Route::get('/paket', [PlanController::class, 'index'])
     ->name('paket');
-
+    
     Route::get('/paket/riwayat-pembayaran', [PlanController::class, 'paymentHistory'])
     ->name('paket.payment.history');
-
+    
     Route::get('/paket/riwayat-pembayaran/{payment}', [PlanController::class, 'paymentDetail'])
     ->name('paket.payment.detail');
 
@@ -269,7 +269,7 @@ Route::get('/paket/pembayaran/menunggu/{payment}', [PlanController::class, 'paym
 
 Route::post('/paket/pembayaran/{payment}/success', [PlanController::class, 'paymentSuccess'])
     ->name('paket.payment.success');
-
+    
     Route::get('/paket/referral/validate', [PlanController::class, 'validateReferral'])
     ->name('paket.referral.validate');
 
@@ -331,7 +331,7 @@ $result = DB::transaction(function () use ($request) {
     $user->stores()->attach($store->id, [
         'role' => 'owner',
     ]);
-
+    
     $freePlan = Plan::where('slug', 'free')->firstOrFail();
 
 Subscription::create([
@@ -634,7 +634,7 @@ Route::post(
     [ProductController::class, 'scanBySku']
 )->middleware('active.store')
 ->name('produk.scan');
-
+    
     // Edit Produk
     Route::put(
         '/produk/{id}',
@@ -737,11 +737,11 @@ Route::get(
     Route::get('/laporan', [LaporanController::class, 'index'])
     ->middleware('active.store')
     ->name('laporan');
-
+    
     Route::get('/laporan/piutang', [LaporanController::class, 'piutang'])
     ->middleware('active.store')
     ->name('laporan.piutang');
-
+    
 
 Route::middleware('auth.role')->group(function () {
 
@@ -760,20 +760,20 @@ Route::middleware('auth.role')->group(function () {
         '/profil',
         [AuthController::class, 'update']
     )->name('profile.update');
-
+    
         /*
       |--------------------------------------------------------------------------
       | CETAK LABEL QR
       |--------------------------------------------------------------------------
       */
-
+      
       Route::get(
           '/cetak-label',
           [LabelController::class, 'index']
       )->name('cetaklabel');
       });
-
-
+      
+      
       /*
 |--------------------------------------------------------------------------
 | PUSAT BANTUAN - OWNER
@@ -848,7 +848,7 @@ Route::middleware('auth.role:admin')->group(function () {
         '/admin/users/{id}',
         [UserController::class, 'destroy']
     )->name('admin.users.destroy');
-
+    
 
 
     /*
