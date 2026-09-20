@@ -4,15 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Store;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-  private function activeStoreId(): int
-{
-    return (int) session('active_store_id');
-}
+    private function activeStoreId(): int
+    {
+        return (int) session('active_store_id');
+    }
+
     /**
      * Menampilkan halaman manajemen user.
      */
@@ -26,9 +29,11 @@ class UserController extends Controller
         ->orderBy('created_at', 'desc')
         ->get();
 
-        return view('admin.users.index', compact('users'));
+        return view(
+            'admin.users.index',
+            compact('users')
+        );
     }
-
 
     /**
      * Membuat akun Admin atau Kasir.
@@ -62,47 +67,92 @@ class UserController extends Controller
                 'in:admin,kasir',
             ],
         ]);
-        $store = \App\Models\Store::find(
-              $this->activeStoreId()
-          );
-
-          if (!$store || !$store->canAddStaff()) {
-              return redirect()
-                  ->back()
-                  ->with(
-                      'error',
-                      'Batas jumlah akun pada paket Anda sudah tercapai. Silakan upgrade paket untuk menambah akun baru.'
-                  );
-          }
-
 
         /*
         |--------------------------------------------------------------------------
-        | Buat User
+        | STORE AKTIF
+        |--------------------------------------------------------------------------
+        */
+
+        $store = Store::find(
+            $this->activeStoreId()
+        );
+
+        if (!$store || !$store->canAddStaff()) {
+            return redirect()
+                ->back()
+                ->with(
+                    'error',
+                    'Batas jumlah akun pada paket Anda sudah tercapai. Silakan upgrade paket untuk menambah akun baru.'
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | BUAT USER
         |--------------------------------------------------------------------------
         */
 
         $user = User::create([
-    'name' => trim($request->name),
+            'name' => trim(
+                $request->name
+            ),
 
-    'email' => strtolower(trim($request->email)),
+            'email' => strtolower(
+                trim($request->email)
+            ),
 
-    'password' => Hash::make($request->password),
+            'password' => Hash::make(
+                $request->password
+            ),
 
-    'role' => $request->role,
-      ]);
-
-      $user->stores()->attach(
-          $this->activeStoreId(),
-          [
-              'role' => $request->role,
-          ]
-      );
-
+            'role' => $request->role,
+        ]);
 
         /*
         |--------------------------------------------------------------------------
-        | Kembali ke Halaman Admin
+        | HUBUNGKAN USER DENGAN STORE
+        |--------------------------------------------------------------------------
+        */
+
+        $user->stores()->attach(
+            $store->id,
+            [
+                'role' => $request->role,
+            ]
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | AUDIT LOG - STAFF DIBUAT
+        |--------------------------------------------------------------------------
+        */
+
+        AuditLogService::log(
+            'staff_created',
+            'Menambahkan akun ' .
+            ucfirst($request->role) .
+            ' "' .
+            $user->name .
+            '" ke toko "' .
+            $store->name .
+            '".',
+            $user,
+            null,
+            $store->id,
+            null,
+            [
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $request->role,
+                'store_id' => $store->id,
+                'store_name' => $store->name,
+            ]
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | KEMBALI KE HALAMAN ADMIN
         |--------------------------------------------------------------------------
         */
 
@@ -110,38 +160,61 @@ class UserController extends Controller
             ->route('admin.index')
             ->with(
                 'success',
-                'Akun ' . ucfirst($request->role) . ' berhasil ditambahkan!'
+                'Akun ' .
+                ucfirst($request->role) .
+                ' berhasil ditambahkan!'
             );
     }
 
-
     /**
-     * Menghapus akun.
+     * Menghapus / mengeluarkan akun dari toko aktif.
      */
     public function destroy($id)
     {
         /*
         |--------------------------------------------------------------------------
-        | Cari User
+        | STORE AKTIF
         |--------------------------------------------------------------------------
         */
 
         $storeId = $this->activeStoreId();
 
-          $user = User::whereHas('stores', function ($query) use ($storeId) {
-              $query->where('stores.id', $storeId);
-          })
-          ->where('id', $id)
-          ->firstOrFail();
-
+        $store = Store::findOrFail(
+            $storeId
+        );
 
         /*
         |--------------------------------------------------------------------------
-        | Jangan Izinkan Admin Menghapus Akunnya Sendiri
+        | CARI USER DI STORE AKTIF
         |--------------------------------------------------------------------------
         */
 
-        if ((int) $user->id === (int) session('user_id')) {
+        $user = User::whereHas(
+            'stores',
+            function ($query) use ($storeId) {
+
+                $query->where(
+                    'stores.id',
+                    $storeId
+                );
+            }
+        )
+        ->where(
+            'id',
+            $id
+        )
+        ->firstOrFail();
+
+        /*
+        |--------------------------------------------------------------------------
+        | JANGAN IZINKAN ADMIN MENGHAPUS AKUN SENDIRI
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            (int) $user->id ===
+            (int) session('user_id')
+        ) {
 
             return redirect()
                 ->back()
@@ -151,21 +224,66 @@ class UserController extends Controller
                 );
         }
 
-
         /*
-|--------------------------------------------------------------------------
-| Keluarkan User dari Toko Aktif
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | SIMPAN DATA SEBELUM DETACH
+        |--------------------------------------------------------------------------
+        */
 
         $userName = $user->name;
+        $userEmail = $user->email;
 
-          $user->stores()->detach($storeId);
+        $pivot = $user->stores()
+            ->where(
+                'stores.id',
+                $storeId
+            )
+            ->first();
 
+        $storeRole = $pivot?->pivot?->role
+            ?? $user->role;
 
         /*
         |--------------------------------------------------------------------------
-        | Kembali
+        | KELUARKAN USER DARI TOKO AKTIF
+        |--------------------------------------------------------------------------
+        */
+
+        $user->stores()->detach(
+            $storeId
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | AUDIT LOG - STAFF DIKELUARKAN
+        |--------------------------------------------------------------------------
+        */
+
+        AuditLogService::log(
+            'staff_deleted',
+            'Mengeluarkan akun ' .
+            ucfirst($storeRole) .
+            ' "' .
+            $userName .
+            '" dari toko "' .
+            $store->name .
+            '".',
+            $user,
+            null,
+            $store->id,
+            [
+                'name' => $userName,
+                'email' => $userEmail,
+                'role' => $storeRole,
+                'store_id' => $store->id,
+                'store_name' => $store->name,
+            ],
+            null
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | KEMBALI
         |--------------------------------------------------------------------------
         */
 
@@ -173,7 +291,9 @@ class UserController extends Controller
             ->route('admin.index')
             ->with(
                 'success',
-                'Akun "' . $userName . '" berhasil dihapus.'
+                'Akun "' .
+                $userName .
+                '" berhasil dikeluarkan dari toko.'
             );
     }
 }

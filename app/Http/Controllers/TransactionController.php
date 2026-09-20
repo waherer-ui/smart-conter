@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Transaction;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -321,6 +322,36 @@ class TransactionController extends Controller
                     return $transaction;
                 }
             );
+
+            AuditLogService::log(
+    'transaction_created',
+    'Membuat transaksi "' .
+    $transaction->invoice_number .
+    '" dengan total Rp' .
+    number_format(
+        $transaction->total,
+        0,
+        ',',
+        '.'
+    ) .
+    ' menggunakan pembayaran ' .
+    $transaction->payment_method .
+    '.',
+    $transaction,
+    null,
+    $storeId,
+    null,
+    [
+        'invoice_number' => $transaction->invoice_number,
+        'subtotal' => $transaction->subtotal,
+        'discount' => $transaction->discount,
+        'total' => $transaction->total,
+        'paid' => $transaction->paid,
+        'change' => $transaction->change,
+        'payment_method' => $transaction->payment_method,
+        'items_count' => count($validated['items']),
+    ]
+);
 
             /*
             |--------------------------------------------------------------------------

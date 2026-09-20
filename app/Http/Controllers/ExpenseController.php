@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 
 class ExpenseController extends Controller
@@ -279,25 +280,49 @@ class ExpenseController extends Controller
                 'Tanggal pengeluaran tidak valid.',
         ]);
 
-        Expense::create([
-            'store_id' =>
-                $this->activeStoreId(),
+        $pengeluaran = Expense::create([
+    'store_id' =>
+        $this->activeStoreId(),
 
-            'user_id' =>
-                session('user_id'),
+    'user_id' =>
+        session('user_id'),
 
-            'category' =>
-                $validated['category'],
+    'category' =>
+        $validated['category'],
 
-            'description' =>
-                $validated['description'] ?? null,
+    'description' =>
+        $validated['description'] ?? null,
 
-            'amount' =>
-                $validated['amount'],
+    'amount' =>
+        $validated['amount'],
 
-            'expense_date' =>
-                $validated['expense_date'],
-        ]);
+    'expense_date' =>
+        $validated['expense_date'],
+]);
+
+AuditLogService::log(
+    'expense_created',
+    'Mencatat pengeluaran "' .
+    $pengeluaran->category .
+    '" sebesar Rp' .
+    number_format(
+        $pengeluaran->amount,
+        0,
+        ',',
+        '.'
+    ) .
+    '.',
+    $pengeluaran,
+    null,
+    $this->activeStoreId(),
+    null,
+    [
+        'category' => $pengeluaran->category,
+        'description' => $pengeluaran->description,
+        'amount' => $pengeluaran->amount,
+        'expense_date' => $pengeluaran->expense_date,
+    ]
+);
 
         return redirect()
             ->route('pengeluaran')
@@ -360,6 +385,13 @@ class ExpenseController extends Controller
             ],
         ]);
 
+        $oldValues = [
+    'category' => $pengeluaran->category,
+    'description' => $pengeluaran->description,
+    'amount' => $pengeluaran->amount,
+    'expense_date' => $pengeluaran->expense_date,
+];
+
         $pengeluaran->update([
             'category' =>
                 $validated['category'],
@@ -373,6 +405,30 @@ class ExpenseController extends Controller
             'expense_date' =>
                 $validated['expense_date'],
         ]);
+
+        AuditLogService::log(
+    'expense_updated',
+    'Mengubah pengeluaran "' .
+    $pengeluaran->category .
+    '" sebesar Rp' .
+    number_format(
+        $pengeluaran->amount,
+        0,
+        ',',
+        '.'
+    ) .
+    '.',
+    $pengeluaran,
+    null,
+    $this->activeStoreId(),
+    $oldValues,
+    [
+        'category' => $pengeluaran->category,
+        'description' => $pengeluaran->description,
+        'amount' => $pengeluaran->amount,
+        'expense_date' => $pengeluaran->expense_date,
+    ]
+);
 
         return redirect()
             ->route('pengeluaran')
@@ -393,7 +449,33 @@ class ExpenseController extends Controller
             $this->activeStoreId()
         )->findOrFail($id);
 
+        $oldValues = [
+    'category' => $pengeluaran->category,
+    'description' => $pengeluaran->description,
+    'amount' => $pengeluaran->amount,
+    'expense_date' => $pengeluaran->expense_date,
+];
+
         $pengeluaran->delete();
+
+        AuditLogService::log(
+    'expense_deleted',
+    'Menghapus pengeluaran "' .
+    $oldValues['category'] .
+    '" sebesar Rp' .
+    number_format(
+        $oldValues['amount'],
+        0,
+        ',',
+        '.'
+    ) .
+    '.',
+    $pengeluaran,
+    null,
+    $this->activeStoreId(),
+    $oldValues,
+    null
+);
 
         return redirect()
             ->route('pengeluaran')

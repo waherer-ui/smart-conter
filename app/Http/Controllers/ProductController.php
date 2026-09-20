@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\ProductHistory;
 use App\Models\Store;
+use App\Services\AuditLogService;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -549,34 +551,44 @@ class ProductController extends Controller
         }
 
 
-       /*
-|--------------------------------------------------------------------------
-| CEK PRODUK YANG SAMA
-|--------------------------------------------------------------------------
-|
-| Produk dianggap sama jika:
-| - berada di toko yang sama
-| - nama sama (tidak peduli huruf besar/kecil)
-| - kategori sama (tidak peduli huruf besar/kecil)
-|
-*/
+        /*
+        |--------------------------------------------------------------------------
+        | CEK PRODUK YANG SAMA
+        |--------------------------------------------------------------------------
+        |
+        | Produk dianggap sama jika:
+        | - berada di toko yang sama
+        | - nama sama
+        | - kategori sama
+        | - tidak peduli huruf besar/kecil
+        |
+        */
 
-$productName = trim($request->name);
-$productCategory = trim($request->category);
+        $productName = trim(
+            $request->name
+        );
 
-$existingProduct = Product::where(
-    'store_id',
-    $this->activeStoreId()
-)
-->whereRaw(
-    'LOWER(TRIM(name)) = ?',
-    [strtolower($productName)]
-)
-->whereRaw(
-    'LOWER(TRIM(category)) = ?',
-    [strtolower($productCategory)]
-)
-->first();
+        $productCategory = trim(
+            $request->category
+        );
+
+        $existingProduct = Product::where(
+            'store_id',
+            $this->activeStoreId()
+        )
+        ->whereRaw(
+            'LOWER(TRIM(name)) = ?',
+            [
+                strtolower($productName)
+            ]
+        )
+        ->whereRaw(
+            'LOWER(TRIM(category)) = ?',
+            [
+                strtolower($productCategory)
+            ]
+        )
+        ->first();
 
 
         /*
@@ -674,6 +686,27 @@ $existingProduct = Product::where(
                     $stockAfter,
 
             ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | AUDIT LOG RESTOCK
+            |--------------------------------------------------------------------------
+            */
+
+            AuditLogService::log(
+                'product_restocked',
+                'Menambah stok produk "' .
+                $existingProduct->name .
+                '" sebanyak ' .
+                $addedStock .
+                ' unit. Stok: ' .
+                $stockBefore .
+                ' → ' .
+                $stockAfter,
+                $existingProduct
+            );
+
 
             return redirect()
                 ->back()
@@ -896,6 +929,26 @@ $existingProduct = Product::where(
                 $request->stock,
 
         ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | AUDIT LOG PRODUK BARU
+        |--------------------------------------------------------------------------
+        */
+
+        AuditLogService::log(
+            'product_created',
+            'Menambahkan produk baru "' .
+            $product->name .
+            '" dengan SKU ' .
+            $product->sku .
+            ' dan stok awal ' .
+            $product->stock .
+            ' unit.',
+            $product
+        );
+
 
         return redirect()
             ->back()
@@ -1201,7 +1254,7 @@ $existingProduct = Product::where(
 
         /*
         |--------------------------------------------------------------------------
-        | SIMPAN RIWAYAT JIKA ADA PERUBAHAN
+        | SIMPAN RIWAYAT & AUDIT JIKA ADA PERUBAHAN
         |--------------------------------------------------------------------------
         */
 
@@ -1234,6 +1287,71 @@ $existingProduct = Product::where(
                     ),
 
             ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | AUDIT LOG EDIT PRODUK
+            |--------------------------------------------------------------------------
+            */
+
+            AuditLogService::log(
+                'product_updated',
+                'Mengubah produk "' .
+                $product->name .
+                '": ' .
+                implode(
+                    ' ; ',
+                    $changes
+                ),
+                $product,
+                null,
+                null,
+                [
+                    'name' =>
+                        $oldName,
+
+                    'category' =>
+                        $oldCategory,
+
+                    'brand' =>
+                        $oldBrand,
+
+                    'capital_price' =>
+                        $oldCapitalPrice,
+
+                    'price' =>
+                        $oldPrice,
+
+                    'stock' =>
+                        $oldStock,
+
+                    'image' =>
+                        $oldImage,
+                ],
+                [
+                    'name' =>
+                        $product->name,
+
+                    'category' =>
+                        $product->category,
+
+                    'brand' =>
+                        $product->brand,
+
+                    'capital_price' =>
+                        $product->capital_price,
+
+                    'price' =>
+                        $product->price,
+
+                    'stock' =>
+                        $product->stock,
+
+                    'image' =>
+                        $product->image,
+                ]
+            );
         }
 
 
@@ -1241,7 +1359,9 @@ $existingProduct = Product::where(
             ->back()
             ->with(
                 'success',
-                'Data produk berhasil diperbarui!'
+                'Produk "' .
+                $product->name .
+                '" berhasil diperbarui!'
             );
     }
 
@@ -1332,6 +1452,41 @@ $existingProduct = Product::where(
                 $stock,
 
         ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | AUDIT LOG HAPUS PRODUK
+        |--------------------------------------------------------------------------
+        */
+
+        AuditLogService::log(
+            'product_deleted',
+            'Menghapus produk "' .
+            $name .
+            '" dengan SKU ' .
+            $sku .
+            '. Stok terakhir: ' .
+            $stock .
+            ' unit.',
+            $product,
+            null,
+            null,
+            [
+                'sku' =>
+                    $sku,
+
+                'name' =>
+                    $name,
+
+                'stock' =>
+                    $stock,
+
+                'image' =>
+                    $image,
+            ],
+            null
+        );
 
 
         /*

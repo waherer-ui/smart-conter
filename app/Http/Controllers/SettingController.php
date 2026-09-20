@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 
 class SettingController extends Controller
@@ -11,6 +12,7 @@ class SettingController extends Controller
     {
         return (int) session('active_store_id');
     }
+
     /**
      * Menampilkan halaman pengaturan.
      */
@@ -20,24 +22,20 @@ class SettingController extends Controller
         |--------------------------------------------------------------------------
         | Ambil pengaturan
         |--------------------------------------------------------------------------
-        |
-        | Kita hanya menggunakan satu baris konfigurasi toko.
-        | Jika belum ada, buat otomatis dengan nilai default.
-        |
         */
 
         $storeId = $this->activeStoreId();
 
-$settings = Setting::where(
-    'store_id',
-    $storeId
-)->first();
+        $settings = Setting::where(
+            'store_id',
+            $storeId
+        )->first();
 
         if (!$settings) {
 
             $settings = Setting::create([
                 'store_id' => $storeId,
-              
+
                 'store_name' => 'Smart POS',
                 'store_address' => null,
                 'store_phone' => null,
@@ -61,7 +59,6 @@ $settings = Setting::where(
             compact('settings')
         );
     }
-
 
     /**
      * Menyimpan perubahan pengaturan.
@@ -167,9 +164,7 @@ $settings = Setting::where(
 
             'minimum_stock.min' =>
                 'Minimum stok tidak boleh kurang dari 0.',
-
         ]);
-
 
         /*
         |--------------------------------------------------------------------------
@@ -179,16 +174,63 @@ $settings = Setting::where(
 
         $storeId = $this->activeStoreId();
 
-$settings = Setting::where(
-    'store_id',
-    $storeId
-)->first();
+        $settings = Setting::where(
+            'store_id',
+            $storeId
+        )->first();
 
-if (!$settings) {
-    $settings = new Setting();
-    $settings->store_id = $storeId;
-}
+        if (!$settings) {
 
+            $settings = new Setting();
+
+            $settings->store_id = $storeId;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan Nilai Lama Untuk Audit Log
+        |--------------------------------------------------------------------------
+        */
+
+        $oldValues = $settings->exists
+            ? [
+                'store_name' =>
+                    $settings->store_name,
+
+                'store_address' =>
+                    $settings->store_address,
+
+                'store_phone' =>
+                    $settings->store_phone,
+
+                'store_email' =>
+                    $settings->store_email,
+
+                'currency' =>
+                    $settings->currency,
+
+                'allow_discount' =>
+                    $settings->allow_discount,
+
+                'max_discount' =>
+                    $settings->max_discount,
+
+                'minimum_stock' =>
+                    $settings->minimum_stock,
+
+                'receipt_footer' =>
+                    $settings->receipt_footer,
+
+                'show_cashier' =>
+                    $settings->show_cashier,
+
+                'show_payment_method' =>
+                    $settings->show_payment_method,
+
+                'show_discount' =>
+                    $settings->show_discount,
+            ]
+            : null;
 
         /*
         |--------------------------------------------------------------------------
@@ -234,6 +276,73 @@ if (!$settings) {
 
         $settings->save();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Nilai Baru Untuk Audit Log
+        |--------------------------------------------------------------------------
+        */
+
+        $newValues = [
+            'store_name' =>
+                $settings->store_name,
+
+            'store_address' =>
+                $settings->store_address,
+
+            'store_phone' =>
+                $settings->store_phone,
+
+            'store_email' =>
+                $settings->store_email,
+
+            'currency' =>
+                $settings->currency,
+
+            'allow_discount' =>
+                $settings->allow_discount,
+
+            'max_discount' =>
+                $settings->max_discount,
+
+            'minimum_stock' =>
+                $settings->minimum_stock,
+
+            'receipt_footer' =>
+                $settings->receipt_footer,
+
+            'show_cashier' =>
+                $settings->show_cashier,
+
+            'show_payment_method' =>
+                $settings->show_payment_method,
+
+            'show_discount' =>
+                $settings->show_discount,
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Audit Log
+        |--------------------------------------------------------------------------
+        */
+
+        AuditLogService::log(
+            'settings_updated',
+
+            'Mengubah pengaturan toko "' .
+            $settings->store_name .
+            '".',
+
+            $settings,
+
+            null,
+
+            $storeId,
+
+            $oldValues,
+
+            $newValues
+        );
 
         /*
         |--------------------------------------------------------------------------

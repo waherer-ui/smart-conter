@@ -49,6 +49,17 @@ $activeStore = $layoutStores->firstWhere(
     $activeStoreId
 );
 
+$supportWaitingCount = 0;
+
+if ($layoutUser) {
+    $supportWaitingCount = \App\Models\SupportTicket::where(
+        'owner_id',
+        $layoutUser->id
+    )
+    ->where('status', 'waiting')
+    ->count();
+}
+
 @endphp
 
 
@@ -121,184 +132,261 @@ $activeStore = $layoutStores->firstWhere(
 
                         <div class="flex items-center gap-2">
 
+                          {{-- ================================= --}}
+{{-- QUICK HELP --}}
+{{-- ================================= --}}
 
-                            {{-- ================================= --}}
-                            {{-- STORE SWITCHER --}}
-                            {{-- ================================= --}}
+<a
+    href="{{ route('support.index') }}"
+    class="relative
+           flex items-center justify-center
+           w-10 h-10
+           rounded-xl
+           text-gray-300
+           hover:bg-gray-700
+           hover:text-white
+           transition
+           focus:outline-none
+           focus:ring-2
+           focus:ring-indigo-500"
+    aria-label="Pusat Bantuan"
+    title="Pusat Bantuan"
+>
+    <span class="text-lg">
+        💬
+    </span>
 
-                            @if($activeStore)
-
-                                @if(session('user_role') === 'admin')
-
-                                    <div class="relative">
-
-                                        <button
-                                            type="button"
-                                            onclick="toggleStoreDropdown(event)"
-                                            class="text-right rounded-xl px-3 py-2
-                                                   hover:bg-gray-700 transition
-                                                   focus:outline-none
-                                                   focus:ring-2
-                                                   focus:ring-emerald-500"
-                                        >
-
-                                            <div
-                                                class="text-sm font-semibold
-                                                       text-emerald-400
-                                                       truncate max-w-[180px]"
-                                            >
-                                                🏪 {{ $activeStore->name }} ▾
-                                            </div>
-
-                                            <div class="text-xs text-gray-400">
-                                                Toko aktif
-                                            </div>
-
-                                        </button>
-
-
-                                        <div
-                                            id="desktop-store-dropdown"
-                                            class="hidden absolute right-0 mt-2
-                                                   w-56 rounded-2xl
-                                                   bg-gray-800
-                                                   border border-white/10
-                                                   shadow-2xl
-                                                   overflow-hidden z-50"
-                                        >
-
-@php
-    $storeLimit = $activeStore?->getLimit('max_stores');
-@endphp
-
-@foreach($layoutStores as $index => $store)
-
-    @php
-        $storeLocked =
-            $storeLimit !== null &&
-            $index >= $storeLimit;
-    @endphp
-
-    @if($storeLocked)
-
-        {{-- TOKO TERKUNCI --}}
-        <div
-            class="dropdown-link
-                   cursor-not-allowed
-                   opacity-60"
+    @if($supportWaitingCount > 0)
+        <span
+            class="absolute
+                   top-1 right-1
+                   min-w-[15px] h-[15px]
+                   px-1
+                   rounded-full
+                   bg-amber-500
+                   text-[9px]
+                   font-bold
+                   text-gray-900
+                   flex items-center justify-center
+                   border-2 border-gray-800"
         >
+            {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
+        </span>
+    @endif
+</a>
 
-            <span>
-                🏪
-            </span>
 
-            <span
-                class="flex-1
-                       text-left
-                       truncate"
+{{-- ================================= --}}
+{{-- STORE SWITCHER / PLATFORM ACCESS --}}
+{{-- ================================= --}}
+
+@if(session('is_platform_admin'))
+
+    {{-- ========================================= --}}
+    {{-- SUPER ADMIN --}}
+    {{-- ========================================= --}}
+
+    <div class="hidden md:block text-right">
+
+        <div
+            class="text-sm font-semibold
+                   text-emerald-400"
+        >
+            🛡️ Super Admin
+        </div>
+
+        <div class="text-xs text-gray-400">
+            Platform KasirKU
+        </div>
+
+    </div>
+
+@elseif($activeStore)
+
+    {{-- ========================================= --}}
+    {{-- OWNER / ADMIN TOKO --}}
+    {{-- ========================================= --}}
+
+    @if(session('user_role') === 'admin')
+
+        <div class="relative">
+
+            <button
+                type="button"
+                onclick="toggleStoreDropdown(event)"
+                class="text-right rounded-xl px-3 py-2
+                       hover:bg-gray-700 transition
+                       focus:outline-none
+                       focus:ring-2
+                       focus:ring-emerald-500"
             >
-                {{ $store->name }}
-            </span>
 
-            <span
-                class="text-xs
-                       text-amber-400
-                       font-semibold"
+                <div
+                    class="text-sm font-semibold
+                           text-emerald-400
+                           truncate max-w-[180px]"
+                >
+                    🏪 {{ $activeStore->name }} ▾
+                </div>
+
+                <div class="text-xs text-gray-400">
+                    Toko aktif
+                </div>
+
+            </button>
+
+
+            <div
+                id="desktop-store-dropdown"
+                class="hidden absolute right-0 mt-2
+                       w-56 rounded-2xl
+                       bg-gray-800
+                       border border-white/10
+                       shadow-2xl
+                       overflow-hidden z-50"
             >
-                🔒
-            </span>
+
+                @php
+                    $storeLimit = $activeStore?->getLimit('max_stores');
+                @endphp
+
+
+                @foreach($layoutStores as $index => $store)
+
+                    @php
+                        $storeLocked =
+                            $storeLimit !== null &&
+                            $index >= $storeLimit;
+                    @endphp
+
+
+                    @if($storeLocked)
+
+                        {{-- TOKO TERKUNCI --}}
+
+                        <div
+                            class="dropdown-link
+                                   cursor-not-allowed
+                                   opacity-60"
+                        >
+
+                            <span>
+                                🏪
+                            </span>
+
+                            <span
+                                class="flex-1
+                                       text-left
+                                       truncate"
+                            >
+                                {{ $store->name }}
+                            </span>
+
+                            <span
+                                class="text-xs
+                                       text-amber-400
+                                       font-semibold"
+                            >
+                                🔒
+                            </span>
+
+                        </div>
+
+                    @else
+
+                        {{-- TOKO BISA DIAKSES --}}
+
+                        <form
+                            action="{{ route('store.switch', $store->id) }}"
+                            method="POST"
+                        >
+
+                            @csrf
+
+                            <button
+                                type="submit"
+                                class="dropdown-link"
+                            >
+
+                                <span>
+                                    🏪
+                                </span>
+
+                                <span
+                                    class="flex-1
+                                           text-left
+                                           truncate"
+                                >
+                                    {{ $store->name }}
+                                </span>
+
+
+                                @if($store->id == $activeStoreId)
+
+                                    <span
+                                        class="text-emerald-400
+                                               font-bold"
+                                    >
+                                        ✓
+                                    </span>
+
+                                @endif
+
+                            </button>
+
+                        </form>
+
+                    @endif
+
+                @endforeach
+
+
+                <a
+                    href="{{ route('store.create') }}"
+                    class="dropdown-link
+                           border-t
+                           border-white/10"
+                >
+
+                    <span>
+                        ➕
+                    </span>
+
+                    <span class="flex-1 text-left">
+                        Tambah Toko/Cabang
+                    </span>
+
+                </a>
+
+            </div>
 
         </div>
 
     @else
 
-        {{-- TOKO BISA DIAKSES --}}
-        <form
-            action="{{ route('store.switch', $store->id) }}"
-            method="POST"
-        >
+        {{-- ================================= --}}
+        {{-- KASIR --}}
+        {{-- ================================= --}}
 
-            @csrf
+        <div class="text-right">
 
-            <button
-                type="submit"
-                class="dropdown-link"
+            <div
+                class="text-sm font-semibold
+                       text-emerald-400
+                       truncate max-w-[180px]"
             >
+                🏪 {{ $activeStore->name }}
+            </div>
 
-                <span>
-                    🏪
-                </span>
+            <div class="text-xs text-gray-400">
+                Toko aktif
+            </div>
 
-                <span
-                    class="flex-1
-                           text-left
-                           truncate"
-                >
-                    {{ $store->name }}
-                </span>
-
-                @if($store->id == $activeStoreId)
-
-                    <span
-                        class="text-emerald-400
-                               font-bold"
-                    >
-                        ✓
-                    </span>
-
-                @endif
-
-            </button>
-
-        </form>
+        </div>
 
     @endif
 
-@endforeach
-
-
-                                            <a
-                                                href="{{ route('store.create') }}"
-                                                class="dropdown-link
-                                                       border-t
-                                                       border-white/10"
-                                            >
-
-                                                <span>
-                                                    ➕
-                                                </span>
-
-                                                <span class="flex-1 text-left">
-                                                    Tambah Toko/Cabang
-                                                </span>
-
-                                            </a>
-
-                                        </div>
-
-                                    </div>
-
-                                @else
-
-                                    <div class="text-right">
-
-                                        <div
-                                            class="text-sm font-semibold
-                                                   text-emerald-400
-                                                   truncate max-w-[180px]"
-                                        >
-                                            🏪 {{ $activeStore->name }}
-                                        </div>
-
-                                        <div class="text-xs text-gray-400">
-                                            Toko aktif
-                                        </div>
-
-                                    </div>
-
-                                @endif
-
-                            @endif
+@endif
 
 
 
@@ -447,175 +535,358 @@ $activeStore = $layoutStores->firstWhere(
                                 {{-- ========================================= --}}
                             {{-- INFORMASI PAKET --}}
                             {{-- ========================================= --}}
-                            
+
                             <div class="px-4 pb-4">
-                            
+
                                  <x-plan-info :active-store="$activeStore" />
-                            
-                            </div>
 
                             </div>
-
-                        @endif
-
-
-                        {{-- NAVIGASI DESKTOP --}}
-
-                        <div class="border-t border-white/10 py-2">
-
-                            <div
-                                class="px-4 py-1.5 text-xs
-                                       font-semibold text-gray-500
-                                       uppercase"
-                            >
-                                Navigasi
-                            </div>
-
-                            <a
-                                href="{{ route('dashboard') }}"
-                                class="dropdown-link"
-                            >
-                                <span>🏠</span>
-                                <span>Dashboard</span>
-                            </a>
-
-                            <a
-                                href="{{ route('kasir.index') }}"
-                                class="dropdown-link"
-                            >
-                                <span>🛒</span>
-                                <span>Kasir</span>
-                            </a>
-
-                            <a
-                                href="{{ route('produk.index') }}"
-                                class="dropdown-link"
-                            >
-                                <span>📦</span>
-                                <span>Produk</span>
-                            </a>
-                            
-                            <a
-                                href="{{ route('pelanggan.index') }}"
-                                class="dropdown-link"
-                            >
-                                <span>👥</span>
-                                <span>Pelanggan</span>
-                            </a>
-                            
-                            <a
-                              href="{{ route('supplier.index') }}"
-                              class="dropdown-link"
-                          >
-                              <span>🚚</span>
-                              <span>Supplier</span>
-                          </a>
-
-                            <a
-                                href="{{ route('pengeluaran') }}"
-                                class="dropdown-link"
-                            >
-                                <span>💸</span>
-                                <span>Pengeluaran</span>
-                            </a>
-
-                            <a
-                                href="{{ route('laporan') }}"
-                                class="dropdown-link"
-                            >
-                                <span>📊</span>
-                                <span>Laporan</span>
-                            </a>
-
-                            <a
-                                href="{{ route('riwayat') }}"
-                                class="dropdown-link"
-                            >
-                                <span>🧾</span>
-                                <span>Riwayat Transaksi</span>
-                            </a>
-
-                            @if(session('logged_in'))
-
-                                <a
-                                    href="{{ route('profil') }}"
-                                    class="dropdown-link"
-                                >
-                                    <span>👤</span>
-                                    <span>Profil Saya</span>
-                                </a>
-
-                            @else
-
-                                <a
-                                    href="{{ route('login') }}"
-                                    class="dropdown-link"
-                                >
-                                    <span>🔐</span>
-                                    <span>Masuk / Daftar</span>
-                                </a>
-
-                            @endif
-
-                        </div>
-
-
-                        {{-- ADMIN DESKTOP --}}
-
-                        @if(session('user_role') === 'admin')
-
-                            <div class="border-t border-white/10 py-2">
-
-                                <div
-                                    class="px-4 py-1.5 text-xs
-                                           font-semibold text-gray-500
-                                           uppercase"
-                                >
-                                    Administrator
-                                </div>
-
-                                <a
-                                    href="{{ route('admin.index') }}"
-                                    class="dropdown-link"
-                                >
-                                    <span>👥</span>
-                                    <span>Manajemen Admin</span>
-                                </a>
-
-                                <a
-                                    href="{{ route('setting') }}"
-                                    class="dropdown-link"
-                                >
-                                    <span>⚙️</span>
-                                    <span>Pengaturan</span>
-                                </a>
 
                             </div>
 
                         @endif
 
 
-                        {{-- LOGOUT DESKTOP --}}
+{{-- NAVIGASI DESKTOP --}}
 
-                        @if(session('logged_in'))
+@if(session('is_platform_admin'))
 
-                            <div
-                                class="border-t border-white/10 py-2"
-                            >
+    {{-- ==============================
+         SUPER ADMIN KASIRKU
+    =============================== --}}
 
-                                <a
-                                    href="{{ route('logout') }}"
-                                    class="dropdown-link text-red-400
-                                           hover:bg-red-500/10
-                                           hover:text-red-300"
-                                >
-                                    <span>🚪</span>
-                                    <span>Keluar</span>
-                                </a>
+    <div class="border-t border-white/10 py-2">
 
-                            </div>
+        <div
+            class="px-4 py-1.5 text-xs
+                   font-semibold text-gray-500
+                   uppercase"
+        >
+            Platform
+        </div>
 
-                        @endif
+        <a
+            href="{{ route('admin-kasirku.dashboard') }}"
+            class="dropdown-link"
+        >
+            <span>🏠</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a
+            href="{{ route('admin-kasirku.users.index') }}"
+            class="dropdown-link"
+        >
+            <span>👥</span>
+            <span>Pengguna</span>
+        </a>
+
+        <a
+            href="{{ route('admin-kasirku.stores.index') }}"
+            class="dropdown-link"
+        >
+            <span>🏪</span>
+            <span>Toko</span>
+        </a>
+
+        <a
+            href="{{ route('admin-kasirku.subscriptions.index') }}"
+            class="dropdown-link"
+        >
+            <span>💳</span>
+            <span>Langganan</span>
+        </a>
+
+        <a
+            href="{{ route('admin-kasirku.plans.index') }}"
+            class="dropdown-link"
+        >
+            <span>📦</span>
+            <span>Paket</span>
+        </a>
+
+    </div>
+
+
+    {{-- OPERASIONAL --}}
+
+    <div class="border-t border-white/10 py-2">
+
+        <div
+            class="px-4 py-1.5 text-xs
+                   font-semibold text-gray-500
+                   uppercase"
+        >
+            Operasional
+        </div>
+
+        <a
+            href="{{ route('admin-kasirku.support.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('admin-kasirku.support.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span class="relative">
+                💬
+
+                @if($supportWaitingCount > 0)
+                    <span
+                        class="absolute -top-1 -right-2
+                               min-w-[16px] h-4
+                               px-1
+                               rounded-full
+                               bg-amber-500
+                               text-[9px]
+                               font-bold
+                               text-gray-900
+                               flex items-center justify-center"
+                    >
+                        {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
+                    </span>
+                @endif
+            </span>
+
+            <span class="flex-1">
+                Bantuan
+            </span>
+
+            @if($supportWaitingCount > 0)
+                <span class="text-xs text-amber-400 font-semibold">
+                    {{ $supportWaitingCount }}
+                </span>
+            @endif
+        </a>
+
+    </div>
+
+
+    {{-- SISTEM --}}
+
+    <div class="border-t border-white/10 py-2">
+
+        <div
+            class="px-4 py-1.5 text-xs
+                   font-semibold text-gray-500
+                   uppercase"
+        >
+            Sistem
+        </div>
+
+        <a
+            href="{{ route('admin-kasirku.settings') }}"
+            class="dropdown-link"
+        >
+            <span>⚙️</span>
+            <span>Pengaturan</span>
+        </a>
+
+    </div>
+
+
+@else
+
+    {{-- ==============================
+         OWNER / KASIR
+         MENU LAMA
+    =============================== --}}
+
+    <div class="border-t border-white/10 py-2">
+
+        <div
+            class="px-4 py-1.5 text-xs
+                   font-semibold text-gray-500
+                   uppercase"
+        >
+            Navigasi
+        </div>
+
+        <a
+            href="{{ route('dashboard') }}"
+            class="dropdown-link"
+        >
+            <span>🏠</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a
+            href="{{ route('kasir.index') }}"
+            class="dropdown-link"
+        >
+            <span>🛒</span>
+            <span>Kasir</span>
+        </a>
+
+        <a
+            href="{{ route('produk.index') }}"
+            class="dropdown-link"
+        >
+            <span>📦</span>
+            <span>Produk</span>
+        </a>
+
+        <a
+            href="{{ route('pelanggan.index') }}"
+            class="dropdown-link"
+        >
+            <span>👥</span>
+            <span>Pelanggan</span>
+        </a>
+
+        <a
+            href="{{ route('supplier.index') }}"
+            class="dropdown-link"
+        >
+            <span>🚚</span>
+            <span>Supplier</span>
+        </a>
+
+        <a
+            href="{{ route('pengeluaran') }}"
+            class="dropdown-link"
+        >
+            <span>💸</span>
+            <span>Pengeluaran</span>
+        </a>
+
+        <a
+            href="{{ route('laporan') }}"
+            class="dropdown-link"
+        >
+            <span>📊</span>
+            <span>Laporan</span>
+        </a>
+
+        <a
+            href="{{ route('riwayat') }}"
+            class="dropdown-link"
+        >
+            <span>🧾</span>
+            <span>Riwayat Transaksi</span>
+        </a>
+
+        {{-- PUSAT BANTUAN --}}
+
+        <a
+            href="{{ route('support.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('support.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span class="relative">
+                💬
+
+                @if($supportWaitingCount > 0)
+                    <span
+                        class="absolute -top-1 -right-2
+                               min-w-[16px] h-4
+                               px-1
+                               rounded-full
+                               bg-amber-500
+                               text-[9px]
+                               font-bold
+                               text-gray-900
+                               flex items-center justify-center"
+                    >
+                        {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
+                    </span>
+                @endif
+            </span>
+
+            <span class="flex-1">
+                Pusat Bantuan
+            </span>
+
+            @if($supportWaitingCount > 0)
+                <span class="text-xs text-amber-400 font-semibold">
+                    {{ $supportWaitingCount }} perlu respons
+                </span>
+            @endif
+        </a>
+
+
+        @if(session('logged_in'))
+
+            <a
+                href="{{ route('profil') }}"
+                class="dropdown-link"
+            >
+                <span>👤</span>
+                <span>Profil Saya</span>
+            </a>
+
+        @else
+
+            <a
+                href="{{ route('login') }}"
+                class="dropdown-link"
+            >
+                <span>🔐</span>
+                <span>Masuk / Daftar</span>
+            </a>
+
+        @endif
+
+    </div>
+
+
+    {{-- ADMIN TOKO --}}
+
+    @if(session('user_role') === 'admin')
+
+        <div class="border-t border-white/10 py-2">
+
+            <div
+                class="px-4 py-1.5 text-xs
+                       font-semibold text-gray-500
+                       uppercase"
+            >
+                Administrator
+            </div>
+
+            <a
+                href="{{ route('admin.index') }}"
+                class="dropdown-link"
+            >
+                <span>👥</span>
+                <span>Manajemen Admin</span>
+            </a>
+
+            <a
+                href="{{ route('setting') }}"
+                class="dropdown-link"
+            >
+                <span>⚙️</span>
+                <span>Pengaturan</span>
+            </a>
+
+        </div>
+
+    @endif
+
+@endif
+
+
+{{-- LOGOUT DESKTOP --}}
+
+@if(session('logged_in'))
+
+    <div class="border-t border-white/10 py-2">
+
+        <a
+            href="{{ route('logout') }}"
+            class="dropdown-link text-red-400
+                   hover:bg-red-500/10
+                   hover:text-red-300"
+        >
+            <span>🚪</span>
+            <span>Keluar</span>
+        </a>
+
+    </div>
+
+@endif
 
                     </div>
 
@@ -979,157 +1250,375 @@ $activeStore = $layoutStores->firstWhere(
                 </div>
 
             @endif
-            
+
             {{-- ============================================= --}}
           {{-- INFORMASI PAKET MOBILE --}}
           {{-- ============================================= --}}
-          
+
           @if(session('logged_in'))
-          
+
               <div class="px-4 pb-4">
                    <x-plan-info :active-store="$activeStore" />
               </div>
-          
+
           @endif
 
-            {{-- ============================================= --}}
-            {{-- NAVIGASI MOBILE --}}
-            {{-- ============================================= --}}
+{{-- ============================================= --}}
+{{-- NAVIGASI MOBILE --}}
+{{-- ============================================= --}}
 
-            <div class="border-t border-white/10 py-2">
+@if(session('is_platform_admin'))
 
-                <div
-                    class="px-4 py-1.5 text-xs
-                           font-semibold text-gray-500
-                           uppercase"
-                >
-                    Navigasi
-                </div>
-                
-                <a
-                    href="{{ route('kasir.index') }}"
-                    class="dropdown-link"
-                >
-                    <span>🛒</span>
-                    <span>Kasir</span>
-                </a>
+    {{-- ========================================= --}}
+    {{-- SUPER ADMIN MOBILE --}}
+    {{-- ========================================= --}}
+
+    <div class="border-t border-white/10 py-2">
+
+        <div
+            class="px-4 py-1.5 text-xs
+                   font-semibold text-gray-500
+                   uppercase"
+        >
+            Platform
+        </div>
 
 
-                <a
-                    href="{{ route('produk.index') }}"
-                    class="dropdown-link"
-                >
-                    <span>📦</span>
-                    <span>Produk</span>
-                </a>
-                
-                <a
-                    href="{{ route('supplier.index') }}"
-                    class="dropdown-link"
-                >
-                    <span>🚚</span>
-                    <span>Supplier</span>
-                </a>
+        <a
+            href="{{ route('admin-kasirku.dashboard') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('admin-kasirku.dashboard')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span>🏠</span>
+            <span>Dashboard</span>
+        </a>
 
 
-                <a
-                    href="{{ route('pengeluaran') }}"
-                    class="dropdown-link"
-                >
-                    <span>💸</span>
-                    <span>Pengeluaran</span>
-                </a>
+        <a
+            href="{{ route('admin-kasirku.users.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('admin-kasirku.users.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span>👥</span>
+            <span>Pengguna</span>
+        </a>
 
-                @if(session('logged_in'))
 
-                    <a
-                        href="{{ route('profil') }}"
-                        class="dropdown-link"
+        <a
+            href="{{ route('admin-kasirku.stores.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('admin-kasirku.stores.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span>🏪</span>
+            <span>Toko</span>
+        </a>
+
+
+        <a
+            href="{{ route('admin-kasirku.subscriptions.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('admin-kasirku.subscriptions.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span>💳</span>
+            <span>Langganan</span>
+        </a>
+
+
+        <a
+            href="{{ route('admin-kasirku.plans.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('admin-kasirku.plans.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span>📦</span>
+            <span>Paket</span>
+        </a>
+
+    </div>
+
+
+    {{-- ========================================= --}}
+    {{-- OPERASIONAL --}}
+    {{-- ========================================= --}}
+
+    <div class="border-t border-white/10 py-2">
+
+        <div
+            class="px-4 py-1.5 text-xs
+                   font-semibold text-gray-500
+                   uppercase"
+        >
+            Operasional
+        </div>
+
+
+        <a
+            href="{{ route('admin-kasirku.support.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('admin-kasirku.support.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+
+            <span class="relative">
+                💬
+
+                @if($supportWaitingCount > 0)
+                    <span
+                        class="absolute -top-1 -right-2
+                               min-w-[16px] h-4
+                               px-1
+                               rounded-full
+                               bg-amber-500
+                               text-[9px]
+                               font-bold
+                               text-gray-900
+                               flex items-center justify-center"
                     >
-                        <span>👤</span>
-                        <span>Profil Saya</span>
-                    </a>
-
-                @else
-
-                    <a
-                        href="{{ route('login') }}"
-                        class="dropdown-link"
-                    >
-                        <span>🔐</span>
-                        <span>Masuk / Daftar</span>
-                    </a>
-
+                        {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
+                    </span>
                 @endif
+            </span>
 
+            <span class="flex-1">
+                Bantuan
+            </span>
+
+            @if($supportWaitingCount > 0)
+                <span class="text-xs text-amber-400">
+                    {{ $supportWaitingCount }}
+                </span>
+            @endif
+
+        </a>
+
+    </div>
+
+
+    {{-- ========================================= --}}
+    {{-- SISTEM --}}
+    {{-- ========================================= --}}
+
+    <div class="border-t border-white/10 py-2">
+
+        <div
+            class="px-4 py-1.5 text-xs
+                   font-semibold text-gray-500
+                   uppercase"
+        >
+            Sistem
+        </div>
+
+
+        <a
+            href="{{ route('admin-kasirku.settings') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('admin-kasirku.settings')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span>⚙️</span>
+            <span>Pengaturan</span>
+        </a>
+
+    </div>
+
+
+@else
+
+    {{-- ========================================= --}}
+    {{-- OWNER / KASIR MOBILE --}}
+    {{-- ========================================= --}}
+
+    <div class="border-t border-white/10 py-2">
+
+        <div
+            class="px-4 py-1.5 text-xs
+                   font-semibold text-gray-500
+                   uppercase"
+        >
+            Navigasi
+        </div>
+
+
+        <a
+            href="{{ route('kasir.index') }}"
+            class="dropdown-link"
+        >
+            <span>🛒</span>
+            <span>Kasir</span>
+        </a>
+
+
+        <a
+            href="{{ route('produk.index') }}"
+            class="dropdown-link"
+        >
+            <span>📦</span>
+            <span>Produk</span>
+        </a>
+
+
+        <a
+            href="{{ route('supplier.index') }}"
+            class="dropdown-link"
+        >
+            <span>🚚</span>
+            <span>Supplier</span>
+        </a>
+
+
+        <a
+            href="{{ route('pengeluaran') }}"
+            class="dropdown-link"
+        >
+            <span>💸</span>
+            <span>Pengeluaran</span>
+        </a>
+
+
+        {{-- PUSAT BANTUAN --}}
+
+        <a
+            href="{{ route('support.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('support.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+
+            <span class="relative">
+                💬
+
+                @if($supportWaitingCount > 0)
+                    <span
+                        class="absolute -top-1 -right-2
+                               min-w-[16px] h-4
+                               px-1
+                               rounded-full
+                               bg-amber-500
+                               text-[9px]
+                               font-bold
+                               text-gray-900
+                               flex items-center justify-center"
+                    >
+                        {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
+                    </span>
+                @endif
+            </span>
+
+            <span class="flex-1">
+                Pusat Bantuan
+            </span>
+
+            @if($supportWaitingCount > 0)
+                <span class="text-xs text-amber-400">
+                    {{ $supportWaitingCount }}
+                </span>
+            @endif
+
+        </a>
+
+
+        @if(session('logged_in'))
+
+            <a
+                href="{{ route('profil') }}"
+                class="dropdown-link"
+            >
+                <span>👤</span>
+                <span>Profil Saya</span>
+            </a>
+
+        @else
+
+            <a
+                href="{{ route('login') }}"
+                class="dropdown-link"
+            >
+                <span>🔐</span>
+                <span>Masuk / Daftar</span>
+            </a>
+
+        @endif
+
+    </div>
+
+
+    {{-- ========================================= --}}
+    {{-- ADMIN TOKO MOBILE --}}
+    {{-- ========================================= --}}
+
+    @if(session('user_role') === 'admin')
+
+        <div class="border-t border-white/10 py-2">
+
+            <div
+                class="px-4 py-1.5 text-xs
+                       font-semibold text-gray-500
+                       uppercase"
+            >
+                Administrator
             </div>
 
 
-
-            {{-- ============================================= --}}
-            {{-- ADMIN MOBILE --}}
-            {{-- ============================================= --}}
-
-            @if(session('user_role') === 'admin')
-
-                <div class="border-t border-white/10 py-2">
-
-                    <div
-                        class="px-4 py-1.5 text-xs
-                               font-semibold text-gray-500
-                               uppercase"
-                    >
-                        Administrator
-                    </div>
+            <a
+                href="{{ route('admin.index') }}"
+                class="dropdown-link"
+            >
+                <span>👥</span>
+                <span>Manajemen Admin</span>
+            </a>
 
 
-                    <a
-                        href="{{ route('admin.index') }}"
-                        class="dropdown-link"
-                    >
-                        <span>👥</span>
-                        <span>Manajemen Admin</span>
-                    </a>
+            <a
+                href="{{ route('setting') }}"
+                class="dropdown-link"
+            >
+                <span>⚙️</span>
+                <span>Pengaturan</span>
+            </a>
+
+        </div>
+
+    @endif
+
+@endif
 
 
-                    <a
-                        href="{{ route('setting') }}"
-                        class="dropdown-link"
-                    >
-                        <span>⚙️</span>
-                        <span>Pengaturan</span>
-                    </a>
+{{-- ============================================= --}}
+{{-- LOGOUT --}}
+{{-- ============================================= --}}
 
-                </div>
+@if(session('logged_in'))
 
-            @endif
+    <div class="border-t border-white/10 py-2">
 
+        <a
+            href="{{ route('logout') }}"
+            onclick="localStorage.removeItem('smart_pos_cart')"
+            class="dropdown-link text-red-400
+                   hover:bg-red-500/10
+                   hover:text-red-300"
+        >
 
+            <span>🚪</span>
+            <span>Keluar</span>
 
-            {{-- ============================================= --}}
-            {{-- LOGOUT --}}
-            {{-- ============================================= --}}
+        </a>
 
-            @if(session('logged_in'))
+    </div>
 
-                <div class="border-t border-white/10 py-2">
-
-                    <a
-                        href="{{ route('logout') }}"
-                        onclick="localStorage.removeItem('smart_pos_cart')"
-                        class="dropdown-link text-red-400
-                               hover:bg-red-500/10
-                               hover:text-red-300"
-                    >
-
-                        <span>🚪</span>
-                        <span>Keluar</span>
-
-                    </a>
-
-                </div>
-
-            @endif
+@endif
 
         </div>
 
@@ -1241,7 +1730,7 @@ $activeStore = $layoutStores->firstWhere(
                     cursor-pointer">
               © {{ date('Y') }} KasirKU. Semua hak dilindungi.
           </a>
-      
+
           <p class="text-xs text-gray-600">
               Solusi kasir untuk usaha Anda.
           </p>
@@ -2352,24 +2841,44 @@ document
                 </a>
 
 
-                {{-- PELANGGAN --}}
-                <a
-                    href="{{ route('pelanggan.index') }}"
-                    class="mobile-bottom-item
-                           {{ request()->routeIs('pelanggan.*')
-                                ? 'mobile-bottom-active'
-                                : '' }}"
-                >
+{{-- BANTUAN --}}
+<a
+    href="{{ route('support.index') }}"
+    class="mobile-bottom-item
+           relative
+           {{ request()->routeIs('support.*')
+                ? 'mobile-bottom-active'
+                : '' }}"
+>
 
-                    <span class="text-xl leading-none">
-                        👥
-                    </span>
+    <span class="relative text-xl leading-none">
 
-                    <span>
-                        Pelanggan
-                    </span>
+        💬
 
-                </a>
+        @if($supportWaitingCount > 0)
+            <span
+                class="absolute
+                       -top-1 -right-2
+                       min-w-[15px] h-[15px]
+                       px-1
+                       rounded-full
+                       bg-amber-500
+                       text-[9px]
+                       font-bold
+                       text-gray-900
+                       flex items-center justify-center"
+            >
+                {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
+            </span>
+        @endif
+
+    </span>
+
+    <span>
+        Bantuan
+    </span>
+
+</a>
 
             @endif
 

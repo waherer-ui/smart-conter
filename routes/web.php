@@ -16,6 +16,8 @@ use App\Http\Controllers\AdminKasirku\UserController as PlatformUserController;
 use App\Http\Controllers\AdminKasirku\StoreController as PlatformStoreController;
 use App\Http\Controllers\AdminKasirku\SubscriptionController;
 use App\Http\Controllers\AdminKasirku\PlanController as PlatformPlanController;
+use App\Http\Controllers\AdminKasirku\SupportController;
+use App\Http\Controllers\AdminKasirku\AuditLogController;
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProductController;
@@ -30,6 +32,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SupportController as OwnerSupportController;
 
 
 
@@ -114,6 +117,42 @@ Route::put(
     '/admin-kasirku/paket/{plan}',
     [PlatformPlanController::class, 'update']
 )->name('admin-kasirku.plans.update');
+
+Route::get(
+    '/admin-kasirku/aktivitas',
+    [AuditLogController::class, 'index']
+)->name('admin-kasirku.audit-log.index');
+
+/*
+|--------------------------------------------------------------------------
+| PUSAT BANTUAN
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/admin-kasirku/bantuan',
+    [SupportController::class, 'index']
+)->name('admin-kasirku.support.index');
+
+Route::get(
+    '/admin-kasirku/bantuan/{ticket}',
+    [SupportController::class, 'show']
+)->name('admin-kasirku.support.show');
+
+Route::put(
+    '/admin-kasirku/bantuan/{ticket}/status',
+    [SupportController::class, 'updateStatus']
+)->name('admin-kasirku.support.status');
+
+Route::put(
+    '/admin-kasirku/bantuan/{ticket}/assign',
+    [SupportController::class, 'assign']
+)->name('admin-kasirku.support.assign');
+
+Route::post(
+    '/admin-kasirku/bantuan/{ticket}/reply',
+    [SupportController::class, 'reply']
+)->name('admin-kasirku.support.reply');
 
 });
 /*
@@ -734,6 +773,41 @@ Route::middleware('auth.role')->group(function () {
       )->name('cetaklabel');
       });
 
+
+      /*
+|--------------------------------------------------------------------------
+| PUSAT BANTUAN - OWNER
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth.role')->group(function () {
+
+    Route::get(
+        '/bantuan',
+        [OwnerSupportController::class, 'index']
+    )->name('support.index');
+
+    Route::get(
+        '/bantuan/buat',
+        [OwnerSupportController::class, 'create']
+    )->name('support.create');
+
+    Route::post(
+        '/bantuan',
+        [OwnerSupportController::class, 'store']
+    )->name('support.store');
+
+    Route::get(
+        '/bantuan/{ticket}',
+        [OwnerSupportController::class, 'show']
+    )->name('support.show');
+
+    Route::post(
+        '/bantuan/{ticket}/pesan',
+        [OwnerSupportController::class, 'message']
+    )->name('support.message');
+});
+
 /*
 |--------------------------------------------------------------------------
 | ADMIN SAJA
@@ -774,6 +848,7 @@ Route::middleware('auth.role:admin')->group(function () {
         '/admin/users/{id}',
         [UserController::class, 'destroy']
     )->name('admin.users.destroy');
+
 
 
     /*
