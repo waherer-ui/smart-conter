@@ -20,6 +20,9 @@ class Payment extends Model
         'referral_code',
 'referral_discount_percent',
 'referral_discount_amount',
+'midtrans_order_id',
+'midtrans_snap_token',
+'midtrans_transaction_status',
     ];
 
     protected $casts = [

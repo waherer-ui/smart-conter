@@ -241,6 +241,20 @@ Route::middleware(['auth.role', 'active.store'])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| MIDTRANS NOTIFICATION
+|--------------------------------------------------------------------------
+| Endpoint ini dipanggil langsung oleh Midtrans.
+| Tidak membutuhkan login/session owner.
+|--------------------------------------------------------------------------
+*/
+
+Route::post(
+    '/midtrans/notification',
+    [PlanController::class, 'midtransNotification']
+)->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+->name('midtrans.notification');
+/*
+|--------------------------------------------------------------------------
 | PAKET / LANGGANAN
 | PUBLIK
 |--------------------------------------------------------------------------
@@ -267,8 +281,12 @@ Route::post('/paket/pembayaran/{plan}/buat', [PlanController::class, 'createPaym
 Route::get('/paket/pembayaran/menunggu/{payment}', [PlanController::class, 'paymentPending'])
     ->name('paket.payment.pending');
 
-Route::post('/paket/pembayaran/{payment}/success', [PlanController::class, 'paymentSuccess'])
-    ->name('paket.payment.success');
+
+    
+    Route::post(
+    '/paket/pembayaran/{payment}/cek-status',
+    [PlanController::class, 'checkStatus']
+)->name('paket.payment.check-status');
     
     Route::get('/paket/referral/validate', [PlanController::class, 'validateReferral'])
     ->name('paket.referral.validate');
