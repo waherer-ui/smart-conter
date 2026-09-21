@@ -311,7 +311,7 @@ class PlanController extends Controller
                     Str::random(6)
                 ),
         ]);
-        
+
         /*
  * =====================================================
  * MIDTRANS
@@ -563,6 +563,29 @@ try {
             compact('payment')
         );
     }
+
+    /**
+ * Mengecek status payment untuk auto-redirect.
+ *
+ * Method ini hanya membaca status dari database.
+ * Aktivasi tetap dilakukan oleh webhook Midtrans.
+ */
+public function paymentStatus(
+    Payment $payment
+) {
+    $userId = session('user_id');
+
+    if (
+        !$userId ||
+        (int) $payment->owner_id !== (int) $userId
+    ) {
+        abort(403);
+    }
+
+    return response()->json([
+        'status' => $payment->fresh()->status,
+    ]);
+}
 
 /**
  * Mengecek status pembayaran langsung ke Midtrans.

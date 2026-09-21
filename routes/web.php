@@ -281,7 +281,10 @@ Route::post('/paket/pembayaran/{plan}/buat', [PlanController::class, 'createPaym
 Route::get('/paket/pembayaran/menunggu/{payment}', [PlanController::class, 'paymentPending'])
     ->name('paket.payment.pending');
 
-
+Route::get(
+    '/paket/pembayaran/{payment}/status',
+    [PlanController::class, 'paymentStatus']
+)->name('paket.payment.status');
     
     Route::post(
     '/paket/pembayaran/{payment}/cek-status',

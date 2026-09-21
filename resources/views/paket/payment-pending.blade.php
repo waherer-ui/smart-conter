@@ -161,7 +161,7 @@
             >
                 Bayar Sekarang
             </button>
-            
+
             <form method="POST"
       action="{{ route('paket.payment.check-status', $payment) }}"
       class="mt-3">
@@ -275,9 +275,132 @@ $payment->midtrans_snap_token
 <script
     src="https://app.sandbox.midtrans.com/snap/snap.js"
     data-client-key="{{ config('midtrans.client_key') }}"
+
+
 ></script>
 
 <script>
+
+    const paymentStatusUrl =
+        '{{ route('paket.payment.status', $payment) }}';
+
+    const paketUrl =
+        '{{ route('paket') }}';
+
+    let pollingActive = true;
+    let pollingCount = 0;
+    const maxPolling = 30;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CEK STATUS OTOMATIS
+    |--------------------------------------------------------------------------
+    | Webhook Midtrans mengubah status payment di database.
+    | Browser hanya membaca status tersebut.
+    |--------------------------------------------------------------------------
+    */
+
+    function checkPaymentStatus() {
+
+        if (!pollingActive) {
+            return;
+        }
+
+        fetch(paymentStatusUrl, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            cache: 'no-store'
+        })
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error(
+                    'Gagal membaca status pembayaran.'
+                );
+            }
+
+            return response.json();
+
+        })
+        .then(data => {
+
+            console.log(
+                'Status payment:',
+                data.status
+            );
+
+            /*
+             * Webhook sudah mengaktifkan pembayaran.
+             */
+            if (data.status === 'paid') {
+
+                pollingActive = false;
+
+                window.location.href =
+                    paketUrl;
+
+                return;
+            }
+
+            /*
+             * Berhenti setelah sekitar 60 detik.
+             * Tombol Cek Status tetap tersedia sebagai fallback.
+             */
+            pollingCount++;
+
+            if (pollingCount >= maxPolling) {
+
+                pollingActive = false;
+
+                console.log(
+                    'Polling otomatis selesai.'
+                );
+
+                return;
+            }
+
+            setTimeout(
+                checkPaymentStatus,
+                2000
+            );
+
+        })
+        .catch(error => {
+
+            console.error(
+                'Polling payment error:',
+                error
+            );
+
+            pollingCount++;
+
+            if (pollingCount < maxPolling) {
+
+                setTimeout(
+                    checkPaymentStatus,
+                    3000
+                );
+
+            } else {
+
+                pollingActive = false;
+
+            }
+
+        });
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TOMBOL BAYAR SEKARANG
+    |--------------------------------------------------------------------------
+    */
 
     document
         .getElementById('pay-button')
@@ -294,8 +417,11 @@ $payment->midtrans_snap_token
                             result
                         );
 
-                        window.location.href =
-                            '{{ route('paket.payment.pending', $payment) }}';
+                        /*
+                         * Jangan langsung menganggap PAID.
+                         * Tunggu webhook Midtrans memproses payment.
+                         */
+                        checkPaymentStatus();
 
                     },
 
@@ -306,8 +432,10 @@ $payment->midtrans_snap_token
                             result
                         );
 
-                        window.location.href =
-                            '{{ route('paket.payment.pending', $payment) }}';
+                        /*
+                         * Tetap tunggu webhook.
+                         */
+                        checkPaymentStatus();
 
                     },
 
@@ -336,6 +464,17 @@ $payment->midtrans_snap_token
             );
 
         });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | MULAI POLLING SAAT HALAMAN DIBUKA
+    |--------------------------------------------------------------------------
+    | Berguna jika webhook sudah masuk sebelum halaman selesai dimuat.
+    |--------------------------------------------------------------------------
+    */
+
+    checkPaymentStatus();
 
 </script>
 
