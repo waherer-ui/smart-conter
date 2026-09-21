@@ -558,6 +558,15 @@ try {
             abort(403);
         }
 
+        if ($payment->status === 'paid') {
+            return redirect()
+                ->route('paket')
+                ->with(
+                    'success',
+                    'Pembayaran berhasil dan paket Anda sudah aktif.'
+                );
+        }
+
         return view(
             'paket.payment-pending',
             compact('payment')
