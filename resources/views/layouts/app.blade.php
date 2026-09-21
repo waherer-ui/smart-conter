@@ -735,6 +735,17 @@ if ($layoutUser) {
             <span>📦</span>
             <span>Produk</span>
         </a>
+        
+        <a
+    href="{{ route('pelanggan.index') }}"
+    class="dropdown-link
+           {{ request()->routeIs('pelanggan.*')
+                ? 'bg-gray-700 text-white'
+                : '' }}"
+>
+    <span>👥</span>
+    <span>Pelanggan</span>
+</a>
 
         <a
             href="{{ route('pelanggan.index') }}"
@@ -1494,6 +1505,17 @@ if ($layoutUser) {
             <span>📦</span>
             <span>Produk</span>
         </a>
+        
+        <a
+    href="{{ route('pelanggan.index') }}"
+    class="dropdown-link
+           {{ request()->routeIs('pelanggan.*')
+                ? 'bg-gray-700 text-white'
+                : '' }}"
+>
+    <span>👥</span>
+    <span>Pelanggan</span>
+</a>
 
 
         <a
