@@ -262,105 +262,117 @@ class ProductController extends Controller
     */
 
     public function dashboard(Request $request)
-    {
-        $category = $request->input('category');
-        $search = $request->input('search');
+{
+    $category = $request->input('category');
+    $search = $request->input('search');
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | QUERY PRODUK DASHBOARD
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | TOKO AKTIF
+    |--------------------------------------------------------------------------
+    */
 
-        $query = Product::where(
-            'store_id',
-            $this->activeStoreId()
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | PENCARIAN
-        |--------------------------------------------------------------------------
-        */
-
-        if ($search) {
-
-            $query->where(function ($q) use ($search) {
-
-                $q->where(
-                    'name',
-                    'like',
-                    '%' . $search . '%'
-                )
-                ->orWhere(
-                    'category',
-                    'like',
-                    '%' . $search . '%'
-                )
-                ->orWhere(
-                    'sku',
-                    'like',
-                    '%' . $search . '%'
-                );
-
-            });
-        }
+    $activeStore = Store::find(
+        $this->activeStoreId()
+    );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | FILTER KATEGORI
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | QUERY PRODUK DASHBOARD
+    |--------------------------------------------------------------------------
+    */
 
-        if ($category && $category !== 'all') {
-
-            $query->where(
-                'category',
-                $category
-            );
-        }
+    $query = Product::where(
+        'store_id',
+        $this->activeStoreId()
+    );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL PRODUK
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | PENCARIAN
+    |--------------------------------------------------------------------------
+    */
 
-        $products = $query
-            ->orderBy('name')
-            ->get();
+    if ($search) {
 
+        $query->where(function ($q) use ($search) {
 
-        /*
-        |--------------------------------------------------------------------------
-        | KATEGORI
-        |--------------------------------------------------------------------------
-        */
-
-        $categories = Product::where(
-            'store_id',
-            $this->activeStoreId()
-        )
-        ->select('category')
-        ->distinct()
-        ->orderBy('category')
-        ->pluck('category');
-
-
-        return view(
-            'home',
-            compact(
-                'products',
-                'categories',
-                'category',
-                'search'
+            $q->where(
+                'name',
+                'like',
+                '%' . $search . '%'
             )
+            ->orWhere(
+                'category',
+                'like',
+                '%' . $search . '%'
+            )
+            ->orWhere(
+                'sku',
+                'like',
+                '%' . $search . '%'
+            );
+
+        });
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILTER KATEGORI
+    |--------------------------------------------------------------------------
+    */
+
+    if ($category && $category !== 'all') {
+
+        $query->where(
+            'category',
+            $category
         );
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | AMBIL PRODUK
+    |--------------------------------------------------------------------------
+    */
+
+    $products = $query
+        ->orderBy('name')
+        ->get();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | KATEGORI
+    |--------------------------------------------------------------------------
+    */
+
+    $categories = Product::where(
+        'store_id',
+        $this->activeStoreId()
+    )
+    ->select('category')
+    ->distinct()
+    ->orderBy('category')
+    ->pluck('category');
+
+
+    return view(
+        'home',
+        compact(
+            'products',
+            'categories',
+            'category',
+            'search',
+            'activeStore'
+        )
+    );
+}
 
 
     /*

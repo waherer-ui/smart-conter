@@ -90,62 +90,122 @@
 <div class="space-y-6 pb-24">
 
 {{-- =========================================================
-         HERO DASHBOARD / ETALASE KONTER
-    ========================================================== --}}
-    <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-5 sm:p-6 text-white shadow-xl">
+     HERO DASHBOARD / TOKO AKTIF + PROMO FITUR
+========================================================== --}}
+<div class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-5 sm:p-6 text-white shadow-xl">
 
-        {{-- Efek dekorasi ringan --}}
-        <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-        <div class="absolute -bottom-12 -left-8 w-32 h-32 bg-indigo-300/10 rounded-full blur-2xl"></div>
+    {{-- Efek dekorasi --}}
+    <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+    <div class="absolute -bottom-12 -left-8 w-32 h-32 bg-indigo-300/10 rounded-full blur-2xl"></div>
 
-        <div class="relative">
+    <div class="relative">
 
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
 
-                {{-- INFORMASI KONTER --}}
-                <div class="min-w-0">
+            {{-- INFORMASI TOKO AKTIF --}}
+            <div class="min-w-0">
 
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 border border-white/10 text-[10px] font-medium">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
-                            Sistem Aktif
-                        </span>
-                    </div>
+                <div class="flex items-center gap-2 mb-2">
 
-                    <h2 class="text-xl sm:text-2xl font-bold tracking-tight">
-                        Etalase & Servis Konter HP
-                    </h2>
+                    <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full
+                                 bg-white/10 border border-white/10
+                                 text-[10px] font-medium">
 
-                    <p class="text-sm text-blue-100 mt-1 leading-5">
-                        Lihat produk, layanan, harga, dan ketersediaan stok.
-                    </p>
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+
+                        Toko Aktif
+                    </span>
 
                 </div>
-  </div>
+
+                <h2 class="text-xl sm:text-2xl font-bold tracking-tight">
+                    Selamat datang di {{ $activeStore->name ?? 'Toko Anda' }} 👋
+                </h2>
+
+                <p class="text-sm text-blue-100 mt-1 leading-5">
+                    Kelola penjualan, stok, pelanggan, dan operasional toko dengan KasirKU.
+                </p>
+
+            </div>
 
 
-            {{-- =================================================
-                 INFORMASI BERJALAN
-            ================================================== --}}
-            <div class="mt-5 pt-3 border-t border-white/10 overflow-hidden">
+            {{-- TOMBOL PAKET --}}
+            <div class="shrink-0">
 
-                <div class="dashboard-marquee flex items-center gap-8 whitespace-nowrap text-[11px] text-blue-100">
+                <a href="{{ url('/paket') }}"
+                   class="inline-flex items-center justify-center gap-2
+                          px-4 py-2.5 rounded-xl
+                          bg-white text-blue-700
+                          text-xs sm:text-sm font-semibold
+                          shadow-lg shadow-blue-900/20
+                          hover:bg-blue-50
+                          active:scale-95 transition">
 
-                    <span>
-                        ✦ Produk berkualitas untuk kebutuhan konter
-                    </span>
+                    <span>✨</span>
+                    Lihat Paket
 
-                    <span>
-                        ✦ Cek stok sebelum melakukan transaksi
-                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-4 h-4"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor"
+                         stroke-width="2">
 
-                    <span>
-                        ✦ Kelola produk dan penjualan dengan mudah
-                    </span>
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M9 5l7 7-7 7"/>
 
-                    <span>
-                        ✦ Smart POS — sederhana, cepat, dan ringan
-                    </span>
+                    </svg>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        {{-- =================================================
+             PROMO FITUR PRO & PREMIUM
+        ================================================== --}}
+        <div class="mt-5 pt-4 border-t border-white/10">
+
+            <div class="flex items-center gap-2 mb-2">
+
+                <span class="text-[11px] font-semibold text-white">
+                    🚀 Tingkatkan kemampuan KasirKU
+                </span>
+
+                <span class="px-2 py-0.5 rounded-full
+                             bg-amber-400/20
+                             border border-amber-300/20
+                             text-[9px] font-bold text-amber-200">
+
+                    PRO & PREMIUM
+
+                </span>
+
+            </div>
+
+
+            <div class="overflow-hidden">
+
+                <div class="dashboard-marquee flex items-center gap-10
+                            whitespace-nowrap text-[11px] text-blue-100">
+
+                    <span>💰 Catatan Utang & Piutang</span>
+                    <span>📦 Pembelian & Supplier</span>
+                    <span>📊 HPP & Laporan Laba</span>
+                    <span>🏪 Kelola Multi Toko</span>
+                    <span>👥 Tambah Staff & Kasir</span>
+                    <span>☁️ Backup & fitur premium</span>
+
+                    {{-- Duplikasi untuk efek marquee --}}
+                    <span>💰 Catatan Utang & Piutang</span>
+                    <span>📦 Pembelian & Supplier</span>
+                    <span>📊 HPP & Laporan Laba</span>
+                    <span>🏪 Kelola Multi Toko</span>
+                    <span>👥 Tambah Staff & Kasir</span>
+                    <span>☁️ Backup & fitur premium</span>
 
                 </div>
 
@@ -154,6 +214,8 @@
         </div>
 
     </div>
+
+</div>
     
     {{-- =========================================================
          FILTER KATEGORI
