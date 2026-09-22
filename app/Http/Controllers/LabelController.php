@@ -17,6 +17,15 @@ class LabelController extends Controller
     {
         /*
         |--------------------------------------------------------------------------
+        | Ambil ID toko aktif
+        |--------------------------------------------------------------------------
+        */
+
+        $storeId = (int) session('active_store_id');
+
+
+        /*
+        |--------------------------------------------------------------------------
         | Ambil ID produk yang dipilih
         |--------------------------------------------------------------------------
         */
@@ -37,15 +46,12 @@ class LabelController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Ambil produk
+        | Ambil produk dari toko aktif saja
         |--------------------------------------------------------------------------
-        |
-        | Jika belum ada produk yang dipilih,
-        | tampilkan semua produk.
-        |
         */
 
         $products = Product::query()
+            ->where('store_id', $storeId)
             ->when(
                 !empty($selectedIds),
                 function ($query) use ($selectedIds) {
