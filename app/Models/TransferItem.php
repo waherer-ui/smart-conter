@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class TransferItem extends Model
+{
+    protected $fillable = [
+        'transfer_id',
+        'product_id',
+        'product_name',
+        'sku',
+        'quantity',
+    ];
+
+    protected $casts = [
+        'quantity' => 'integer',
+    ];
+
+    /**
+     * Transfer induk.
+     */
+    public function transfer(): BelongsTo
+    {
+        return $this->belongsTo(Transfer::class);
+    }
+
+    /**
+     * Produk asal transfer.
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+}

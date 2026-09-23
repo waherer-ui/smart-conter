@@ -725,7 +725,7 @@ if ($layoutUser) {
             class="dropdown-link"
         >
             <span>🛒</span>
-            <span>Kasir</span>
+            <span>Kasir / keranjang</span>
         </a>
 
         <a
@@ -733,26 +733,29 @@ if ($layoutUser) {
             class="dropdown-link"
         >
             <span>📦</span>
-            <span>Produk</span>
+            <span>Produk / restock produk</span>
         </a>
         
         <a
-    href="{{ route('pelanggan.index') }}"
-    class="dropdown-link
-           {{ request()->routeIs('pelanggan.*')
-                ? 'bg-gray-700 text-white'
-                : '' }}"
->
-    <span>👥</span>
-    <span>Pelanggan</span>
-</a>
-
+            href="{{ route('transfer.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('transfer.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span>🔄</span>
+            <span>Transfer Antar Toko</span>
+        </a>
+        
         <a
             href="{{ route('pelanggan.index') }}"
-            class="dropdown-link"
+            class="dropdown-link
+                   {{ request()->routeIs('pelanggan.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
         >
             <span>👥</span>
-            <span>Pelanggan</span>
+            <span>Pelanggan & utang pelanggan</span>
         </a>
 
         <a
@@ -760,7 +763,7 @@ if ($layoutUser) {
             class="dropdown-link"
         >
             <span>🚚</span>
-            <span>Supplier</span>
+            <span>Supplier & pembelian produk</span>
         </a>
 
         <a
@@ -776,7 +779,7 @@ if ($layoutUser) {
             class="dropdown-link"
         >
             <span>📊</span>
-            <span>Laporan</span>
+            <span>Laporan & laporan utang</span>
         </a>
 
         <a
@@ -1494,7 +1497,7 @@ if ($layoutUser) {
             class="dropdown-link"
         >
             <span>🛒</span>
-            <span>Kasir</span>
+            <span>Kasir / keranjang</span>
         </a>
 
 
@@ -1503,19 +1506,30 @@ if ($layoutUser) {
             class="dropdown-link"
         >
             <span>📦</span>
-            <span>Produk</span>
+            <span>Produk / restock produk</span>
         </a>
         
         <a
-    href="{{ route('pelanggan.index') }}"
-    class="dropdown-link
-           {{ request()->routeIs('pelanggan.*')
-                ? 'bg-gray-700 text-white'
-                : '' }}"
->
-    <span>👥</span>
-    <span>Pelanggan</span>
-</a>
+            href="{{ route('transfer.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('transfer.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span>🔄</span>
+            <span>Transfer Antar Toko</span>
+        </a>
+        
+        <a
+            href="{{ route('pelanggan.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('pelanggan.*')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span>👥</span>
+            <span>Pelanggan & utang pelanggan</span>
+        </a>
 
 
         <a
@@ -1523,7 +1537,7 @@ if ($layoutUser) {
             class="dropdown-link"
         >
             <span>🚚</span>
-            <span>Supplier</span>
+            <span>Supplier / pembelian produk</span>
         </a>
 
 
@@ -2762,7 +2776,7 @@ document
                     </span>
 
                     <span>
-                        Riwayat
+                        Riwayat Transaksi
                     </span>
 
                 </a>
@@ -2885,7 +2899,7 @@ document
                     </span>
 
                     <span>
-                        Laporan
+                        Laporan & laporan utang
                     </span>
 
                 </a>

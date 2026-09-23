@@ -20,7 +20,7 @@
 
 
     {{-- RINGKASAN --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
 
         {{-- TOTAL PIUTANG --}}
         <div class="bg-gray-800/80 border border-white/10
@@ -65,7 +65,7 @@
                     rounded-2xl p-4 shadow-xl">
 
             <p class="text-xs text-gray-500">
-                Pelanggan Berutang
+                Belum Lunas
             </p>
 
             <p class="text-lg font-bold text-white mt-1">
@@ -73,7 +73,7 @@
             </p>
 
             <p class="text-[11px] text-gray-600 mt-1">
-                Pelanggan dengan sisa piutang
+                Pelanggan
             </p>
 
         </div>

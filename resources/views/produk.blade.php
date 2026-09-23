@@ -609,7 +609,7 @@
             </h3>
 
             <p class="text-xs text-gray-400 mt-1">
-                Rekap produk baru dan restock berdasarkan tanggal.
+                Rekap perubahan stok, produk baru, restock, dan transfer antar toko berdasarkan tanggal.
             </p>
 
         </div>
@@ -875,6 +875,46 @@
                                                         Restock
                                                     </span>
 
+                                                                                            @elseif(
+                                                    str_contains(
+                                                        $hist->status_type,
+                                                        'Transfer Masuk'
+                                                    )
+                                                )
+
+                                                    <span
+                                                        class="bg-emerald-500/20
+                                                               text-emerald-300
+                                                               border
+                                                               border-emerald-500/30
+                                                               text-[10px]
+                                                               px-2 py-0.5
+                                                               rounded-full
+                                                               font-semibold"
+                                                    >
+                                                        Transfer Masuk
+                                                    </span>
+
+                                                @elseif(
+                                                    str_contains(
+                                                        $hist->status_type,
+                                                        'Transfer Keluar'
+                                                    )
+                                                )
+
+                                                    <span
+                                                        class="bg-orange-500/20
+                                                               text-orange-300
+                                                               border
+                                                               border-orange-500/30
+                                                               text-[10px]
+                                                               px-2 py-0.5
+                                                               rounded-full
+                                                               font-semibold"
+                                                    >
+                                                        Transfer Keluar
+                                                    </span>
+
                                                 @else
 
                                                     <span
@@ -898,26 +938,32 @@
 
 
                                         {{-- JUMLAH --}}
-                                        <td
-                                            class="py-2.5 px-3
-                                                   text-emerald-400
-                                                   font-semibold text-xs
-                                                   w-40 text-right
-                                                   align-middle"
-                                        >
+<td
+    class="py-2.5 px-3
+           font-semibold text-xs
+           w-40 text-right
+           align-middle
+           {{ $hist->added_stock > 0
+                ? 'text-emerald-400'
+                : ($hist->added_stock < 0
+                    ? 'text-orange-400'
+                    : 'text-gray-400') }}"
+>
 
                                             <div
                                                 class="flex items-center
                                                        justify-end gap-2"
                                             >
 
-                                                <span>
-                                                    @if($hist->added_stock > 0)
-                                                        +{{ $hist->added_stock }} pcs
-                                                    @else
-                                                        -
-                                                    @endif
-                                                </span>
+                                               <span>
+                                @if($hist->added_stock > 0)
+                                    +{{ $hist->added_stock }} pcs
+                                @elseif($hist->added_stock < 0)
+                                    {{ $hist->added_stock }} pcs
+                                @else
+                                    -
+                                @endif
+                            </span>
 
 
                                                 {{-- HAPUS RIWAYAT --}}

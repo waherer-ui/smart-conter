@@ -32,6 +32,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\TransferController;
 use App\Http\Controllers\SupportController as OwnerSupportController;
 
 
@@ -235,6 +236,25 @@ Route::middleware(['auth.role', 'active.store'])->group(function () {
 
     Route::get('/pembelian/{id}', [PurchaseController::class, 'show'])
         ->name('purchase.show');
+        
+            // =========================
+    // TRANSFER ANTAR TOKO
+    // =========================
+
+    Route::get('/transfer', [TransferController::class, 'index'])
+        ->name('transfer.index');
+
+    Route::get('/transfer/tambah', [TransferController::class, 'create'])
+        ->name('transfer.create');
+
+    Route::post('/transfer', [TransferController::class, 'store'])
+        ->name('transfer.store');
+        
+        Route::get('/transfer/{id}', [TransferController::class, 'show'])
+    ->name('transfer.show');
+    
+    Route::post('/transfer/{id}/terima', [TransferController::class, 'receive'])
+    ->name('transfer.receive');
 
 });
 
