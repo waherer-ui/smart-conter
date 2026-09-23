@@ -29,7 +29,7 @@
 >
 
     <title>
-        Smart POS - @yield('title', 'Dashboard')
+        KasirKU - @yield('title', 'Dashboard')
     </title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -39,6 +39,66 @@
 
 <body class="min-h-screen bg-gray-900 text-gray-200 flex flex-col">
 
+
+{{-- ========================================================= --}}
+{{-- KASIRKU SPLASH SCREEN --}}
+{{-- ========================================================= --}}
+
+@if(session('logged_in'))
+
+    <div
+        id="kasirku-splash"
+        class="fixed inset-0 z-[9999]
+               hidden items-center justify-center
+               bg-gray-900
+               opacity-0
+               transition-opacity duration-500"
+    >
+
+        <div class="flex flex-col items-center text-center">
+
+            <div
+                class="flex h-20 w-20
+                       items-center justify-center
+                       rounded-3xl
+                       bg-emerald-500
+                       text-4xl
+                       font-black
+                       text-white
+                       shadow-2xl
+                       shadow-emerald-500/30"
+            >
+                K
+            </div>
+
+            <div
+                class="mt-5
+                       text-3xl
+                       font-black
+                       tracking-tight"
+            >
+                <span class="text-emerald-400">
+                    asir
+                </span>
+
+                <span class="text-white">
+                    KU
+                </span>
+            </div>
+
+            <p
+                class="mt-2
+                       text-sm
+                       text-gray-400"
+            >
+                Solusi kasir untuk usaha Anda.
+            </p>
+
+        </div>
+
+    </div>
+
+@endif
 
 {{-- ========================================================= --}}
 {{-- DATA USER & TOKO AKTIF --}}
@@ -2988,6 +3048,65 @@ if ('serviceWorker' in navigator) {
             });
     });
 }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const splash = document.getElementById('kasirku-splash');
+
+    if (!splash) {
+        return;
+    }
+
+    const splashShown = sessionStorage.getItem(
+        'kasirku_splash_shown'
+    );
+
+    /*
+     * Kalau splash sudah pernah ditampilkan
+     * dalam sesi aplikasi ini, jangan tampilkan lagi.
+     */
+    if (splashShown) {
+        splash.remove();
+        return;
+    }
+
+    /*
+     * Tandai bahwa splash sudah ditampilkan.
+     */
+    sessionStorage.setItem(
+        'kasirku_splash_shown',
+        '1'
+    );
+
+    /*
+     * Tampilkan splash.
+     */
+    splash.classList.remove('hidden');
+
+    /*
+     * Tunggu sebentar sebelum fade out.
+     */
+    setTimeout(function () {
+
+        splash.classList.remove('opacity-0');
+        splash.classList.add('opacity-100');
+
+    }, 50);
+
+    setTimeout(function () {
+
+        splash.classList.remove('opacity-100');
+        splash.classList.add('opacity-0');
+
+        setTimeout(function () {
+            splash.remove();
+        }, 500);
+
+    }, 750);
+
+});
 </script>
 
 </body>
