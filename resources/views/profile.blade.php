@@ -129,6 +129,61 @@
 
 </div>
 
+{{-- =========================================================
+     DATA & BACKUP
+========================================================== --}}
+<div class="bg-gray-800/80 border border-white/10 rounded-2xl shadow-xl backdrop-blur-md overflow-hidden">
+
+    <div class="px-5 py-4 border-b border-white/10">
+        <div class="flex items-center gap-3">
+
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-xl shrink-0">
+                💾
+            </div>
+
+            <div>
+                <h2 class="text-sm font-semibold text-white">
+                    Data & Backup
+                </h2>
+
+                <p class="text-[11px] text-gray-500 mt-0.5">
+                    Kelola keamanan dan salinan data bisnis Anda.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+
+    <a
+        href="{{ route('backup.index') }}"
+        class="flex items-center gap-4 px-5 py-4 hover:bg-white/5 transition group"
+    >
+
+        <div class="w-10 h-10 rounded-xl bg-gray-900 border border-white/10 flex items-center justify-center text-lg">
+            📦
+        </div>
+
+        <div class="flex-1 min-w-0">
+
+            <p class="text-sm font-medium text-white">
+                Backup & Restore
+            </p>
+
+            <p class="text-[11px] text-gray-500 mt-0.5">
+                Simpan atau pulihkan data bisnis Anda.
+            </p>
+
+        </div>
+
+        <div class="text-gray-500 group-hover:text-emerald-400 transition text-lg">
+            →
+        </div>
+
+    </a>
+
+</div>
+
 
 {{-- =========================================================
      REFERRAL

@@ -20,6 +20,7 @@ use App\Http\Controllers\AdminKasirku\SupportController;
 use App\Http\Controllers\AdminKasirku\AuditLogController;
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\LaporanController;
@@ -867,6 +868,22 @@ Route::middleware('auth.role')->group(function () {
 Route::middleware('auth.role:admin')->group(function () {
 
 
+Route::get('/backup', [BackupController::class, 'index'])
+        ->name('backup.index');
+
+    Route::get('/backup/download', [BackupController::class, 'download'])
+        ->name('backup.download');
+        
+        Route::get('/backup/restore', [BackupController::class, 'restoreIndex'])
+    ->name('backup.restore');
+
+Route::post('/backup/restore/preview', [BackupController::class, 'restorePreview'])
+    ->name('backup.restore.preview');
+    
+    Route::post('/backup/restore', [BackupController::class, 'restore'])
+    ->name('backup.restore.execute');
+        
+        
     /*
     |--------------------------------------------------------------------------
     | MANAJEMEN USER
@@ -954,7 +971,6 @@ Route::middleware('auth.role:admin')->group(function () {
 
 Route::get('/', function () {
 
-
     /*
     |--------------------------------------------------------------------------
     | BELUM LOGIN
@@ -962,8 +978,19 @@ Route::get('/', function () {
     */
 
     if (!session('logged_in')) {
+        return redirect()->route('login');
+    }
 
-        return view('welcome.welcome');
+
+    /*
+    |--------------------------------------------------------------------------
+    | PLATFORM ADMIN
+    |--------------------------------------------------------------------------
+    */
+
+    if (session('is_platform_admin')) {
+        return redirect()
+            ->route('admin-kasirku.dashboard');
     }
 
 
@@ -974,7 +1001,6 @@ Route::get('/', function () {
     */
 
     if (session('user_role') === 'admin') {
-
         return redirect()
             ->route('dashboard');
     }
@@ -987,7 +1013,6 @@ Route::get('/', function () {
     */
 
     if (session('user_role') === 'kasir') {
-
         return redirect()
             ->route('kasir.index');
     }
@@ -1039,10 +1064,10 @@ Route::get('/logout', function (Request $request) {
     */
 
     return redirect()
-        ->route('dashboard')
-        ->with(
-            'success',
-            'Anda berhasil logout.'
-        );
+    ->route('login')
+    ->with(
+        'success',
+        'Anda berhasil logout.'
+    );
 
 })->name('logout');
