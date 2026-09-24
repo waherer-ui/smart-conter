@@ -1303,7 +1303,7 @@ if ($layoutUser) {
     <div
         id="mobile-menu"
         class="hidden absolute
-               top-16 left-0 right-0 px-4"
+               top-16 right-3 w-64 z-[63]"
     >
 
         <div
@@ -2058,7 +2058,22 @@ function toggleMobileMenu() {
 
 }
 
+document.addEventListener('click', function (event) {
+    const menu = document.getElementById('mobile-menu');
 
+    if (!menu || menu.classList.contains('hidden')) {
+        return;
+    }
+
+    const profileButton = event.target.closest(
+        '[aria-label="Menu profil"]'
+    );
+
+    // Klik di luar dropdown
+    if (!menu.contains(event.target) && !profileButton) {
+        menu.classList.add('hidden');
+    }
+});
 /*
 |--------------------------------------------------------------------------
 | MOBILE STORE DROPDOWN
