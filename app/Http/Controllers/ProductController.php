@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductHistory;
 use App\Models\Store;
 use App\Services\AuditLogService;
+use App\Models\Customer;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -382,70 +383,83 @@ class ProductController extends Controller
     */
 
     public function kasir(Request $request)
-    {
-        $search = $request->input('search');
-        $category = $request->input('category');
+{
+    $search = $request->input('search');
+    $category = $request->input('category');
 
-        $query = Product::where(
-            'store_id',
-            $this->activeStoreId()
-        );
+    $query = Product::where(
+        'store_id',
+        $this->activeStoreId()
+    );
 
-        if ($search) {
+    if ($search) {
 
-            $query->where(function ($q) use ($search) {
+        $query->where(function ($q) use ($search) {
 
-                $q->where(
-                    'name',
-                    'like',
-                    '%' . $search . '%'
-                )
-                ->orWhere(
-                    'category',
-                    'like',
-                    '%' . $search . '%'
-                )
-                ->orWhere(
-                    'sku',
-                    'like',
-                    '%' . $search . '%'
-                );
-
-            });
-        }
-
-        if ($category && $category !== 'all') {
-
-            $query->where(
-                'category',
-                $category
-            );
-        }
-
-        $products = $query
-            ->orderBy('name')
-            ->get();
-
-        $categories = Product::where(
-            'store_id',
-            $this->activeStoreId()
-        )
-        ->select('category')
-        ->distinct()
-        ->orderBy('category')
-        ->pluck('category');
-
-
-        return view(
-            'kasir',
-            compact(
-                'products',
-                'categories',
-                'category',
-                'search'
+            $q->where(
+                'name',
+                'like',
+                '%' . $search . '%'
             )
+            ->orWhere(
+                'category',
+                'like',
+                '%' . $search . '%'
+            )
+            ->orWhere(
+                'sku',
+                'like',
+                '%' . $search . '%'
+            );
+
+        });
+    }
+
+    if ($category && $category !== 'all') {
+
+        $query->where(
+            'category',
+            $category
         );
     }
+
+    $products = $query
+        ->orderBy('name')
+        ->get();
+
+    $categories = Product::where(
+        'store_id',
+        $this->activeStoreId()
+    )
+    ->select('category')
+    ->distinct()
+    ->orderBy('category')
+    ->pluck('category');
+
+    /*
+    |--------------------------------------------------------------------------
+    | DAFTAR PELANGGAN UNTUK CASHBON
+    |--------------------------------------------------------------------------
+    */
+
+    $customers = Customer::where(
+        'store_id',
+        $this->activeStoreId()
+    )
+    ->orderBy('name')
+    ->get();
+
+    return view(
+        'kasir',
+        compact(
+            'products',
+            'categories',
+            'category',
+            'search',
+            'customers'
+        )
+    );
+}
 
 
     /*

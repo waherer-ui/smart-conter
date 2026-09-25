@@ -522,4 +522,53 @@ class CustomerController extends Controller
                 'Pembayaran utang berhasil dicatat.'
             );
     }
+    
+    public function ajaxStore(Request $request)
+{
+    $storeId = session('active_store_id');
+
+    if (!$storeId) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Toko aktif tidak ditemukan.',
+        ], 422);
+    }
+
+    $validated = $request->validate([
+        'name' => [
+            'required',
+            'string',
+            'max:255',
+        ],
+
+        'phone' => [
+            'nullable',
+            'string',
+            'max:50',
+        ],
+
+        'address' => [
+            'nullable',
+            'string',
+            'max:500',
+        ],
+    ]);
+
+    $customer = Customer::create([
+        'store_id' => $storeId,
+        'name' => $validated['name'],
+        'phone' => $validated['phone'] ?? null,
+        'address' => $validated['address'] ?? null,
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Pelanggan berhasil ditambahkan.',
+        'customer' => [
+            'id' => $customer->id,
+            'name' => $customer->name,
+            'phone' => $customer->phone,
+        ],
+    ]);
+}
 }

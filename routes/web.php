@@ -26,6 +26,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\ReceiptSettingController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StoreController;
@@ -181,6 +182,10 @@ Route::middleware(['auth.role', 'active.store'])->group(function () {
 
     Route::get('/pelanggan/{id}', [CustomerController::class, 'show'])
         ->name('pelanggan.show');
+        
+        Route::post('/pelanggan/ajax', [CustomerController::class, 'ajaxStore'])
+    ->middleware('active.store')
+    ->name('pelanggan.ajax.store');
 
     // =========================
     // PIUTANG / UTANG PELANGGAN
@@ -925,6 +930,27 @@ Route::post('/backup/restore/preview', [BackupController::class, 'restorePreview
         '/setting',
         [SettingController::class, 'update']
     )->name('setting.update');
+    
+    /*
+|--------------------------------------------------------------------------
+| PENGATURAN STRUK
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/pengaturan-struk',
+    [ReceiptSettingController::class, 'index']
+)->name('receipt-settings.index');
+
+Route::put(
+    '/pengaturan-struk',
+    [ReceiptSettingController::class, 'update']
+)->name('receipt-settings.update');
+
+Route::delete(
+    '/pengaturan-struk/logo',
+    [ReceiptSettingController::class, 'deleteLogo']
+)->name('receipt-settings.logo.delete');
 
 
     /*

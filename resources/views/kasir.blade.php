@@ -402,44 +402,101 @@
                 <option value="Debit Card">
                     Debit Card
                 </option>
+                
+                <option value="Cashbon / Utang">
+                    Cashbon / Utang
+                </option>
 
             </select>
 
         </div>
 
 
-        <div>
+        {{-- PELANGGAN CASHBON --}}
+<div
+    id="cashbon-customer-box"
+    class="hidden"
+>
 
-            <label class="block text-xs font-medium text-gray-300 mb-1">
-                Nominal Uang Bayar (Rp)
-            </label>
+    <label class="block text-xs font-medium text-gray-300 mb-1">
+        Pelanggan
+    </label>
 
-            <input
-                type="number"
-                id="pay-amount"
-                placeholder="Ketik nominal uang..."
-                min="0"
-                oninput="calculateChange()"
-                class="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs outline-none"
-            >
+    <select
+    id="cashbon-customer"
+    class="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs outline-none focus:ring-1 focus:ring-indigo-500"
+>
+    <option value="">
+        Pilih pelanggan...
+    </option>
 
-        </div>
+    @isset($customers)
+
+        @foreach($customers as $customer)
+
+            <option value="{{ $customer->id }}">
+                {{ $customer->name }}
+                @if($customer->phone)
+                    — {{ $customer->phone }}
+                @endif
+            </option>
+
+        @endforeach
+
+    @endisset
+</select>
+
+<button
+    type="button"
+    onclick="openAddCustomerModal()"
+    class="w-full mt-2 bg-gray-700 hover:bg-gray-600 border border-white/10 text-indigo-300 hover:text-white py-2 rounded-xl text-xs font-semibold transition"
+>
+    + Tambah Pelanggan
+</button>
+
+<p class="text-[10px] text-gray-500 mt-1">
+    Pelanggan wajib dipilih untuk transaksi Cashbon / Utang.
+</p>
+
+</div>
+
+
+{{-- NOMINAL PEMBAYARAN --}}
+<div>
+
+    <label class="block text-xs font-medium text-gray-300 mb-1">
+        Nominal Uang Bayar (Rp)
+    </label>
+
+    <input
+        type="number"
+        id="pay-amount"
+        placeholder="Ketik nominal uang..."
+        min="0"
+        oninput="calculateChange()"
+        class="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs outline-none"
+    >
+
+</div>
 
 
         <div class="flex justify-between items-center py-2 border-t border-white/10 text-xs">
 
-            <span class="text-gray-300">
-                Kembalian:
-            </span>
+    <span
+        id="pay-change-label"
+        class="text-gray-300"
+    >
+        Kembalian:
+    </span>
 
-            <strong
-                id="pay-change"
-                class="text-emerald-400 text-sm"
-            >
-                Rp 0
-            </strong>
+    <strong
+        id="pay-change"
+        class="text-emerald-400 text-sm"
+    >
+        Rp 0
+    </strong>
 
-        </div>
+</div>
 
 
         <div class="flex gap-2 pt-2">
@@ -467,81 +524,404 @@
 
 </div>
 
+{{-- ============================================================
+     MODAL TAMBAH PELANGGAN DARI CASHBON
+============================================================ --}}
+<div
+    id="add-customer-modal"
+    class="hidden fixed inset-0 z-[60] items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+>
+    <div class="bg-gray-800 border border-white/15 rounded-2xl w-full max-w-md p-5 shadow-2xl">
+
+        <div class="flex justify-between items-center pb-3 border-b border-white/10">
+
+            <h3 class="text-sm font-semibold text-white">
+                Tambah Pelanggan
+            </h3>
+
+            <button
+                type="button"
+                onclick="closeAddCustomerModal()"
+                class="text-gray-400 hover:text-white text-sm font-bold"
+            >
+                ✕
+            </button>
+
+        </div>
+
+
+        <div class="space-y-3 mt-4">
+
+            <div>
+
+                <label class="block text-xs font-medium text-gray-300 mb-1">
+                    Nama Pelanggan *
+                </label>
+
+                <input
+                    type="text"
+                    id="new-customer-name"
+                    placeholder="Nama pelanggan..."
+                    class="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs outline-none focus:ring-1 focus:ring-indigo-500"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-xs font-medium text-gray-300 mb-1">
+                    No. HP
+                </label>
+
+                <input
+                    type="text"
+                    id="new-customer-phone"
+                    placeholder="Nomor HP..."
+                    class="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs outline-none focus:ring-1 focus:ring-indigo-500"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label class="block text-xs font-medium text-gray-300 mb-1">
+                    Alamat
+                </label>
+
+                <textarea
+                    id="new-customer-address"
+                    rows="2"
+                    placeholder="Alamat pelanggan..."
+                    class="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
+                ></textarea>
+
+            </div>
+
+        </div>
+
+
+        <div class="flex gap-2 mt-5">
+
+            <button
+                type="button"
+                onclick="closeAddCustomerModal()"
+                class="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-300 py-2.5 rounded-xl text-xs font-medium"
+            >
+                Batal
+            </button>
+
+            <button
+                type="button"
+                id="save-new-customer-btn"
+                onclick="saveNewCustomer()"
+                class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl text-xs font-semibold"
+            >
+                Simpan Pelanggan
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+@php
+    $activeStoreId = session('active_store_id');
+
+    $receiptSetting = null;
+
+    if ($activeStoreId) {
+        $receiptSetting = \App\Models\ReceiptSetting::where(
+            'store_id',
+            $activeStoreId
+        )->first();
+    }
+
+    $activeStore = null;
+
+    if ($activeStoreId) {
+        $activeStore = \App\Models\Store::find($activeStoreId);
+    }
+
+    $customReceiptEnabled = false;
+
+    if ($activeStore) {
+        $customReceiptEnabled = $activeStore->hasFeature('custom_receipt');
+    }
+@endphp
+
 
 {{-- ============================================================
-     STRUK
+STRUK
 ============================================================ --}}
+
 <div
     id="print-receipt"
     class="hidden print:block font-mono text-black bg-white p-4 max-w-[300px] mx-auto text-xs"
->
+>{{-- ========================================================
+     HEADER
+========================================================= --}}
 
-    <div class="text-center pb-2 border-b border-dashed border-black">
+<div class="text-center pb-2 border-b border-dashed border-black">
+
+    @if($customReceiptEnabled && $receiptSetting)
+
+        {{-- LOGO --}}
+        @if($receiptSetting->logo)
+
+            <div class="flex justify-center mb-2">
+
+                <img
+                    src="{{ asset($receiptSetting->logo) }}"
+                    alt="Logo"
+                    class="max-w-[170px] max-h-[90px] object-contain"
+                >
+
+            </div>
+
+        @endif
+
+
+        {{-- NAMA USAHA --}}
+        @if($receiptSetting->business_name)
+
+            <h2
+                class="font-bold text-sm"
+                id="receipt-business-name"
+            >
+                {{ $receiptSetting->business_name }}
+            </h2>
+
+        @else
+
+            <h2
+                class="font-bold text-sm"
+                id="receipt-business-name"
+            >
+                KasirKU
+            </h2>
+
+        @endif
+
+
+        {{-- ALAMAT --}}
+        @if($receiptSetting->address)
+
+            <p
+                class="text-[10px] whitespace-pre-line"
+                id="receipt-address"
+            >
+                {{ $receiptSetting->address }}
+            </p>
+
+        @endif
+
+
+        {{-- TELEPON --}}
+        @if($receiptSetting->phone)
+
+            <p
+                class="text-[10px]"
+                id="receipt-phone"
+            >
+                Telp: {{ $receiptSetting->phone }}
+            </p>
+
+        @endif
+
+
+        {{-- EMAIL --}}
+        @if($receiptSetting->email)
+
+            <p
+                class="text-[10px]"
+                id="receipt-email"
+            >
+                {{ $receiptSetting->email }}
+            </p>
+
+        @endif
+
+
+        {{-- HEADER CUSTOM --}}
+        @if($receiptSetting->header_text)
+
+            <p
+                class="text-[10px] whitespace-pre-line mt-1"
+                id="receipt-header-text"
+            >
+                {{ $receiptSetting->header_text }}
+            </p>
+
+        @endif
+
+    @else
+
+        {{-- DEFAULT FREE --}}
 
         <h2 class="font-bold text-sm">
-            SMART POS KONTER
+            KasirKU
         </h2>
 
-        <p class="text-[10px]">
-            Pusat Aksesoris & Servis HP
-        </p>
+    @endif
 
-        <p class="text-[10px]" id="receipt-invoice">
-            -
-        </p>
 
-        <p class="text-[10px]" id="receipt-date">
-            -
-        </p>
+    {{-- INVOICE --}}
+
+    <p
+        class="text-[10px] mt-1"
+        id="receipt-invoice"
+    >
+        -
+    </p>
+
+
+    {{-- TANGGAL --}}
+
+    <p
+        class="text-[10px]"
+        id="receipt-date"
+    >
+        -
+    </p>
+
+
+    {{-- CUSTOMER CASHBON --}}
+
+    <p
+        class="text-[10px] mt-1"
+        id="receipt-customer"
+    >
+    </p>
+
+</div>
+
+
+{{-- ========================================================
+     ITEM
+========================================================= --}}
+
+<div
+    class="py-2 border-b border-dashed border-black space-y-1"
+    id="receipt-items"
+>
+</div>
+
+
+{{-- ========================================================
+     TOTAL
+========================================================= --}}
+
+<div
+    class="py-2 border-b border-dashed border-black space-y-1 text-[11px]"
+>
+
+    <div class="flex justify-between">
+
+        <span>Subtotal:</span>
+
+        <span id="receipt-subtotal">
+            Rp 0
+        </span>
 
     </div>
 
 
     <div
-        class="py-2 border-b border-dashed border-black space-y-1"
-        id="receipt-items"
+        id="receipt-discount-row"
+        class="flex justify-between"
     >
-    </div>
 
+        <span>Diskon:</span>
 
-    <div class="py-2 border-b border-dashed border-black space-y-1 text-[11px]">
-
-        <div class="flex justify-between">
-            <span>Subtotal:</span>
-            <span id="receipt-subtotal">Rp 0</span>
-        </div>
-
-        <div class="flex justify-between">
-            <span>Diskon:</span>
-            <span id="receipt-discount">Rp 0</span>
-        </div>
-
-        <div class="flex justify-between font-bold text-xs pt-1">
-            <span>TOTAL:</span>
-            <span id="receipt-total">Rp 0</span>
-        </div>
-
-        <div class="flex justify-between">
-            <span>
-                Bayar (<span id="receipt-method">Tunai</span>):
-            </span>
-
-            <span id="receipt-paid">
-                Rp 0
-            </span>
-        </div>
-
-        <div class="flex justify-between">
-            <span>Kembali:</span>
-            <span id="receipt-change">Rp 0</span>
-        </div>
+        <span id="receipt-discount">
+            Rp 0
+        </span>
 
     </div>
 
 
-    <div class="text-center pt-3 text-[10px]">
+    <div class="flex justify-between font-bold text-xs pt-1">
 
-        <p>
+        <span>TOTAL:</span>
+
+        <span id="receipt-total">
+            Rp 0
+        </span>
+
+    </div>
+
+
+    <div class="flex justify-between">
+
+        <span>
+            Bayar
+            (<span id="receipt-method">Tunai</span>):
+        </span>
+
+        <span id="receipt-paid">
+            Rp 0
+        </span>
+
+    </div>
+
+
+    <div class="flex justify-between">
+
+        <span id="receipt-balance-label">
+            Kembali:
+        </span>
+
+        <span id="receipt-change">
+            Rp 0
+        </span>
+
+    </div>
+
+</div>
+
+
+{{-- ========================================================
+     FOOTER
+========================================================= --}}
+
+<div class="text-center pt-3 text-[10px]">
+
+    @if($customReceiptEnabled && $receiptSetting)
+
+        @if($receiptSetting->footer_text)
+
+            <p
+                id="receipt-footer-text"
+                class="whitespace-pre-line"
+            >
+                {{ $receiptSetting->footer_text }}
+            </p>
+
+        @else
+
+            <p id="receipt-footer-text">
+                Terima kasih 🙏
+            </p>
+
+        @endif
+
+
+        @if($receiptSetting->business_name)
+
+            <p
+                class="font-bold mt-1"
+                id="receipt-footer-business"
+            >
+                {{ $receiptSetting->business_name }}
+            </p>
+
+        @endif
+
+    @else
+
+        <p id="receipt-footer-text">
             Terima Kasih Atas Kunjungan Anda!
         </p>
 
@@ -549,7 +929,13 @@
             Barang yang sudah dibeli tidak dapat ditukar.
         </p>
 
-    </div>
+        <p class="font-bold mt-1">
+            KasirKU
+        </p>
+
+    @endif
+
+</div>
 
 </div>
 
@@ -1146,6 +1532,14 @@ function openPaymentModal() {
     document.getElementById(
         'pay-amount'
     ).value = '';
+    
+    document.getElementById(
+    'cashbon-customer'
+).value = '';
+
+document.getElementById(
+    'cashbon-customer-box'
+).classList.add('hidden');
 
 
     document.getElementById(
@@ -1187,14 +1581,51 @@ function closePaymentModal() {
 
 function paymentMethodChanged() {
 
-    let method =
+    const method =
         document.getElementById('pay-method').value;
 
-    let input =
+    const input =
         document.getElementById('pay-amount');
 
-    let calc =
+    const customerBox =
+        document.getElementById('cashbon-customer-box');
+
+    const customerSelect =
+        document.getElementById('cashbon-customer');
+
+    const calc =
         calculateCartTotal();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CASHBON / UTANG
+    |--------------------------------------------------------------------------
+    */
+
+    if (method === 'Cashbon / Utang') {
+    customerBox.classList.remove('hidden');
+
+    input.value = '';
+    input.readOnly = false;
+    input.placeholder = 'Masukkan pembayaran sebagian...';
+
+    calculateChange();
+    return;
+}
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | METODE PEMBAYARAN BIASA
+    |--------------------------------------------------------------------------
+    */
+
+    // Sembunyikan pelanggan
+    customerBox.classList.add('hidden');
+
+    // Bersihkan pilihan pelanggan
+    customerSelect.value = '';
 
 
     if (method !== 'Tunai') {
@@ -1203,6 +1634,9 @@ function paymentMethodChanged() {
             calc.total;
 
         input.readOnly = true;
+
+        input.placeholder =
+            'Nominal pembayaran';
 
         calculateChange();
 
@@ -1230,9 +1664,17 @@ function paymentMethodChanged() {
 
 function calculateChange() {
 
+    const method =
+        document.getElementById('pay-method').value;
+
+    const label =
+        document.getElementById('pay-change-label');
+
+    const result =
+        document.getElementById('pay-change');
+
     let calc =
         calculateCartTotal();
-
 
     let paid =
         parseFloat(
@@ -1240,17 +1682,46 @@ function calculateChange() {
         ) || 0;
 
 
-    let change =
+    /*
+    |--------------------------------------------------------------------------
+    | CASHBON / UTANG
+    |--------------------------------------------------------------------------
+    */
+
+    if (method === 'Cashbon / Utang') {
+
+        const remainingDebt =
+            Math.max(
+                0,
+                calc.total - paid
+            );
+
+        label.innerText =
+            'Sisa Utang:';
+
+        result.innerText =
+            formatRupiah(remainingDebt);
+
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PEMBAYARAN BIASA
+    |--------------------------------------------------------------------------
+    */
+
+    label.innerText =
+        'Kembalian:';
+
+    const change =
         paid - calc.total;
 
-
-    document.getElementById(
-        'pay-change'
-    ).innerText =
+    result.innerText =
         formatRupiah(
             change >= 0 ? change : 0
         );
-
 }
 
 
@@ -1290,10 +1761,14 @@ async function submitTransaction() {
         const method =
             document.getElementById('pay-method').value;
 
-        const paid =
+        let paid =
             parseFloat(
                 document.getElementById('pay-amount').value
             ) || 0;
+            
+            const customerId =
+    document.getElementById('cashbon-customer').value;
+    
 
 
         /*
@@ -1316,6 +1791,38 @@ async function submitTransaction() {
                 'Nominal uang bayar kurang dari total tagihan!'
             );
         }
+        
+        /*
+|--------------------------------------------------------------------------
+| VALIDASI CASHBON
+|--------------------------------------------------------------------------
+*/
+
+if (method === 'Cashbon / Utang') {
+    if (!customerId) {
+        throw new Error(
+            'Silakan pilih pelanggan untuk transaksi Cashbon / Utang.'
+        );
+    }
+
+    if (calc.total <= 0) {
+        throw new Error(
+            'Transaksi Cashbon harus memiliki total tagihan.'
+        );
+    }
+
+    if (paid < 0) {
+        throw new Error(
+            'Nominal pembayaran tidak valid.'
+        );
+    }
+
+    if (paid > calc.total) {
+        throw new Error(
+            'Nominal pembayaran tidak boleh melebihi total tagihan.'
+        );
+    }
+}
 
 
         /*
@@ -1354,7 +1861,8 @@ async function submitTransaction() {
                     discount: calc.discountAmount,
                     total: calc.total,
                     paid: paid,
-                    payment_method: method
+                    payment_method: method,
+                    customer_id: customerId || null
                 })
             }
         );
@@ -1403,6 +1911,39 @@ async function submitTransaction() {
             'receipt-date'
         ).innerText =
             now.toLocaleString('id-ID');
+            
+/*
+|--------------------------------------------------------------------------
+| PELANGGAN STRUK
+|--------------------------------------------------------------------------
+*/
+
+const customerSelect =
+    document.getElementById('cashbon-customer');
+
+const selectedCustomer =
+    customerSelect.options[
+        customerSelect.selectedIndex
+    ];
+
+let customerName = '-';
+
+if (
+    method === 'Cashbon / Utang' &&
+    selectedCustomer
+) {
+    customerName =
+        selectedCustomer.textContent
+            .split('—')[0]
+            .trim();
+}
+
+document.getElementById(
+    'receipt-customer'
+).innerText =
+    method === 'Cashbon / Utang'
+        ? 'Pelanggan: ' + customerName
+        : '';
 
         document.getElementById(
             'receipt-subtotal'
@@ -1425,20 +1966,36 @@ async function submitTransaction() {
             method;
 
         document.getElementById(
-            'receipt-paid'
-        ).innerText =
-            formatRupiah(paid);
+    'receipt-paid'
+).innerText =
+    paid === 0
+        ? 'BELUM DIBAYAR'
+        : formatRupiah(paid);
 
 
         const change = Math.max(
-            0,
-            paid - calc.total
-        );
+    0,
+    paid - calc.total
+);
 
-        document.getElementById(
-            'receipt-change'
-        ).innerText =
-            formatRupiah(change);
+const remainingDebt = Math.max(
+    0,
+    calc.total - paid
+);
+
+document.getElementById(
+    'receipt-balance-label'
+).innerText =
+    method === 'Cashbon / Utang'
+        ? 'Sisa Utang:'
+        : 'Kembali:';
+
+document.getElementById(
+    'receipt-change'
+).innerText =
+    method === 'Cashbon / Utang'
+        ? formatRupiah(remainingDebt)
+        : formatRupiah(change);
 
 
         /*
@@ -1682,6 +2239,10 @@ function newTransaction() {
     document.getElementById(
         'receipt-date'
     ).innerText = '-';
+    
+    document.getElementById(
+    'receipt-customer'
+).innerText = '';
 
 
     document.getElementById(
@@ -1753,6 +2314,19 @@ function newTransaction() {
     document.getElementById(
         'pay-amount'
     ).readOnly = false;
+    
+    document.getElementById(
+    'cashbon-customer'
+).value = '';
+
+document.getElementById(
+    'cashbon-customer-box'
+).classList.add('hidden');
+
+document.getElementById(
+    'pay-change'
+).innerText =
+    formatRupiah(0);
 
 
     /*
@@ -1768,6 +2342,245 @@ function newTransaction() {
         behavior: 'smooth'
 
     });
+
+}
+
+/*
+|--------------------------------------------------------------------------
+| TAMBAH PELANGGAN DARI CASHBON
+|--------------------------------------------------------------------------
+*/
+
+function openAddCustomerModal() {
+
+    document.getElementById(
+        'add-customer-modal'
+    ).classList.remove('hidden');
+
+    document.getElementById(
+        'add-customer-modal'
+    ).classList.add('flex');
+
+    setTimeout(() => {
+
+        document.getElementById(
+            'new-customer-name'
+        ).focus();
+
+    }, 100);
+}
+
+
+function closeAddCustomerModal() {
+
+    document.getElementById(
+        'add-customer-modal'
+    ).classList.add('hidden');
+
+    document.getElementById(
+        'add-customer-modal'
+    ).classList.remove('flex');
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| SIMPAN PELANGGAN BARU
+|--------------------------------------------------------------------------
+*/
+
+async function saveNewCustomer() {
+
+    const nameInput =
+        document.getElementById(
+            'new-customer-name'
+        );
+
+    const phoneInput =
+        document.getElementById(
+            'new-customer-phone'
+        );
+
+    const addressInput =
+        document.getElementById(
+            'new-customer-address'
+        );
+
+    const button =
+        document.getElementById(
+            'save-new-customer-btn'
+        );
+
+
+    const name =
+        nameInput.value.trim();
+
+    const phone =
+        phoneInput.value.trim();
+
+    const address =
+        addressInput.value.trim();
+
+
+    if (!name) {
+
+        alert(
+            'Nama pelanggan wajib diisi.'
+        );
+
+        nameInput.focus();
+
+        return;
+    }
+
+
+    button.disabled = true;
+
+    button.innerText =
+        'Menyimpan...';
+
+
+    try {
+
+        const response =
+            await fetch(
+                "{{ route('pelanggan.ajax.store') }}",
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type':
+                            'application/json',
+
+                        'Accept':
+                            'application/json',
+
+                        'X-CSRF-TOKEN':
+                            '{{ csrf_token() }}'
+                    },
+
+                    body: JSON.stringify({
+
+                        name: name,
+
+                        phone: phone,
+
+                        address: address
+
+                    })
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            throw new Error(
+                result.message ||
+                'Gagal menyimpan pelanggan.'
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | MASUKKAN PELANGGAN BARU KE DROPDOWN
+        |--------------------------------------------------------------------------
+        */
+
+        const customerSelect =
+            document.getElementById(
+                'cashbon-customer'
+            );
+
+
+        const option =
+            document.createElement('option');
+
+
+        option.value =
+            result.customer.id;
+
+
+        option.textContent =
+            result.customer.phone
+                ? result.customer.name +
+                  ' — ' +
+                  result.customer.phone
+                : result.customer.name;
+
+
+        customerSelect.appendChild(
+            option
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | LANGSUNG PILIH
+        |--------------------------------------------------------------------------
+        */
+
+        customerSelect.value =
+            result.customer.id;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | BERSIHKAN FORM
+        |--------------------------------------------------------------------------
+        */
+
+        nameInput.value = '';
+
+        phoneInput.value = '';
+
+        addressInput.value = '';
+
+
+        closeAddCustomerModal();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | INFO
+        |--------------------------------------------------------------------------
+        */
+
+        alert(
+            'Pelanggan "' +
+            result.customer.name +
+            '" berhasil ditambahkan.'
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            'Add Customer Error:',
+            error
+        );
+
+        alert(
+            error.message ||
+            'Gagal menyimpan pelanggan.'
+        );
+
+    } finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            'Simpan Pelanggan';
+
+    }
 
 }
 

@@ -1,190 +1,376 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"><title>
+    Struk {{ $transaction->invoice_number }}
+</title>
 
-    <title>
-        Struk {{ $transaction->invoice_number }}
-    </title>
+<style>
+    @page {
+        margin: 0;
+    }
 
-    <style>
-        @page {
-            margin: 0;
-        }
+    body {
+        margin: 0;
+        padding: 4mm;
+        width: 72mm;
+        font-family: DejaVu Sans, sans-serif;
+        font-size: 10px;
+        color: #000;
+    }
 
-        body {
-            margin: 0;
-            padding: 4mm;
-            width: 72mm;
+    .center {
+        text-align: center;
+    }
 
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 10px;
-            color: #000;
-        }
+    .bold {
+        font-weight: bold;
+    }
 
-        .center {
-            text-align: center;
-        }
+    .line {
+        border-top: 1px dashed #000;
+        margin: 8px 0;
+    }
 
-        .bold {
-            font-weight: bold;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-        .line {
-            border-top: 1px dashed #000;
-            margin: 8px 0;
-        }
+    td {
+        vertical-align: top;
+        padding: 2px 0;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    .right {
+        text-align: right;
+    }
 
-        td {
-            vertical-align: top;
-            padding: 2px 0;
-        }
+    .total {
+        font-size: 12px;
+        font-weight: bold;
+    }
 
-        .right {
-            text-align: right;
-        }
+    .small {
+        font-size: 9px;
+    }
 
-        .total {
-            font-size: 12px;
-            font-weight: bold;
-        }
+    .business-name {
+        font-size: 14px;
+        font-weight: bold;
+    }
 
-        .small {
-            font-size: 9px;
-        }
-    </style>
-</head>
+    .logo {
+        max-width: 45mm;
+        max-height: 25mm;
+        object-fit: contain;
+        margin-bottom: 4px;
+    }
 
-<body>
+    .header-text,
+    .footer-text {
+        white-space: pre-line;
+    }
 
-    {{-- HEADER --}}
-    <div class="center">
+    .contact {
+        font-size: 9px;
+        line-height: 1.4;
+    }
+</style>
 
-        <div class="bold">
-            KASIRKU
+</head><body>@php
+/*
+* Ambil pengaturan struk berdasarkan toko transaksi.
+*
+* receiptSetting sudah dibuat per store.
+*/
+$receiptSetting = \App\Models\ReceiptSetting::where(
+'store_id',
+$transaction->store_id
+)->first();
+
+/*
+ * Cek apakah toko memiliki fitur Custom Struk.
+ */
+$customReceipt = false;
+
+if ($transaction->store) {
+    $customReceipt = $transaction->store->hasFeature('custom_receipt');
+}
+
+@endphp
+
+{{-- ========================================================= --}}
+{{-- HEADER STRUK --}}
+{{-- ========================================================= --}}
+
+<div class="center">@if($customReceipt && $receiptSetting)
+
+    {{-- LOGO --}}
+    @if($receiptSetting->logo)
+        <img
+            src="{{ public_path($receiptSetting->logo) }}"
+            class="logo"
+            alt="Logo"
+        >
+    @endif
+
+
+    {{-- NAMA USAHA --}}
+    @if($receiptSetting->business_name)
+        <div class="business-name">
+            {{ $receiptSetting->business_name }}
         </div>
+    @endif
 
-        <div>
-            {{ $transaction->invoice_number }}
+
+    {{-- ALAMAT --}}
+    @if($receiptSetting->address)
+        <div class="contact">
+            {{ $receiptSetting->address }}
         </div>
+    @endif
 
-        <div class="small">
-            {{ $transaction->created_at->format('d/m/Y H:i') }}
+
+    {{-- TELEPON --}}
+    @if($receiptSetting->phone)
+        <div class="contact">
+            Telp: {{ $receiptSetting->phone }}
         </div>
+    @endif
 
+
+    {{-- EMAIL --}}
+    @if($receiptSetting->email)
+        <div class="contact">
+            {{ $receiptSetting->email }}
+        </div>
+    @endif
+
+
+    {{-- HEADER TAMBAHAN --}}
+    @if($receiptSetting->header_text)
+        <div class="header-text small" style="margin-top: 4px;">
+            {{ $receiptSetting->header_text }}
+        </div>
+    @endif
+
+@else
+
+    {{-- HEADER DEFAULT FREE --}}
+    <div class="business-name">
+        KasirKU
     </div>
 
-    <div class="line"></div>
+@endif
 
-    {{-- ITEM --}}
-    <table>
 
-        @foreach ($transaction->items as $item)
+{{-- INVOICE --}}
+<div style="margin-top: 5px;">
+    {{ $transaction->invoice_number }}
+</div>
 
-            <tr>
-                <td colspan="2">
-                    {{ $item->product_name }}
-                </td>
-            </tr>
+{{-- TANGGAL --}}
+<div class="small">
+    {{ $transaction->created_at->format('d/m/Y H:i') }}
+</div>
 
-            <tr>
+</div><div class="line"></div>{{-- ========================================================= --}}
+{{-- CUSTOMER CASHBON --}}
+{{-- ========================================================= --}}
 
-                <td>
-                    {{ $item->quantity }}
-                    ×
-                    Rp {{ number_format($item->price, 0, ',', '.') }}
-                </td>
+@if ($transaction->payment_method === 'Cashbon / Utang')
 
-                <td class="right">
-                    Rp {{ number_format($item->subtotal, 0, ',', '.') }}
-                </td>
+<table>
 
-            </tr>
+    <tr>
+        <td>Pelanggan</td>
 
-        @endforeach
+        <td class="right">
+            {{ $transaction->customer->name ?? '-' }}
+        </td>
+    </tr>
 
-    </table>
+</table>
 
-    <div class="line"></div>
+<div class="line"></div>
 
-    {{-- RINGKASAN --}}
-    <table>
+@endif
 
-        <tr>
-            <td>Subtotal</td>
+{{-- ========================================================= --}}
+{{-- ITEMS --}}
+{{-- ========================================================= --}}
 
-            <td class="right">
-                Rp {{ number_format($transaction->subtotal, 0, ',', '.') }}
-            </td>
-        </tr>
+<table>@foreach ($transaction->items as $item)
 
-        @if ($transaction->discount > 0)
+    <tr>
+        <td colspan="2">
+            {{ $item->product_name }}
+        </td>
+    </tr>
 
-            <tr>
-                <td>Diskon</td>
+    <tr>
 
-                <td class="right">
-                    Rp {{ number_format($transaction->discount, 0, ',', '.') }}
-                </td>
-            </tr>
+        <td>
+            {{ $item->quantity }}
+            ×
+            Rp {{ number_format($item->price, 0, ',', '.') }}
+        </td>
+
+        <td class="right">
+            Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+        </td>
+
+    </tr>
+
+@endforeach
+
+</table><div class="line"></div>{{-- ========================================================= --}}
+{{-- SUMMARY --}}
+{{-- ========================================================= --}}
+
+<table><tr>
+    <td>Subtotal</td>
+
+    <td class="right">
+        Rp {{ number_format($transaction->subtotal, 0, ',', '.') }}
+    </td>
+</tr>
+
+
+@if ($transaction->discount > 0)
+
+    <tr>
+        <td>Diskon</td>
+
+        <td class="right">
+            Rp {{ number_format($transaction->discount, 0, ',', '.') }}
+        </td>
+    </tr>
+
+@endif
+
+
+<tr class="total">
+
+    <td>Total</td>
+
+    <td class="right">
+        Rp {{ number_format($transaction->total, 0, ',', '.') }}
+    </td>
+
+</tr>
+
+
+<tr>
+
+    <td>Bayar</td>
+
+    <td class="right">
+        Rp {{ number_format($transaction->paid, 0, ',', '.') }}
+    </td>
+
+</tr>
+
+
+<tr>
+
+    <td>
+
+        @if ($transaction->payment_method === 'Cashbon / Utang')
+            Sisa Utang
+        @else
+            Kembalian
+        @endif
+
+    </td>
+
+
+    <td class="right">
+
+        @if ($transaction->payment_method === 'Cashbon / Utang')
+
+            Rp
+            {{ number_format(
+                max(
+                    0,
+                    $transaction->total - $transaction->paid
+                ),
+                0,
+                ',',
+                '.'
+            ) }}
+
+        @else
+
+            Rp
+            {{ number_format(
+                $transaction->change,
+                0,
+                ',',
+                '.'
+            ) }}
 
         @endif
 
-        <tr class="total">
+    </td>
 
-            <td>Total</td>
+</tr>
 
-            <td class="right">
-                Rp {{ number_format($transaction->total, 0, ',', '.') }}
-            </td>
+</table><div class="line"></div>{{-- ========================================================= --}}
+{{-- FOOTER --}}
+{{-- ========================================================= --}}
 
-        </tr>
+<div class="center small"><div>
+    Pembayaran:
+    {{ $transaction->payment_method }}
+</div>
 
-        <tr>
-            <td>
-                Bayar
-            </td>
 
-            <td class="right">
-                Rp {{ number_format($transaction->paid, 0, ',', '.') }}
-            </td>
-        </tr>
+@if($customReceipt && $receiptSetting)
 
-        <tr>
-            <td>
-                Kembalian
-            </td>
+    @if($receiptSetting->footer_text)
 
-            <td class="right">
-                Rp {{ number_format($transaction->change, 0, ',', '.') }}
-            </td>
-        </tr>
-
-    </table>
-
-    <div class="line"></div>
-
-    <div class="center small">
-
-        <div>
-            Pembayaran:
-            {{ $transaction->payment_method }}
+        <div
+            class="footer-text"
+            style="margin-top: 6px;"
+        >
+            {{ $receiptSetting->footer_text }}
         </div>
 
-        <br>
+    @else
 
+        <div style="margin-top: 6px;">
+            Terima kasih 🙏
+        </div>
+
+    @endif
+
+
+    @if($receiptSetting->business_name)
+
+        <div
+            class="bold"
+            style="margin-top: 4px;"
+        >
+            {{ $receiptSetting->business_name }}
+        </div>
+
+    @endif
+
+@else
+
+    <div style="margin-top: 6px;">
         Terima kasih 🙏
-
-        <br>
-
-        <strong>KasirKU</strong>
-
     </div>
 
-</body>
+    <div
+        class="bold"
+        style="margin-top: 4px;"
+    >
+        KasirKU
+    </div>
+
+@endif
+
+</div></body>
 </html>

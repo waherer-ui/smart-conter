@@ -6,6 +6,7 @@ use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\Purchase;
 use App\Models\Transaction;
+use App\Models\ReceiptSetting;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -140,5 +141,10 @@ public function canAddCustomer(): bool
 public function productHistories(): HasMany
 {
     return $this->hasMany(ProductHistory::class);
+}
+
+public function receiptSetting(): \Illuminate\Database\Eloquent\Relations\HasOne
+{
+    return $this->hasOne(ReceiptSetting::class);
 }
 }

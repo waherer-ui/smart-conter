@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Transaction;
 use App\Services\AuditLogService;
+use App\Models\Customer;
+use App\Models\Debt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 
 class TransactionController extends Controller
 {
@@ -18,384 +21,690 @@ class TransactionController extends Controller
         return (int) session('active_store_id');
     }
 
-    /**
-     * Menyimpan transaksi penjualan.
-     */
-    public function store(Request $request)
-    {
+/**
+ * Menyimpan transaksi penjualan.
+ */
+public function store(Request $request)
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Validasi Data
+    |--------------------------------------------------------------------------
+    */
+
+    $validated = $request->validate([
+        'items' => [
+            'required',
+            'array',
+            'min:1',
+        ],
+
+        'items.*.id' => [
+            'required',
+            'integer',
+            'exists:products,id',
+        ],
+
+        'items.*.quantity' => [
+            'required',
+            'integer',
+            'min:1',
+        ],
+
+        'subtotal' => [
+            'required',
+            'numeric',
+            'min:0',
+        ],
+
+        'discount' => [
+            'required',
+            'numeric',
+            'min:0',
+        ],
+
+        'total' => [
+            'required',
+            'numeric',
+            'min:0',
+        ],
+
+        'paid' => [
+            'required',
+            'numeric',
+            'min:0',
+        ],
+
+        'payment_method' => [
+            'required',
+            'string',
+            'max:50',
+        ],
+
+        'customer_id' => [
+            'nullable',
+            'integer',
+            'exists:customers,id',
+        ],
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Login
+    |--------------------------------------------------------------------------
+    */
+
+    $userId = session('user_id');
+
+    if (!$userId) {
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Session kasir tidak ditemukan. Silakan login kembali.',
+        ], 401);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Toko Aktif
+    |--------------------------------------------------------------------------
+    */
+
+    $storeId = $this->activeStoreId();
+
+    if (!$storeId) {
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Toko aktif tidak ditemukan.',
+        ], 422);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | IDENTIFIKASI CASHBON
+    |--------------------------------------------------------------------------
+    */
+
+    $isCashbon =
+        $validated['payment_method'] === 'Cashbon / Utang';
+
+    /*
+    |--------------------------------------------------------------------------
+    | CASHBON HARUS MEMAKAI FITUR UTANG
+    |--------------------------------------------------------------------------
+    */
+
+    if ($isCashbon) {
+
+        $store = \App\Models\Store::find($storeId);
+
+        if (!$store || !$store->hasFeature('debt')) {
+
+            return response()->json([
+                'success' => false,
+                'message' =>
+                    'Fitur Cashbon / Utang hanya tersedia pada paket Pro dan Premium.',
+            ], 422);
+        }
+
         /*
         |--------------------------------------------------------------------------
-        | Validasi Data
-        |--------------------------------------------------------------------------
-        */
-
-        $validated = $request->validate([
-            'items' => [
-                'required',
-                'array',
-                'min:1',
-            ],
-
-            'items.*.id' => [
-                'required',
-                'integer',
-                'exists:products,id',
-            ],
-
-            'items.*.quantity' => [
-                'required',
-                'integer',
-                'min:1',
-            ],
-
-            'subtotal' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
-
-            'discount' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
-
-            'total' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
-
-            'paid' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
-
-            'payment_method' => [
-                'required',
-                'string',
-                'max:50',
-            ],
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Validasi Pembayaran
+        | Cashbon Wajib Memilih Pelanggan
         |--------------------------------------------------------------------------
         */
 
         if (
-            $validated['payment_method'] === 'Tunai'
-            && $validated['paid'] < $validated['total']
+            empty($validated['customer_id'])
         ) {
+
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Nominal pembayaran kurang dari total tagihan.',
+                    'Silakan pilih pelanggan untuk transaksi Cashbon / Utang.',
             ], 422);
         }
 
         /*
         |--------------------------------------------------------------------------
-        | User Login
+        | Total Cashbon Tidak Boleh Nol
         |--------------------------------------------------------------------------
         */
 
-        $userId = session('user_id');
+        if (
+            (float) $validated['total'] <= 0
+        ) {
 
-        if (!$userId) {
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Session kasir tidak ditemukan. Silakan login kembali.',
-            ], 401);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Toko Aktif
-        |--------------------------------------------------------------------------
-        */
-
-        $storeId = $this->activeStoreId();
-
-        if (!$storeId) {
-            return response()->json([
-                'success' => false,
-                'message' =>
-                    'Toko aktif tidak ditemukan.',
+                    'Transaksi Cashbon harus memiliki total tagihan.',
             ], 422);
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Simpan Transaksi + Detail + Kurangi Stok
+        | Pastikan Pelanggan Milik Toko Aktif
         |--------------------------------------------------------------------------
         */
 
-        try {
+        $customerExists = Customer::where(
+            'store_id',
+            $storeId
+        )
+        ->where(
+            'id',
+            $validated['customer_id']
+        )
+        ->exists();
 
-            $transaction = DB::transaction(
-                function () use (
-                    $validated,
-                    $userId,
-                    $storeId
-                ) {
+        if (!$customerExists) {
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Generate Nomor Invoice
-                    |--------------------------------------------------------------------------
-                    */
+            return response()->json([
+                'success' => false,
+                'message' =>
+                    'Pelanggan tidak ditemukan di toko aktif.',
+            ], 422);
+        }
+    }
 
-                    $invoiceNumber =
-                        'INV-' .
-                        now()->format('YmdHis') .
-                        '-' .
-                        strtoupper(
-                            substr(
-                                uniqid(),
-                                -4
-                            )
-                        );
+    /*
+    |--------------------------------------------------------------------------
+    | Validasi Pembayaran Tunai
+    |--------------------------------------------------------------------------
+    */
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Hitung Kembalian
-                    |--------------------------------------------------------------------------
-                    */
+    if (
+        $validated['payment_method'] === 'Tunai'
+        && $validated['paid'] < $validated['total']
+    ) {
 
-                    $change = max(
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Nominal pembayaran kurang dari total tagihan.',
+        ], 422);
+    }
+    
+    /*
+|--------------------------------------------------------------------------
+| Validasi Pembayaran Cashbon
+|--------------------------------------------------------------------------
+*/
+
+if ($isCashbon) {
+
+    if (
+        (float) $validated['paid'] >
+        (float) $validated['total']
+    ) {
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Nominal pembayaran tidak boleh melebihi total tagihan.',
+        ], 422);
+    }
+}
+
+    /*
+    |--------------------------------------------------------------------------
+    | Simpan Transaksi + Detail + Stok + Utang
+    |--------------------------------------------------------------------------
+    */
+
+    try {
+
+        $transaction = DB::transaction(
+            function () use (
+                $validated,
+                $userId,
+                $storeId,
+                $isCashbon
+            ) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Generate Nomor Invoice
+                |--------------------------------------------------------------------------
+                */
+
+                $invoiceNumber =
+                    'INV-' .
+                    now()->format('YmdHis') .
+                    '-' .
+                    strtoupper(
+                        substr(
+                            uniqid(),
+                            -4
+                        )
+                    );
+
+                /*
+                |--------------------------------------------------------------------------
+                | Hitung Kembalian
+                |--------------------------------------------------------------------------
+                */
+
+                $change = $isCashbon
+                    ? 0
+                    : max(
                         0,
                         $validated['paid']
                         - $validated['total']
                     );
 
+                /*
+                |--------------------------------------------------------------------------
+                | Buat Transaksi
+                |--------------------------------------------------------------------------
+                */
+
+                $transaction = Transaction::create([
+
+                    'store_id' =>
+                        $storeId,
+                        
+                    'customer_id' =>
+                    $validated['customer_id'] ?? null,
+
+                    'invoice_number' =>
+                        $invoiceNumber,
+
+                    'user_id' =>
+                        $userId,
+
+                    'subtotal' =>
+                        $validated['subtotal'],
+
+                    'discount' =>
+                        $validated['discount'],
+
+                    'total' =>
+                        $validated['total'],
+
+                    'paid' =>
+                        $validated['paid'],
+
+                    'change' =>
+                        $change,
+
+                    'payment_method' =>
+                        $validated['payment_method'],
+                ]);
+
+                /*
+                |--------------------------------------------------------------------------
+                | Simpan Detail Produk
+                |--------------------------------------------------------------------------
+                */
+
+                foreach (
+                    $validated['items']
+                    as $item
+                ) {
+
                     /*
                     |--------------------------------------------------------------------------
-                    | Buat Transaksi
+                    | Lock Produk
                     |--------------------------------------------------------------------------
                     */
 
-                    $transaction = Transaction::create([
+                    $product = Product::where(
+                        'store_id',
+                        $storeId
+                    )
+                    ->where(
+                        'id',
+                        $item['id']
+                    )
+                    ->lockForUpdate()
+                    ->first();
 
-                        'store_id' =>
-                            $storeId,
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Produk Tidak Ditemukan
+                    |--------------------------------------------------------------------------
+                    */
 
-                        'invoice_number' =>
-                            $invoiceNumber,
+                    if (!$product) {
 
-                        'user_id' =>
-                            $userId,
+                        throw new \Exception(
+                            'Produk tidak ditemukan di toko aktif.'
+                        );
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Cek Stok
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        $product->stock
+                        < $item['quantity']
+                    ) {
+
+                        throw new \Exception(
+                            'Stok produk "' .
+                            $product->name .
+                            '" tidak mencukupi.'
+                        );
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Hitung Subtotal Item
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $itemSubtotal =
+                        $product->price
+                        * $item['quantity'];
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Simpan Transaction Item
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $transaction->items()->create([
+
+                        'product_id' =>
+                            $product->id,
+
+                        'product_name' =>
+                            $product->name,
+
+                        'sku' =>
+                            $product->sku,
+
+                        'capital_price' =>
+                            $product->capital_price,
+
+                        'price' =>
+                            $product->price,
+
+                        'quantity' =>
+                            $item['quantity'],
 
                         'subtotal' =>
-                            $validated['subtotal'],
-
-                        'discount' =>
-                            $validated['discount'],
-
-                        'total' =>
-                            $validated['total'],
-
-                        'paid' =>
-                            $validated['paid'],
-
-                        'change' =>
-                            $change,
-
-                        'payment_method' =>
-                            $validated['payment_method'],
+                            $itemSubtotal,
                     ]);
 
                     /*
                     |--------------------------------------------------------------------------
-                    | Simpan Detail Produk
+                    | Kurangi Stok
                     |--------------------------------------------------------------------------
                     */
 
-                    foreach (
-                        $validated['items']
-                        as $item
-                    ) {
+                    $product->stock -=
+                        $item['quantity'];
 
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Lock Produk
-                        |--------------------------------------------------------------------------
-                        */
-
-                        $product = Product::where(
-                            'store_id',
-                            $storeId
-                        )
-                        ->where(
-                            'id',
-                            $item['id']
-                        )
-                        ->lockForUpdate()
-                        ->first();
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Produk Tidak Ditemukan
-                        |--------------------------------------------------------------------------
-                        */
-
-                        if (!$product) {
-
-                            throw new \Exception(
-                                'Produk tidak ditemukan di toko aktif.'
-                            );
-                        }
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Cek Stok
-                        |--------------------------------------------------------------------------
-                        */
-
-                        if (
-                            $product->stock
-                            < $item['quantity']
-                        ) {
-
-                            throw new \Exception(
-                                'Stok produk "' .
-                                $product->name .
-                                '" tidak mencukupi.'
-                            );
-                        }
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Hitung Subtotal Item
-                        |--------------------------------------------------------------------------
-                        */
-
-                        $itemSubtotal =
-                            $product->price
-                            * $item['quantity'];
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Simpan Transaction Item
-                        |--------------------------------------------------------------------------
-                        */
-
-                        $transaction->items()->create([
-
-                            'product_id' =>
-                                $product->id,
-
-                            'product_name' =>
-                                $product->name,
-
-                            'sku' =>
-                                $product->sku,
-
-                            'capital_price' =>
-                                $product->capital_price,
-
-                            'price' =>
-                                $product->price,
-
-                            'quantity' =>
-                                $item['quantity'],
-
-                            'subtotal' =>
-                                $itemSubtotal,
-                        ]);
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | Kurangi Stok
-                        |--------------------------------------------------------------------------
-                        */
-
-                        $product->stock -=
-                            $item['quantity'];
-
-                        $product->save();
-                    }
-
-                    return $transaction;
+                    $product->save();
                 }
-            );
 
-            AuditLogService::log(
-    'transaction_created',
-    'Membuat transaksi "' .
-    $transaction->invoice_number .
-    '" dengan total Rp' .
-    number_format(
-        $transaction->total,
-        0,
-        ',',
-        '.'
-    ) .
-    ' menggunakan pembayaran ' .
-    $transaction->payment_method .
-    '.',
-    $transaction,
-    null,
-    $storeId,
-    null,
-    [
-        'invoice_number' => $transaction->invoice_number,
-        'subtotal' => $transaction->subtotal,
-        'discount' => $transaction->discount,
-        'total' => $transaction->total,
-        'paid' => $transaction->paid,
-        'change' => $transaction->change,
-        'payment_method' => $transaction->payment_method,
-        'items_count' => count($validated['items']),
-    ]
-);
+                /*
+|--------------------------------------------------------------------------
+| BUAT CATATAN UTANG JIKA CASHBON
+|--------------------------------------------------------------------------
+*/
 
-            /*
-            |--------------------------------------------------------------------------
-            | Berhasil
-            |--------------------------------------------------------------------------
-            */
+if ($isCashbon) {
 
-            return response()->json([
+    $customer = Customer::where(
+        'store_id',
+        $storeId
+    )
+    ->lockForUpdate()
+    ->find(
+        $validated['customer_id']
+    );
 
-                'success' =>
-                    true,
+    if (!$customer) {
 
-                'message' =>
-                    'Transaksi berhasil disimpan.',
+        throw new \Exception(
+            'Pelanggan tidak ditemukan di toko aktif.'
+        );
+    }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Hitung Sisa Utang
+    |--------------------------------------------------------------------------
+    */
+
+    $remainingDebt =
+        (float) $transaction->total -
+        (float) $transaction->paid;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Buat Utang Hanya Jika Masih Ada Sisa
+    |--------------------------------------------------------------------------
+    */
+
+    if ($remainingDebt > 0) {
+
+        Debt::create([
+
+            'store_id' =>
+                $storeId,
+
+            'customer_id' =>
+                $customer->id,
+
+            'user_id' =>
+                $userId,
+
+            'description' =>
+                'Cashbon transaksi ' .
+                $transaction->invoice_number,
+
+            'amount' =>
+                $remainingDebt,
+
+            'paid_amount' =>
+                0,
+
+            'debt_date' =>
+                now()->toDateString(),
+
+            'due_date' =>
+                null,
+
+            'status' =>
+                'unpaid',
+        ]);
+    }
+}
+
+                return $transaction;
+            }
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | AUDIT LOG TRANSAKSI
+        |--------------------------------------------------------------------------
+        */
+
+        AuditLogService::log(
+            'transaction_created',
+            'Membuat transaksi "' .
+            $transaction->invoice_number .
+            '" dengan total Rp' .
+            number_format(
+                $transaction->total,
+                0,
+                ',',
+                '.'
+            ) .
+            ' menggunakan pembayaran ' .
+            $transaction->payment_method .
+            '.',
+            $transaction,
+            null,
+            $storeId,
+            null,
+            [
                 'invoice_number' =>
                     $transaction->invoice_number,
 
-                'transaction_id' =>
-                    $transaction->id,
+                'subtotal' =>
+                    $transaction->subtotal,
+
+                'discount' =>
+                    $transaction->discount,
+
+                'total' =>
+                    $transaction->total,
+
+                'paid' =>
+                    $transaction->paid,
 
                 'change' =>
                     $transaction->change,
-            ]);
 
-        } catch (\Throwable $e) {
+                'payment_method' =>
+                    $transaction->payment_method,
 
-            /*
-            |--------------------------------------------------------------------------
-            | Gagal
-            |--------------------------------------------------------------------------
-            */
+                'customer_id' =>
+                    $validated['customer_id'] ?? null,
 
-            return response()->json([
+                'items_count' =>
+                    count($validated['items']),
+            ]
+        );
 
-                'success' =>
-                    false,
+        /*
+        |--------------------------------------------------------------------------
+        | AUDIT LOG CASHBON
+        |--------------------------------------------------------------------------
+        */
 
-                'message' =>
-                    $e->getMessage(),
+        if ($isCashbon) {
 
-            ], 422);
+            $customer = Customer::where(
+                'store_id',
+                $storeId
+            )
+            ->find(
+                $validated['customer_id']
+            );
+
+            if ($customer) {
+
+                $debt = Debt::where(
+                    'store_id',
+                    $storeId
+                )
+                ->where(
+                    'customer_id',
+                    $customer->id
+                )
+                ->where(
+                    'description',
+                    'Cashbon transaksi ' .
+                    $transaction->invoice_number
+                )
+                ->latest('id')
+                ->first();
+
+                if ($debt) {
+
+                    AuditLogService::log(
+                        'debt_created',
+                        'Mencatat cashbon pelanggan "' .
+                        $customer->name .
+                        '" dari transaksi "' .
+                        $transaction->invoice_number .
+                        '" sebesar Rp' .
+                        number_format(
+                            $debt->amount,
+                            0,
+                            ',',
+                            '.'
+                        ) .
+                        '.',
+                        $debt,
+                        null,
+                        $storeId,
+                        null,
+                        [
+                            'customer_id' =>
+                                $customer->id,
+
+                            'customer_name' =>
+                                $customer->name,
+
+                            'transaction_id' =>
+                                $transaction->id,
+
+                            'invoice_number' =>
+                                $transaction->invoice_number,
+
+                            'amount' =>
+                                $debt->amount,
+
+                            'paid_amount' =>
+                                $debt->paid_amount,
+
+                            'status' =>
+                                $debt->status,
+                        ]
+                    );
+                }
+            }
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Berhasil
+        |--------------------------------------------------------------------------
+        */
+
+        return response()->json([
+
+            'success' =>
+                true,
+
+            'message' =>
+                $isCashbon
+                    ? 'Transaksi Cashbon berhasil disimpan dan dicatat sebagai utang pelanggan.'
+                    : 'Transaksi berhasil disimpan.',
+
+            'invoice_number' =>
+                $transaction->invoice_number,
+
+            'transaction_id' =>
+                $transaction->id,
+
+            'change' =>
+                $transaction->change,
+        ]);
+
+    } catch (\Throwable $e) {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Gagal
+        |--------------------------------------------------------------------------
+        */
+
+        return response()->json([
+
+            'success' =>
+                false,
+
+            'message' =>
+                $e->getMessage(),
+
+        ], 422);
     }
+}
 
     /**
  * Menampilkan struk transaksi dalam bentuk PDF.
@@ -433,6 +742,8 @@ public function receiptPdf($id)
     ->with([
         'user',
         'items',
+        'customer',
+        'Store',
     ])
     ->findOrFail($id);
 
@@ -514,7 +825,8 @@ public function receiptPdf($id)
     )
     ->with([
         'user',
-        'items'
+        'items',
+        'customer',
     ])
     ->latest();
 

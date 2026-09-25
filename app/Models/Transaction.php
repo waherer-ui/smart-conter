@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+use App\Models\Customer;
+
 class Transaction extends Model
 {
     protected $fillable = [
         'store_id',
         'invoice_number',
+        'customer_id',
         'user_id',
         'subtotal',
         'discount',
@@ -43,4 +46,9 @@ class Transaction extends Model
     {
         return $this->hasMany(TransactionItem::class);
     }
+    
+    public function customer()
+{
+    return $this->belongsTo(Customer::class);
+}
 }

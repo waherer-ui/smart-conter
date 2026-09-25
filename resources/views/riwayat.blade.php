@@ -217,18 +217,25 @@
                                 </td>
 
 
-                                {{-- KASIR --}}
-                                <td class="px-5 py-4">
+{{-- KASIR --}}
+<td class="px-5 py-4">
 
-                                    <div class="text-xs text-white">
-                                        {{ $transaction->user->name ?? '-' }}
-                                    </div>
+    <div class="text-xs text-white">
+        {{ $transaction->user->name ?? '-' }}
+    </div>
 
-                                    <div class="text-[10px] text-gray-500">
-                                        {{ $transaction->user->role ?? '-' }}
-                                    </div>
+    <div class="text-[10px] text-gray-500">
+        {{ $transaction->user->role ?? '-' }}
+    </div>
 
-                                </td>
+    @if($transaction->payment_method === 'Cashbon / Utang')
+        <div class="text-[10px] text-amber-400 mt-1">
+            Pelanggan:
+            {{ $transaction->customer->name ?? '-' }}
+        </div>
+    @endif
+
+</td>
 
 
                                 {{-- BARANG --}}
@@ -280,9 +287,19 @@
                                     </div>
 
                                     <div class="text-[10px] text-gray-500">
-                                        Kembali:
-                                        Rp {{ number_format($transaction->change, 0, ',', '.') }}
-                                    </div>
+    @if($transaction->payment_method === 'Cashbon / Utang')
+        Sisa Utang:
+        Rp {{ number_format(
+            max(0, $transaction->total - $transaction->paid),
+            0,
+            ',',
+            '.'
+        ) }}
+    @else
+        Kembali:
+        Rp {{ number_format($transaction->change, 0, ',', '.') }}
+    @endif
+</div>
 
                                 </td>
 
@@ -336,6 +353,18 @@
                             <span class="text-gray-300">
                                 {{ $transaction->user->name ?? '-' }}
                             </span>
+                            
+                            @if($transaction->payment_method === 'Cashbon / Utang')
+                            <div class="mt-1 text-[11px]">
+                                <span class="text-gray-500">
+                                    Pelanggan:
+                                </span>
+                        
+                                <span class="text-amber-400">
+                                    {{ $transaction->customer->name ?? '-' }}
+                                </span>
+                            </div>
+                        @endif
 
                         </div>
 
@@ -422,15 +451,28 @@
 
                             <div class="flex justify-between">
 
-                                <span class="text-[10px] text-gray-500">
-                                    Kembalian
-                                </span>
+    <span class="text-[10px] text-gray-500">
+        @if($transaction->payment_method === 'Cashbon / Utang')
+            Sisa Utang
+        @else
+            Kembalian
+        @endif
+    </span>
 
-                                <span class="text-[10px] text-emerald-400">
-                                    Rp {{ number_format($transaction->change, 0, ',', '.') }}
-                                </span>
+    <span class="text-[10px] text-emerald-400">
+        @if($transaction->payment_method === 'Cashbon / Utang')
+            Rp {{ number_format(
+                max(0, $transaction->total - $transaction->paid),
+                0,
+                ',',
+                '.'
+            ) }}
+        @else
+            Rp {{ number_format($transaction->change, 0, ',', '.') }}
+        @endif
+    </span>
 
-                            </div>
+</div>
 
                         </div>
 
