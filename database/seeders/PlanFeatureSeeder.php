@@ -28,6 +28,7 @@ class PlanFeatureSeeder extends Seeder
             'cloud_backup',
             'product_import_excel',
             'product_import_csv',
+            'custom_receipt',
         ];
 
         $premiumFeatures = [

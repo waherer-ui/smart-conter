@@ -58,6 +58,13 @@ class FeatureSeeder extends Seeder
               'description' => 'Melihat laporan dasar penjualan dan pengeluaran.',
               'is_active' => true,
           ],
+          
+          [
+              'name' => 'Custom Struk',
+              'slug' => 'custom_receipt',
+              'description' => 'Mengatur tampilan, logo, dan informasi pada struk transaksi.',
+              'is_active' => true,
+          ],
         ];
 
         foreach ($features as $feature) {
