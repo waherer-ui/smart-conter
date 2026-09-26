@@ -321,9 +321,53 @@
     </div>
 
 
-    {{-- =========================================================
-         PENGATURAN STRUK
-    ========================================================== --}}
+{{-- =========================================================
+     PENGATURAN STRUK
+========================================================== --}}
+
+<div class="bg-gray-800 p-6 rounded-xl border border-white/10">
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+        <div>
+
+            <h2 class="text-lg font-semibold text-white">
+                Pengaturan Struk
+            </h2>
+
+            <p class="text-sm text-gray-400 mt-1">
+                Atur tampilan dan informasi yang ditampilkan pada struk transaksi.
+            </p>
+
+        </div>
+
+        <a
+            href="{{ route('receipt-settings.index') }}"
+            class="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-5 py-2.5 rounded-lg transition"
+        >
+
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 14.25l6-6m4.5-3.493V21H4.5V4.5h15V4.5zM9 8.25h.008v.008H9V8.25zm6 7.5h.008v.008H15v-.008z"
+                />
+            </svg>
+
+            Kelola Tampilan Struk
+
+        </a>
+
+    </div>
+
+</div>
 
     <div class="bg-gray-800 p-6 rounded-xl border border-white/10">
 
