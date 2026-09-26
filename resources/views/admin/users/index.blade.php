@@ -62,7 +62,8 @@
             </h2>
 
             <p class="mt-1 text-sm text-gray-400">
-                Buat akun Administrator atau Kasir untuk mengakses Smart POS.
+                  Buat akun Administrator atau Kasir untuk mengakses
+                <span class="font-semibold text-emerald-400">{{ $store->name }}</span>.
             </p>
 
         </div>
@@ -280,7 +281,7 @@
             </h2>
 
             <p class="mt-1 text-sm text-gray-400">
-                Daftar akun yang memiliki akses ke Smart POS.
+                Daftar akun yang memiliki akses ke <span class="font-semibold text-emerald-400">{{ $store->name }}</span>.
             </p>
 
         </div>
@@ -607,7 +608,7 @@
                     </h2>
 
                     <p class="mt-1 text-sm text-gray-400">
-                        Riwayat aktivitas pengguna pada toko aktif.
+                        Riwayat aktivitas pengguna pada <span class="font-semibold text-emerald-400">{{ $store->name }}</span>.
                     </p>
 
                 </div>

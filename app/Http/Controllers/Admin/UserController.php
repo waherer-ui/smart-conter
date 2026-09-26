@@ -31,7 +31,7 @@ class UserController extends Controller
 
         return view(
             'admin.users.index',
-            compact('users')
+            compact('users', 'store')
         );
     }
 
@@ -479,7 +479,8 @@ public function activity(Request $request, $id)
             'selectedUser',
             'activities',
             'activityType',
-            'period'
+            'period',
+            'store'
         )
     );
 }

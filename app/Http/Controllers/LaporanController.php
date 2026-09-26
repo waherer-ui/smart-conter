@@ -10,6 +10,7 @@ use App\Models\TransactionItem;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LaporanController extends Controller
 {
@@ -41,6 +42,7 @@ class LaporanController extends Controller
         }
 
         $storeId = $this->activeStoreId();
+        $tab = $request->input('tab', 'laporan');
 
 
         /*
@@ -88,19 +90,102 @@ class LaporanController extends Controller
             : collect();
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | PERIODE LAPORAN
-        |--------------------------------------------------------------------------
-        */
+/*
+|--------------------------------------------------------------------------
+| FILTER PERIODE
+|--------------------------------------------------------------------------
+*/
+
+$period = $request->input('period', 'today');
+
+switch ($period) {
+
+    case '7days':
+
+        $startDate = Carbon::today()
+            ->subDays(6)
+            ->startOfDay();
+
+        $endDate = Carbon::today()
+            ->endOfDay();
+
+        break;
+
+
+    case '1month':
+
+        $startDate = Carbon::today()
+            ->subMonth()
+            ->startOfDay();
+
+        $endDate = Carbon::today()
+            ->endOfDay();
+
+        break;
+
+
+    case '3months':
+
+        $startDate = Carbon::today()
+            ->subMonths(3)
+            ->startOfDay();
+
+        $endDate = Carbon::today()
+            ->endOfDay();
+
+        break;
+
+
+    case '6months':
+
+        $startDate = Carbon::today()
+            ->subMonths(6)
+            ->startOfDay();
+
+        $endDate = Carbon::today()
+            ->endOfDay();
+
+        break;
+
+
+    case '1year':
+
+        $startDate = Carbon::today()
+            ->subYear()
+            ->startOfDay();
+
+        $endDate = Carbon::today()
+            ->endOfDay();
+
+        break;
+
+
+    case 'custom':
 
         $startDate = $request->filled('start_date')
-    ? Carbon::parse($request->start_date)->startOfDay()
-    : Carbon::today()->startOfDay();
+            ? Carbon::parse($request->start_date)->startOfDay()
+            : Carbon::today()->startOfDay();
 
-$endDate = $request->filled('end_date')
-    ? Carbon::parse($request->end_date)->endOfDay()
-    : Carbon::today()->endOfDay();
+        $endDate = $request->filled('end_date')
+            ? Carbon::parse($request->end_date)->endOfDay()
+            : Carbon::today()->endOfDay();
+
+        break;
+
+
+    case 'today':
+    default:
+
+        $period = 'today';
+
+        $startDate = Carbon::today()
+            ->startOfDay();
+
+        $endDate = Carbon::today()
+            ->endOfDay();
+
+        break;
+}
 
 
 /*
@@ -130,6 +215,256 @@ if ($historyDays !== null) {
         $historyRestricted = true;
     }
 
+}
+
+/*
+|--------------------------------------------------------------------------
+| ANALITIK LANJUTAN
+|--------------------------------------------------------------------------
+*/
+
+$analitik = null;
+
+if ($tab === 'analitik') {
+
+    if ($store && $store->hasFeature('advanced_analytics')) {
+
+        /*
+        |--------------------------------------------------------------------------
+        | TRANSAKSI ANALITIK
+        |--------------------------------------------------------------------------
+        */
+
+        $analitikTransaksiQuery = Transaction::query()
+            ->where('store_id', $storeId)
+            ->whereDate('created_at', '>=', $startDate->toDateString())
+            ->whereDate('created_at', '<=', $endDate->toDateString());
+
+        if ($cashierId) {
+            $analitikTransaksiQuery->where(
+                'user_id',
+                $cashierId
+            );
+        }
+
+        $analitikTransaksi = $analitikTransaksiQuery
+            ->orderBy('created_at')
+            ->get();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | TREN PENJUALAN HARIAN
+        |--------------------------------------------------------------------------
+        */
+
+        $trenPenjualan = $analitikTransaksi
+            ->groupBy(function ($transaction) {
+                return $transaction->created_at->format('Y-m-d');
+            })
+            ->map(function ($items, $date) {
+                return [
+                    'tanggal' => $date,
+                    'omzet' => $items->sum('total'),
+                    'transaksi' => $items->count(),
+                ];
+            })
+            ->sortKeys()
+            ->values();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ITEM TRANSAKSI
+        |--------------------------------------------------------------------------
+        */
+
+        $analitikItems = TransactionItem::with('product')
+            ->whereHas('transaction', function ($query) use (
+                $storeId,
+                $startDate,
+                $endDate,
+                $cashierId
+            ) {
+
+                $query->where('store_id', $storeId)
+                    ->whereDate(
+                        'created_at',
+                        '>=',
+                        $startDate->toDateString()
+                    )
+                    ->whereDate(
+                        'created_at',
+                        '<=',
+                        $endDate->toDateString()
+                    );
+
+                if ($cashierId) {
+                    $query->where(
+                        'user_id',
+                        $cashierId
+                    );
+                }
+
+            })
+            ->get();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PRODUK TERLARIS
+        |--------------------------------------------------------------------------
+        */
+
+        $produkTerlaris = $analitikItems
+            ->groupBy('product_id')
+            ->map(function ($items) {
+
+                $itemPertama = $items->first();
+
+                return [
+                    'product_id' => $itemPertama->product_id,
+
+                    'nama' => $itemPertama->product?->name
+                        ?? $itemPertama->product_name
+                        ?? 'Produk dihapus',
+
+                    'terjual' => $items->sum('quantity'),
+
+                    'omzet' => $items->sum('subtotal'),
+                ];
+
+            })
+            ->sortByDesc('terjual')
+            ->values()
+            ->take(10);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PRODUK PALING MENGUNTUNGKAN
+        |--------------------------------------------------------------------------
+        */
+
+        $produkMenguntungkan = $analitikItems
+            ->groupBy('product_id')
+            ->map(function ($items) {
+
+                $itemPertama = $items->first();
+
+                $omzet = $items->sum('subtotal');
+
+                $hpp = $items->sum(function ($item) {
+                    return (float) $item->capital_price
+                        * (float) $item->quantity;
+                });
+
+                return [
+                    'product_id' => $itemPertama->product_id,
+
+                    'nama' => $itemPertama->product?->name
+                        ?? $itemPertama->product_name
+                        ?? 'Produk dihapus',
+
+                    'terjual' => $items->sum('quantity'),
+
+                    'omzet' => $omzet,
+
+                    'hpp' => $hpp,
+
+                    'laba' => $omzet - $hpp,
+                ];
+
+            })
+            ->sortByDesc('laba')
+            ->values()
+            ->take(10);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | METODE PEMBAYARAN
+        |--------------------------------------------------------------------------
+        */
+
+        $metodePembayaran = $analitikTransaksi
+            ->groupBy(function ($transaction) {
+                return strtolower(
+                    $transaction->payment_method ?? 'lainnya'
+                );
+            })
+            ->map(function ($items, $method) {
+
+                return [
+                    'metode' => ucfirst($method),
+
+                    'transaksi' => $items->count(),
+
+                    'total' => $items->sum('total'),
+                ];
+
+            })
+            ->sortByDesc('total')
+            ->values();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | JAM RAMAI
+        |--------------------------------------------------------------------------
+        */
+
+        $jamRamai = $analitikTransaksi
+            ->groupBy(function ($transaction) {
+                return $transaction->created_at->format('H');
+            })
+            ->map(function ($items, $hour) {
+
+                return [
+                    'jam' => $hour . ':00',
+
+                    'transaksi' => $items->count(),
+
+                    'omzet' => $items->sum('total'),
+                ];
+
+            })
+            ->sortByDesc('transaksi')
+            ->values();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RATA-RATA TRANSAKSI
+        |--------------------------------------------------------------------------
+        */
+
+        $rataRataTransaksi = $analitikTransaksi->count() > 0
+            ? $analitikTransaksi->sum('total')
+                / $analitikTransaksi->count()
+            : 0;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | DATA ANALITIK
+        |--------------------------------------------------------------------------
+        */
+
+        $analitik = [
+            'trenPenjualan' => $trenPenjualan,
+
+            'produkTerlaris' => $produkTerlaris,
+
+            'produkMenguntungkan' => $produkMenguntungkan,
+
+            'metodePembayaran' => $metodePembayaran,
+
+            'jamRamai' => $jamRamai,
+
+            'rataRataTransaksi' => $rataRataTransaksi,
+        ];
+    }
 }
 
 
@@ -536,8 +871,11 @@ if ($historyDays !== null) {
                 'isAdmin',
                 'cashierId',
                 'kasir',
+                'tab',
+                'store',
 
                 // Periode
+                'period',
                 'startDate',
                 'endDate',
                 'historyDays',
@@ -570,7 +908,9 @@ if ($historyDays !== null) {
                 'labaBersih',
                 'hppHariIni',
                 'labaKotorHariIni',
-                'labaBersihHariIni'
+                'labaBersihHariIni',
+                // Analitik Lanjutan
+                'analitik'
             ));
         }
 
@@ -587,8 +927,11 @@ if ($historyDays !== null) {
             'isAdmin',
             'cashierId',
             'kasir',
+            'tab',
+            'store',
 
             // Periode
+            'period',
             'startDate',
             'endDate',
             'historyDays',
@@ -613,7 +956,9 @@ if ($historyDays !== null) {
             'totalTransaksiHariIni',
             'barangTerjualHariIni',
             'totalPengeluaranHariIni',
-            'kasBersihHariIni'
+            'kasBersihHariIni',
+            // Analitik Lanjutan
+            'analitik'
         ));
     }
 
