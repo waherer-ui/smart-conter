@@ -22,6 +22,7 @@ class UserController extends Controller
     public function index()
     {
         $storeId = $this->activeStoreId();
+        $store = Store::findOrFail($storeId);
 
         $users = User::whereHas('stores', function ($query) use ($storeId) {
             $query->where('stores.id', $storeId);
