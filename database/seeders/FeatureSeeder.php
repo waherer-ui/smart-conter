@@ -65,6 +65,13 @@ class FeatureSeeder extends Seeder
               'description' => 'Mengatur tampilan, logo, dan informasi pada struk transaksi.',
               'is_active' => true,
           ],
+          
+          [
+              'name' => 'Tambah Toko',
+              'slug' => 'add_store',
+              'description' => 'Menambahkan toko baru untuk akun pemilik.',
+              'is_active' => true,
+          ],
         ];
 
         foreach ($features as $feature) {
