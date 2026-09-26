@@ -912,6 +912,11 @@ Route::post('/backup/restore/preview', [BackupController::class, 'restorePreview
         [UserController::class, 'destroy']
     )->name('admin.users.destroy');
     
+    Route::get(
+    '/admin/users/{id}/activity',
+    [UserController::class, 'activity']
+)->name('admin.users.activity');
+    
 
 
     /*

@@ -296,4 +296,191 @@ class UserController extends Controller
                 '" berhasil dikeluarkan dari toko.'
             );
     }
+    
+/**
+ * Menampilkan aktivitas user pada toko aktif.
+ */
+public function activity(Request $request, $id)
+{
+    $storeId = $this->activeStoreId();
+
+    $store = Store::findOrFail($storeId);
+
+    /*
+    |--------------------------------------------------------------------------
+    | CEK FITUR STAFF ACTIVITY LOG
+    |--------------------------------------------------------------------------
+    */
+
+    if (!$store->hasFeature('staff_activity_log')) {
+        return redirect()
+            ->route('admin.index')
+            ->with(
+                'error',
+                'Fitur Aktivitas Pengguna hanya tersedia pada paket Premium.'
+            );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CARI USER DI TOKO AKTIF
+    |--------------------------------------------------------------------------
+    */
+
+    $selectedUser = User::whereHas(
+        'stores',
+        function ($query) use ($storeId) {
+            $query->where('stores.id', $storeId);
+        }
+    )
+    ->where('id', $id)
+    ->firstOrFail();
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILTER
+    |--------------------------------------------------------------------------
+    */
+
+    $activityType = $request->input('activity_type');
+    $period = $request->input('period');
+
+    /*
+    |--------------------------------------------------------------------------
+    | AMBIL AKTIVITAS
+    |--------------------------------------------------------------------------
+    */
+
+    $activitiesQuery = \App\Models\AuditLog::query()
+        ->where('owner_id', $store->owner_id)
+        ->where('store_id', $storeId)
+        ->where('user_id', $selectedUser->id);
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILTER JENIS AKTIVITAS
+    |--------------------------------------------------------------------------
+    */
+
+    if ($activityType) {
+
+        $activityGroups = [
+
+            'transaction' => [
+                'transaction_created',
+            ],
+
+            'debt' => [
+                'debt_created',
+                'debt_payment',
+            ],
+
+            'product' => [
+                'product_created',
+                'product_updated',
+                'product_deleted',
+                'product_restocked',
+            ],
+
+            'expense' => [
+                'expense_created',
+                'expense_updated',
+                'expense_deleted',
+            ],
+
+            'customer' => [
+                'customer_created',
+            ],
+
+            'supplier' => [
+                'supplier_created',
+                'supplier_updated',
+            ],
+
+            'purchase' => [
+                'purchase_created',
+            ],
+
+            'staff' => [
+                'staff_created',
+                'staff_deleted',
+            ],
+        ];
+
+        if (isset($activityGroups[$activityType])) {
+
+            $activitiesQuery->whereIn(
+                'action',
+                $activityGroups[$activityType]
+            );
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILTER PERIODE
+    |--------------------------------------------------------------------------
+    */
+
+    if ($period === 'today') {
+
+        $activitiesQuery->whereDate(
+            'created_at',
+            now()->toDateString()
+        );
+
+    } elseif ($period === '7_days') {
+
+        $activitiesQuery->where(
+            'created_at',
+            '>=',
+            now()->subDays(7)
+        );
+
+    } elseif ($period === '30_days') {
+
+        $activitiesQuery->where(
+            'created_at',
+            '>=',
+            now()->subDays(30)
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HASIL
+    |--------------------------------------------------------------------------
+    */
+
+    $activities = $activitiesQuery
+        ->latest()
+        ->paginate(15)
+        ->withQueryString();
+
+    /*
+    |--------------------------------------------------------------------------
+    | DAFTAR USER
+    |--------------------------------------------------------------------------
+    */
+
+    $users = User::whereHas(
+        'stores',
+        function ($query) use ($storeId) {
+            $query->where('stores.id', $storeId);
+        }
+    )
+    ->orderBy('created_at', 'desc')
+    ->get();
+
+    return view(
+        'admin.users.index',
+        compact(
+            'users',
+            'selectedUser',
+            'activities',
+            'activityType',
+            'period'
+        )
+    );
+}
 }

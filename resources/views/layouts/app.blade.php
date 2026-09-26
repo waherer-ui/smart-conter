@@ -833,7 +833,7 @@ if ($layoutUser) {
                         : '' }}"
         >
             <span>👥</span>
-            <span>Pelanggan & utang pelanggan</span>
+            <span>Pelanggan & Piutang</span>
         </a>
 
         <a
@@ -857,7 +857,7 @@ if ($layoutUser) {
             class="dropdown-link"
         >
             <span>📊</span>
-            <span>Laporan & laporan utang</span>
+            <span>Laporan & Piutang</span>
         </a>
 
         <a
@@ -1606,7 +1606,7 @@ if ($layoutUser) {
                         : '' }}"
         >
             <span>👥</span>
-            <span>Pelanggan & utang pelanggan</span>
+            <span>Pelanggan & Piutang</span>
         </a>
 
 
@@ -2992,7 +2992,7 @@ document
                     </span>
 
                     <span>
-                        Laporan & laporan utang
+                        Laporan & Piutang
                     </span>
 
                 </a>
