@@ -831,7 +831,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
 
     <div class="grid grid-cols-2 md:grid-cols-2
-                {{ $isAdmin ? 'lg:grid-cols-6' : 'lg:grid-cols-3' }}
+                {{ $isAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-3' }}
                 gap-1">
 
 
@@ -854,6 +854,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 </h3>
 
             </div>
+
+            {{-- Utang Pelanggan --}}
+              <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+
+                  <p class="text-sm text-gray-400">
+                      Utang Pelanggan Hari Ini
+                  </p>
+
+                  <h3 class="text-2xl font-bold text-amber-400 mt-1">
+                      Rp {{ number_format($totalUtangPelangganHariIni ?? 0, 0, ',', '.') }}
+                  </h3>
+
+              </div>
+
+
+              {{-- Pelunasan Piutang --}}
+              <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+
+                  <p class="text-sm text-gray-400">
+                      Pelunasan Piutang Hari Ini
+                  </p>
+
+                  <h3 class="text-2xl font-bold text-emerald-400 mt-1">
+                      Rp {{ number_format($totalPelunasanPiutangHariIni ?? 0, 0, ',', '.') }}
+                  </h3>
+
+              </div>
 
 
             {{-- HPP --}}
@@ -958,6 +985,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 <h3 class="text-2xl font-bold text-white mt-1">
                     Rp {{ number_format($totalPendapatanHariIni ?? 0, 0, ',', '.') }}
                 </h3>
+
+            </div>
+
+            {{-- Utang Pelanggan --}}
+            <div class="bg-gray-900 rounded-lg p-4">
+
+                <p class="text-sm text-gray-400">
+                    Utang Pelanggan
+                </p>
+
+                <p class="text-xl font-bold text-amber-400 mt-1">
+                    Rp {{ number_format($totalUtangPelangganHariIni ?? 0, 0, ',', '.') }}
+                </p>
+
+            </div>
+
+
+            {{-- Pelunasan Piutang --}}
+            <div class="bg-gray-900 rounded-lg p-4">
+
+                <p class="text-sm text-gray-400">
+                    Pelunasan Piutang
+                </p>
+
+                <p class="text-xl font-bold text-emerald-400 mt-1">
+                    Rp {{ number_format($totalPelunasanPiutangHariIni ?? 0, 0, ',', '.') }}
+                </p>
 
             </div>
 
@@ -1354,6 +1408,33 @@ document.addEventListener('DOMContentLoaded', function () {
                     </p>
 
                 </div>
+
+                {{-- Utang Pelanggan --}}
+            <div class="bg-gray-900 rounded-lg p-4">
+
+                <p class="text-sm text-gray-400">
+                    Utang Pelanggan
+                </p>
+
+                <p class="text-xl font-bold text-amber-400 mt-1">
+                    Rp {{ number_format($totalUtangPelanggan ?? 0, 0, ',', '.') }}
+                </p>
+
+            </div>
+
+
+            {{-- Pelunasan Piutang --}}
+            <div class="bg-gray-900 rounded-lg p-4">
+
+                <p class="text-sm text-gray-400">
+                    Pelunasan Piutang
+                </p>
+
+                <p class="text-xl font-bold text-emerald-400 mt-1">
+                    Rp {{ number_format($totalPelunasanPiutang ?? 0, 0, ',', '.') }}
+                </p>
+
+            </div>
 
 
                 {{-- HPP --}}

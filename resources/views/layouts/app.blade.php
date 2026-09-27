@@ -9,7 +9,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
-    
+
     <link rel="manifest" href="{{ asset('manifest.json') }}">
 
 <meta name="theme-color" content="#059669">
@@ -58,17 +58,9 @@
         <div class="flex flex-col items-center text-center">
 
             <div
-                class="flex h-20 w-20
-                       items-center justify-center
-                       rounded-3xl
-                       bg-emerald-500
-                       text-4xl
-                       font-black
-                       text-white
-                       shadow-2xl
-                       shadow-emerald-500/30"
+                class="text-white"
             >
-                K
+                Kasir
             </div>
 
             <div
@@ -77,12 +69,20 @@
                        font-black
                        tracking-tight"
             >
-                <span class="text-emerald-400">
-                    asir
+                <span class="flex h-20 w-20
+                       items-center justify-center
+                       rounded-3xl
+                       bg-emerald-500
+                       text-4xl
+                       font-black
+                       text-white
+                       shadow-2xl
+                       shadow-emerald-500/30">
+                    ½M
                 </span>
 
                 <span class="text-white">
-                    KU
+
                 </span>
             </div>
 
@@ -167,24 +167,19 @@ if ($layoutUser) {
                 >
 
                     <div
-                        class="flex h-9 w-9 items-center justify-center
-                               rounded-xl bg-emerald-500
-                               text-lg font-black text-white
-                               shadow-lg shadow-emerald-500/20"
+                        class="text-white font-bold font-semibold"
                     >
-                        K
+                        Kasir
                     </div>
 
                     <span class="text-xl font-black tracking-tight">
 
-                        <span class="text-emerald-400">
-                            asir
+                        <span class="flex h-9 w-9 items-center justify-center
+                               rounded-xl bg-emerald-500
+                               text-lg font-black text-white
+                               shadow-lg shadow-emerald-500/20">
+                            ½M
                         </span>
-
-                        <span class="text-white">
-                            KU
-                        </span>
-
                     </span>
 
                 </a>
@@ -209,7 +204,7 @@ if ($layoutUser) {
                     @if(session('logged_in'))
 
                         <div class="flex items-center gap-2">
-                          
+
                           {{-- ================================= --}}
 {{-- QUICK HELP --}}
 {{-- ================================= --}}
@@ -613,11 +608,11 @@ if ($layoutUser) {
                                 {{-- ========================================= --}}
                             {{-- INFORMASI PAKET --}}
                             {{-- ========================================= --}}
-                            
+
                             <div class="px-4 pb-4">
-                            
+
                                  <x-plan-info :active-store="$activeStore" />
-                            
+
                             </div>
 
                             </div>
@@ -682,7 +677,7 @@ if ($layoutUser) {
             <span>📦</span>
             <span>Paket</span>
         </a>
-        
+
         <a
               href="{{ route('admin-kasirku.audit-log.index') }}"
               class="dropdown-link
@@ -813,7 +808,7 @@ if ($layoutUser) {
             <span>📦</span>
             <span>Produk / restock produk</span>
         </a>
-        
+
         <a
             href="{{ route('transfer.index') }}"
             class="dropdown-link
@@ -824,7 +819,7 @@ if ($layoutUser) {
             <span>🔄</span>
             <span>Transfer Antar Toko</span>
         </a>
-        
+
         <a
             href="{{ route('pelanggan.index') }}"
             class="dropdown-link
@@ -1353,17 +1348,17 @@ if ($layoutUser) {
                 </div>
 
             @endif
-            
+
             {{-- ============================================= --}}
           {{-- INFORMASI PAKET MOBILE --}}
           {{-- ============================================= --}}
-          
+
           @if(session('logged_in'))
-          
+
               <div class="px-4 pb-4">
                    <x-plan-info :active-store="$activeStore" />
               </div>
-          
+
           @endif
 
 {{-- ============================================= --}}
@@ -1445,7 +1440,7 @@ if ($layoutUser) {
             <span>📦</span>
             <span>Paket</span>
         </a>
-        
+
         {{-- SEMUA AKTIVITAS --}}
           <a
               href="{{ route('admin-kasirku.audit-log.index') }}"
@@ -1457,7 +1452,7 @@ if ($layoutUser) {
               <span class="text-xl leading-none">
                   📋
               </span>
-          
+
               <span>
                   Aktivitas
               </span>
@@ -1586,7 +1581,7 @@ if ($layoutUser) {
             <span>📦</span>
             <span>Produk / restock produk</span>
         </a>
-        
+
         <a
             href="{{ route('transfer.index') }}"
             class="dropdown-link
@@ -1597,7 +1592,7 @@ if ($layoutUser) {
             <span>🔄</span>
             <span>Transfer Antar Toko</span>
         </a>
-        
+
         <a
             href="{{ route('pelanggan.index') }}"
             class="dropdown-link
@@ -1872,7 +1867,7 @@ if ($layoutUser) {
                     cursor-pointer">
               © {{ date('Y') }} KasirKU. Semua hak dilindungi.
           </a>
-      
+
           <p class="text-xs text-gray-600">
               Solusi kasir untuk usaha Anda.
           </p>
