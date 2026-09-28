@@ -29,7 +29,7 @@
 >
 
     <title>
-        KasirKU - @yield('title', 'Dashboard')
+        Kasir½M - @yield('title', 'Dashboard')
     </title>
 
     <script src="https://cdn.tailwindcss.com"></script>

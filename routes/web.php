@@ -36,6 +36,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\SupportController as OwnerSupportController;
+use App\Http\Controllers\GoogleAuthController;
 
 
 
@@ -345,74 +346,247 @@ Route::get('/register', function () {
 
 })->name('register');
 
-// PROSES REGISTRASI
+/*
+|--------------------------------------------------------------------------
+| PROSES REGISTRASI
+|--------------------------------------------------------------------------
+*/
+
 Route::post('/proses-register', function (Request $request) {
 
+    /*
+    |--------------------------------------------------------------------------
+    | REGISTRASI DENGAN GOOGLE
+    |--------------------------------------------------------------------------
+    */
+
+    $googleRegister = session('google_register');
+
+    if ($googleRegister) {
+
+        $request->validate([
+            'store_name' => 'required|string|max:255',
+            'store_address' => 'nullable|string|max:500',
+            'store_phone' => 'nullable|string|max:30',
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Pastikan email / Google ID belum digunakan
+        |--------------------------------------------------------------------------
+        */
+
+        $existingUser = User::where('email', $googleRegister['email'])
+            ->orWhere('google_id', $googleRegister['google_id'])
+            ->first();
+
+        if ($existingUser) {
+
+            session()->forget('google_register');
+
+            return redirect()
+                ->route('login')
+                ->with(
+                    'error',
+                    'Akun Google tersebut sudah terdaftar. Silakan masuk.'
+                );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Buat User + Toko + Subscription
+        |--------------------------------------------------------------------------
+        */
+
+        $result = DB::transaction(function () use (
+            $request,
+            $googleRegister
+        ) {
+
+            $user = User::create([
+                'name' => $googleRegister['name'],
+                'email' => $googleRegister['email'],
+                'google_id' => $googleRegister['google_id'],
+
+                /*
+                | Akun Google tidak membutuhkan password Kasir½M.
+                | Tetap diberikan password acak untuk memenuhi
+                | struktur database User.
+                */
+                'password' => Hash::make(
+                    \Illuminate\Support\Str::random(64)
+                ),
+
+                'role' => 'admin',
+
+                /*
+                | Email berasal dari akun Google.
+                */
+                'email_verified_at' => now(),
+            ]);
+
+            $store = Store::create([
+                'owner_id' => $user->id,
+                'name' => $request->store_name,
+                'address' => $request->store_address,
+                'phone' => $request->store_phone,
+                'is_active' => true,
+            ]);
+
+            $user->stores()->attach(
+                $store->id,
+                [
+                    'role' => 'owner',
+                ]
+            );
+
+            $freePlan = Plan::where(
+                'slug',
+                'free'
+            )->firstOrFail();
+
+            Subscription::create([
+                'owner_id' => $user->id,
+                'plan_id' => $freePlan->id,
+                'starts_at' => now(),
+                'ends_at' => null,
+                'status' => 'active',
+            ]);
+
+            return compact(
+                'user',
+                'store'
+            );
+        });
+
+        $user = $result['user'];
+        $store = $result['store'];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Hapus data Google sementara
+        |--------------------------------------------------------------------------
+        */
+
+        session()->forget('google_register');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Login otomatis
+        |--------------------------------------------------------------------------
+        */
+
+        $request->session()->regenerate();
+
+        $request->session()->put([
+            'logged_in' => true,
+            'user_id' => $user->id,
+            'username' => $user->name,
+            'user_role' => $user->role,
+            'active_store_id' => $store->id,
+            'is_platform_admin' => false,
+        ]);
+
+        return redirect()
+            ->route('dashboard')
+            ->with(
+                'success',
+                'Selamat datang, ' .
+                $user->name .
+                '! Akun Google dan toko Anda berhasil dibuat.'
+            );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | REGISTRASI BIASA
+    |--------------------------------------------------------------------------
+    */
+
     $request->validate([
-    'name' => 'required|string|max:255',
-    'email' => 'required|email|max:255|unique:users,email',
-    'password' => 'required|string|min:8|confirmed',
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255|unique:users,email',
+        'password' => 'required|string|min:8|confirmed',
 
-    'store_name' => 'required|string|max:255',
-    'store_address' => 'nullable|string|max:500',
-    'store_phone' => 'nullable|string|max:30',
-]);
-
-$result = DB::transaction(function () use ($request) {
-
-    $user = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'role' => 'admin',
+        'store_name' => 'required|string|max:255',
+        'store_address' => 'nullable|string|max:500',
+        'store_phone' => 'nullable|string|max:30',
     ]);
 
-    $store = Store::create([
-        'owner_id' => $user->id,
-        'name' => $request->store_name,
-        'address' => $request->store_address,
-        'phone' => $request->store_phone,
-        'is_active' => true,
+    $result = DB::transaction(function () use ($request) {
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'admin',
+        ]);
+
+        $store = Store::create([
+            'owner_id' => $user->id,
+            'name' => $request->store_name,
+            'address' => $request->store_address,
+            'phone' => $request->store_phone,
+            'is_active' => true,
+        ]);
+
+        $user->stores()->attach(
+            $store->id,
+            [
+                'role' => 'owner',
+            ]
+        );
+
+        $freePlan = Plan::where(
+            'slug',
+            'free'
+        )->firstOrFail();
+
+        Subscription::create([
+            'owner_id' => $user->id,
+            'plan_id' => $freePlan->id,
+            'starts_at' => now(),
+            'ends_at' => null,
+            'status' => 'active',
+        ]);
+
+        return compact(
+            'user',
+            'store'
+        );
+    });
+
+    $user = $result['user'];
+    $store = $result['store'];
+
+    $request->session()->regenerate();
+
+    $request->session()->put([
+        'logged_in' => true,
+        'user_id' => $user->id,
+        'username' => $user->name,
+        'user_role' => $user->role,
+        'active_store_id' => $store->id,
+        'is_platform_admin' => false,
     ]);
 
-    $user->stores()->attach($store->id, [
-        'role' => 'owner',
-    ]);
-    
-    $freePlan = Plan::where('slug', 'free')->firstOrFail();
-
-Subscription::create([
-    'owner_id' => $user->id,
-    'plan_id' => $freePlan->id,
-    'starts_at' => now(),
-    'ends_at' => null,
-    'status' => 'active',
-]);
-
-    return compact('user', 'store');
-});
-
-$user = $result['user'];
-$store = $result['store'];
-
-$request->session()->regenerate();
-
-$request->session()->put([
-    'logged_in' => true,
-    'user_id' => $user->id,
-    'username' => $user->name,
-    'user_role' => $user->role,
-    'active_store_id' => $store->id,
-]);
-
-return redirect()
-    ->route('dashboard')
-    ->with(
-        'success',
-        'Selamat datang, ' . $user->name . '! Toko Anda berhasil dibuat.'
-    );
+    return redirect()
+        ->route('dashboard')
+        ->with(
+            'success',
+            'Selamat datang, ' .
+            $user->name .
+            '! Toko Anda berhasil dibuat.'
+        );
 
 })->name('register.process');
+
+Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])
+    ->name('google.redirect');
+
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
+    ->name('google.callback');
 
 
 

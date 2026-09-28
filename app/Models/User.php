@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'password',
     'role',
     'is_platform_admin',
+    'google_id',
 ])]
 
 #[Hidden([
