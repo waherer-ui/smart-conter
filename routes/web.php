@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Store;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Password;
 use App\Models\Subscription;
 use App\Models\Plan;
 
@@ -611,6 +612,101 @@ Route::get('/login', function () {
     return view('login');
 
 })->name('login');
+
+/*
+|--------------------------------------------------------------------------
+| LUPA PASSWORD
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/forgot-password', function (Request $request) {
+
+    $request->validate([
+        'email' => ['required', 'email'],
+    ]);
+
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
+
+    if ($status === Password::RESET_LINK_SENT) {
+
+        return redirect()
+            ->route('login')
+            ->with(
+                'success',
+                'Jika email terdaftar, link reset password telah dikirim. Silakan cek inbox atau folder spam.'
+            );
+    }
+
+    return back()
+        ->withInput($request->only('email'))
+        ->with(
+            'error',
+            'Link reset password gagal dikirim. Silakan coba lagi.'
+        );
+
+})->name('password.email');
+
+/*
+|--------------------------------------------------------------------------
+| RESET PASSWORD
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/reset-password/{token}', function (
+    Request $request,
+    string $token
+) {
+    return view('login', [
+        'resetToken' => $token,
+        'resetEmail' => $request->query('email'),
+    ]);
+})->name('password.reset');
+
+
+Route::post('/reset-password', function (Request $request) {
+
+    $request->validate([
+        'token' => ['required'],
+        'email' => ['required', 'email'],
+        'password' => ['required', 'min:8', 'confirmed'],
+    ]);
+
+    $status = Password::reset(
+        $request->only(
+            'email',
+            'password',
+            'password_confirmation',
+            'token'
+        ),
+        function (User $user, string $password) {
+
+            $user->forceFill([
+                'password' => $password,
+                'remember_token' => \Illuminate\Support\Str::random(60),
+            ])->save();
+        }
+    );
+
+    if ($status === Password::PASSWORD_RESET) {
+
+        return redirect()
+            ->route('login')
+            ->with(
+                'success',
+                'Password berhasil diubah. Silakan masuk menggunakan password baru.'
+            );
+    }
+
+    return back()
+        ->withInput($request->only('email'))
+        ->with(
+            'error',
+            'Link reset password tidak valid atau sudah kedaluwarsa.'
+        );
+
+})->name('password.update');
 
 
 /*

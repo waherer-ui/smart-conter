@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
 
 #[Fillable([
@@ -25,10 +27,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
     'remember_token',
 ])]
 
-class User extends Authenticatable
+class User extends Authenticatable implements CanResetPasswordContract
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, CanResetPassword;
 
     /**
      * Relasi ke riwayat aktivitas produk.
@@ -37,47 +39,49 @@ class User extends Authenticatable
     {
         return $this->hasMany(ProductHistory::class);
     }
+
     /**
      * Relasi ke transaksi penjualan.
      */
     public function transactions()
     {
-    return $this->hasMany(Transaction::class);
+        return $this->hasMany(Transaction::class);
     }
-    
-          /**
-       * Relasi user dengan toko.
-       */
-      public function stores()
-      {
-          return $this->belongsToMany(Store::class)
-              ->withPivot('role')
-              ->withTimestamps();
-      }
-      
-      public function subscription(): HasOne
-{
-    return $this->hasOne(Subscription::class, 'owner_id');
-}
 
-public function ownedStores()
-{
-    return $this->hasMany(Store::class, 'owner_id');
-}
+    /**
+     * Relasi user dengan toko.
+     */
+    public function stores()
+    {
+        return $this->belongsToMany(Store::class)
+            ->withPivot('role')
+            ->withTimestamps();
+    }
 
-public function referral(): HasOne
-{
-    return $this->hasOne(Referral::class, 'owner_id');
-}
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class, 'owner_id');
+    }
+
+    public function ownedStores()
+    {
+        return $this->hasMany(Store::class, 'owner_id');
+    }
+
+    public function referral(): HasOne
+    {
+        return $this->hasOne(Referral::class, 'owner_id');
+    }
+
     /**
      * Attribute casting.
      */
     protected function casts(): array
-{
-    return [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'is_platform_admin' => 'boolean',
-    ];
-}
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'is_platform_admin' => 'boolean',
+        ];
+    }
 }
