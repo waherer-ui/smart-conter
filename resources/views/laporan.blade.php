@@ -127,10 +127,10 @@
          ANALITIK LANJUTAN
     ========================================================== --}}
 
-    <div class="space-y-5">
+    <div class="w-full min-w-0 max-w-full space-y-5 overflow-x-hidden">
 
 {{-- HEADER ANALITIK --}}
-<div class="bg-gray-800/80 border border-white/10 rounded-2xl p-5">
+<div class="bg-gray-800 rounded-2xl border border-white/10 p-4 min-w-0 max-w-full">
 
     <div class="flex flex-col gap-4">
 

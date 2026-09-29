@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-gray-900">
+<html lang="id" class="h-full">
 
 <head>
 
@@ -25,7 +25,7 @@
 
 <meta
     name="apple-mobile-web-app-title"
-    content="KasirKU"
+    content="Kasir½M"
 >
 
     <title>
@@ -33,11 +33,107 @@
     </title>
 
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+
+    html,
+    body {
+        min-height: 100%;
+    }
+
+    body {
+        background:
+            radial-gradient(
+                circle at 15% 20%,
+                rgba(16, 185, 129, 0.14),
+                transparent 28%
+            ),
+            radial-gradient(
+                circle at 85% 75%,
+                rgba(132, 204, 22, 0.11),
+                transparent 30%
+            ),
+            radial-gradient(
+                circle at 50% 100%,
+                rgba(16, 185, 129, 0.07),
+                transparent 35%
+            ),
+            #020807;
+    }
+
+    /* =========================================
+       GLOBAL BACKGROUND GLOW
+       ========================================= */
+
+    .background-glow {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 0;
+    }
+
+    .background-glow::before {
+        content: "";
+        position: absolute;
+        width: 420px;
+        height: 420px;
+        left: -180px;
+        top: 20%;
+        background: rgba(34, 197, 94, 0.09);
+        filter: blur(110px);
+        border-radius: 9999px;
+    }
+
+    .background-glow::after {
+        content: "";
+        position: absolute;
+        width: 380px;
+        height: 380px;
+        right: -160px;
+        bottom: 5%;
+        background: rgba(132, 204, 22, 0.08);
+        filter: blur(110px);
+        border-radius: 9999px;
+    }
+
+    /* =========================================
+       GLOBAL GRID
+       ========================================= */
+
+    .grid-overlay {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.025;
+
+        background-image:
+            linear-gradient(
+                rgba(255, 255, 255, 0.5) 1px,
+                transparent 1px
+            ),
+            linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.5) 1px,
+                transparent 1px
+            );
+
+        background-size: 40px 40px;
+    }
+
+</style>
 
 </head>
 
 
-<body class="min-h-screen bg-gray-900 text-gray-200 flex flex-col">
+<body class="min-h-screen text-gray-200 flex flex-col">
+  
+  {{-- ========================================================= --}}
+{{-- GLOBAL BACKGROUND --}}
+{{-- ========================================================= --}}
+
+<div class="background-glow"></div>
+<div class="grid-overlay"></div>
 
 
 {{-- ========================================================= --}}
@@ -55,46 +151,15 @@
                transition-opacity duration-500"
     >
 
-        <div class="flex flex-col items-center text-center">
+<div class="w-full h-full flex items-center justify-center">
 
-            <div
-                class="text-white"
-            >
-                Kasir
-            </div>
+    <img
+        src="{{ asset('images/Icon-Splash.png') }}"
+        alt="Kasir½M"
+        class="w-full h-full object-cover"
+    >
 
-            <div
-                class="mt-5
-                       text-3xl
-                       font-black
-                       tracking-tight"
-            >
-                <span class="flex h-20 w-20
-                       items-center justify-center
-                       rounded-3xl
-                       bg-emerald-500
-                       text-4xl
-                       font-black
-                       text-white
-                       shadow-2xl
-                       shadow-emerald-500/30">
-                    ½M
-                </span>
-
-                <span class="text-white">
-
-                </span>
-            </div>
-
-            <p
-                class="mt-2
-                       text-sm
-                       text-gray-400"
-            >
-                Solusi kasir untuk usaha Anda.
-            </p>
-
-        </div>
+</div>
 
     </div>
 
@@ -146,45 +211,35 @@ if ($layoutUser) {
 {{-- NAVBAR GLOBAL --}}
 {{-- ========================================================= --}}
 
-<nav class="bg-gray-800 border-b border-white/10 sticky top-0 z-50">
+<nav class="bg-gray-900/40 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
 
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         <div class="flex h-16 items-center justify-between">
 
 
-            {{-- ================================================= --}}
-            {{-- LOGO --}}
-            {{-- ================================================= --}}
+{{-- ================================================= --}}
+{{-- LOGO --}}
+{{-- ================================================= --}}
 
-            <div class="flex items-center">
+<div class="flex items-center">
 
-                <a
-                    href="{{ session('logged_in')
-                        ? route('dashboard')
-                        : route('login') }}"
-                    class="flex items-center gap-1"
-                >
+    <a
+        href="{{ session('logged_in')
+            ? route('dashboard')
+            : route('login') }}"
+        class="flex items-center"
+    >
 
-                    <div
-                        class="text-white font-bold font-semibold"
-                    >
-                        Kasir
-                    </div>
+        <img
+            src="{{ asset('images/Icon-navbar.png') }}"
+            alt="Kasir½M"
+            class="h-10 w-auto object-contain"
+        >
 
-                    <span class="text-xl font-black tracking-tight">
+    </a>
 
-                        <span class="flex h-9 w-9 items-center justify-center
-                               rounded-xl bg-emerald-500
-                               text-lg font-black text-white
-                               shadow-lg shadow-emerald-500/20">
-                            ½M
-                        </span>
-                    </span>
-
-                </a>
-
-            </div>
+</div>
 
 
 
@@ -1852,26 +1907,27 @@ if ($layoutUser) {
 {{-- FOOTER --}}
 {{-- ========================================================= --}}
 
-<footer
-    class="mt-10 pt-6
-                  border-t border-white/5
-                  flex flex-col sm:flex-row
-                  items-center
-                  justify-between
-                  gap-3"
->
-          <a href="{{ route('register') }}"
-             class="text-xs text-gray-600
-                    hover:text-emerald-400
-                    transition duration-200
-                    cursor-pointer">
-              © {{ date('Y') }} KasirKU. Semua hak dilindungi.
-          </a>
+                    <footer class="mt-5 text-center">
 
-          <p class="text-xs text-gray-600">
-              Solusi kasir untuk usaha Anda.
-          </p>
-</footer>
+                        <div class="flex items-center justify-center gap-1.5">
+
+                            <span class="text-[9px] text-gray-600">
+                                © {{ date('Y') }}
+                            </span>
+
+                            <img
+                                src="{{ asset('images/Icon-navbar.png') }}"
+                                alt="Kasir½M"
+                                class="h-5 w-auto object-contain"
+                            >
+
+                        </div>
+
+                        <p class="text-[9px] text-gray-700 mt-1">
+                            Solusi kasir untuk usaha Anda.
+                        </p>
+
+                    </footer>
 
 {{-- ========================================================= --}}
 {{-- GLOBAL QR SCANNER --}}

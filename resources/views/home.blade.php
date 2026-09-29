@@ -30,7 +30,7 @@
                     placeholder="Cari nama produk / SKU..."
                     autocomplete="off"
                     class="w-full
-                           bg-gray-600
+                           bg-gray-900
                            border border-white/10
                            rounded-xl
                            pl-10 pr-4
@@ -92,11 +92,29 @@
 {{-- =========================================================
      HERO DASHBOARD / TOKO AKTIF + PROMO FITUR
 ========================================================== --}}
-<div class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-5 sm:p-6 text-white shadow-xl">
+<div class="relative overflow-hidden
+            bg-gray-900/55
+            backdrop-blur-md
+            border border-white/10
+            rounded-2xl
+            p-5 sm:p-6
+            text-white
+            shadow-xl shadow-black/20">
 
     {{-- Efek dekorasi --}}
-    <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-    <div class="absolute -bottom-12 -left-8 w-32 h-32 bg-indigo-300/10 rounded-full blur-2xl"></div>
+    <div class="absolute -top-10 -right-10
+            w-32 h-32
+            bg-emerald-400/10
+            rounded-full
+            blur-2xl">
+</div>
+
+<div class="absolute -bottom-12 -left-8
+            w-32 h-32
+            bg-lime-400/10
+            rounded-full
+            blur-2xl">
+</div>
 
     <div class="relative">
 
@@ -122,9 +140,16 @@
                     Selamat datang di {{ $activeStore->name ?? 'Toko Anda' }} 👋
                 </h2>
 
-                <p class="text-sm text-blue-100 mt-1 leading-5">
-                    Kelola penjualan, stok, pelanggan, dan operasional toko dengan KasirKU.
-                </p>
+<p class="text-sm text-gray-300 mt-1 leading-5">
+    Kelola penjualan, stok, pelanggan, dan operasional toko dengan
+    <span class="font-semibold text-white">
+      <img
+        src="{{ asset('images/Icon-septian.png') }}"
+        alt="Kasir½M"
+        class="h-4 w-auto object-contain"
+    >
+    </span>
+</p>
 
             </div>
 
@@ -134,12 +159,13 @@
 
                 <a href="{{ url('/paket') }}"
                    class="inline-flex items-center justify-center gap-2
-                          px-4 py-2.5 rounded-xl
-                          bg-white text-blue-700
-                          text-xs sm:text-sm font-semibold
-                          shadow-lg shadow-blue-900/20
-                          hover:bg-blue-50
-                          active:scale-95 transition">
+                       px-4 py-2.5 rounded-xl
+                       bg-emerald-500/90
+                       text-gray-950
+                       text-xs sm:text-sm font-semibold
+                       shadow-lg shadow-emerald-950/30
+                       hover:bg-emerald-400
+                       active:scale-95 transition">
 
                     <span>✨</span>
                     Lihat Paket
@@ -171,9 +197,14 @@
 
             <div class="flex items-center gap-2 mb-2">
 
-                <span class="text-[11px] font-semibold text-white">
-                    🚀 Tingkatkan kemampuan KasirKU
-                </span>
+<span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white">
+    🚀 Tingkatkan kemampuan
+    <img
+        src="{{ asset('images/Icon-septian.png') }}"
+        alt="Kasir½M"
+        class="h-4 w-auto object-contain"
+    >
+</span>
 
                 <span class="px-2 py-0.5 rounded-full
                              bg-amber-400/20
@@ -190,7 +221,7 @@
             <div class="overflow-hidden">
 
                 <div class="dashboard-marquee flex items-center gap-10
-                            whitespace-nowrap text-[11px] text-blue-100">
+                            whitespace-nowrap text-[11px] text-gray-300">
 
                     <span>💰 Catatan Utang & Piutang</span>
                     <span>📦 Pembelian & Supplier</span>

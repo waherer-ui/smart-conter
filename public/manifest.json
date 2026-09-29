@@ -1,6 +1,6 @@
 {
-    "name": "KasirKU",
-    "short_name": "KasirKU",
+    "name": "Kasir½M",
+    "short_name": "Kasir½M",
     "description": "Solusi kasir untuk usaha Anda",
     "start_url": "/",
     "display": "standalone",
@@ -9,12 +9,12 @@
     "orientation": "portrait",
     "icons": [
         {
-            "src": "/images/kasirku-icon-192.png",
+            "src": "/images/icon-app-192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/images/kasirku-icon-512.png",
+            "src": "/images/icon-app-512.png",
             "sizes": "512x512",
             "type": "image/png"
         }
