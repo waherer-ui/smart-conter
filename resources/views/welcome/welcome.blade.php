@@ -4,72 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>KasirKU — Solusi Kasir untuk UMKM</title>
+    <title>Kasir½M — Aplikasi Kasir untuk Usaha Anda</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-950 text-white">
 
-    {{-- LANDING PAGE KASIRKU --}}
-    
+    {{-- LANDING PAGE KASIR½M --}}
+
     <main>
 
-       {{-- NAVBAR --}}
-<nav class="border-b border-white/10 bg-gray-950/90 backdrop-blur-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="h-16 flex items-center justify-between">
+        {{-- NAVBAR --}}
+        <nav class="border-b border-white/10 bg-gray-950/90 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="h-16 flex items-center justify-between">
 
-            {{-- LOGO --}}
-            <a href="/" class="flex items-center gap-2">
-                <span class="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center font-black text-gray-950 text-xl">
-                    K
-                </span>
+                    {{-- LOGO --}}
+<a href="/" class="flex items-center">
+    <img
+        src="{{ asset('images/Icon-septian.png') }}"
+        alt="Kasir½M"
+        class="h-8 w-auto object-contain"
+    >
+</a>
 
-                <span class="text-xl font-bold tracking-tight">
-                    <span class="text-emerald-400">asir</span><span class="text-white">KU</span>
-                </span>
-            </a>
+                    {{-- MENU DESKTOP --}}
+                    <div class="hidden md:flex items-center gap-7 text-sm text-gray-300">
 
-            {{-- MENU DESKTOP --}}
-            <div class="hidden md:flex items-center gap-7 text-sm text-gray-300">
-                <a href="#fitur" class="hover:text-white transition">
-                    Fitur
-                </a>
+                        <a href="#fitur" class="hover:text-white transition">
+                            Fitur
+                        </a>
 
-                <a href="#keunggulan" class="hover:text-white transition">
-                    Keunggulan
-                </a>
+                        <a href="#keunggulan" class="hover:text-white transition">
+                            Keunggulan
+                        </a>
 
-                <a href="#cara-kerja" class="hover:text-white transition">
-                    Cara Kerja
-                </a>
+                        <a href="#cara-kerja" class="hover:text-white transition">
+                            Cara Kerja
+                        </a>
 
-                <a href="#faq" class="hover:text-white transition">
-                    FAQ
-                </a>
+                        <a href="#faq" class="hover:text-white transition">
+                            FAQ
+                        </a>
+
+                    </div>
+
+                    {{-- TOMBOL --}}
+                    <div class="flex items-center gap-2">
+
+                        <a
+                            href="{{ route('login') }}"
+                            class="hidden sm:inline-flex px-4 py-2 text-sm text-gray-300 hover:text-white transition"
+                        >
+                            Masuk
+                        </a>
+
+                        <a
+                            href="{{ route('register') }}"
+                            class="inline-flex items-center px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-gray-950 rounded-xl text-sm font-bold transition active:scale-95"
+                        >
+                            Daftar Gratis
+                        </a>
+
+                    </div>
+
+                </div>
             </div>
-
-            {{-- TOMBOL --}}
-            <div class="flex items-center gap-2">
-                <a
-                    href="{{ route('login') }}"
-                    class="hidden sm:inline-flex px-4 py-2 text-sm text-gray-300 hover:text-white transition"
-                >
-                    Masuk
-                </a>
-
-                <a
-                    href="{{ route('register') }}"
-                    class="inline-flex items-center px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-gray-950 rounded-xl text-sm font-bold transition active:scale-95"
-                >
-                    Daftar Gratis
-                </a>
-            </div>
-
-        </div>
-    </div>
-</nav>
+        </nav>
 
 {{-- HERO SECTION --}}
 <section class="relative overflow-hidden">
@@ -109,7 +111,7 @@
                                  shadow-emerald-400/50">
                     </span>
 
-                    Solusi kasir untuk UMKM
+                    Aplikasi kasir untuk usaha yang terus berkembang
                 </div>
 
 
@@ -131,10 +133,15 @@
                         Lebih Mudah
                     </span>
 
-                    <span class="block text-white">
-                        Bersama KasirKU
-                    </span>
+                      <span class="flex items-center justify-center gap-1.5">
+                          Bersama
+                            <img
+                                src="{{ asset('images/Icon-navbar.png') }}"
+                                alt="Kasir½M"
+                                class="h-10 w-auto object-contain"
+                            >
 
+                        </span>
                 </h1>
 
 
@@ -146,10 +153,10 @@
                           text-gray-400
                           leading-7">
 
-                    KasirKU membantu Anda mengelola
+                    Kasir½M membantu Anda mengelola
                     produk, stok, transaksi, pengeluaran,
                     dan laporan usaha dalam satu aplikasi
-                    yang sederhana dan mudah digunakan.
+                    yang sederhana, praktis, dan mudah digunakan.
 
                 </p>
 
@@ -177,7 +184,7 @@
                                transition
                                active:scale-95"
                     >
-                        🚀 Buat Toko Gratis
+                        🚀 Mulai Gratis
                     </a>
 
 
@@ -212,7 +219,7 @@
 
                     <span>✓ Produk & Stok</span>
                     <span>✓ Kasir & Transaksi</span>
-                    <span>✓ Laporan</span>
+                    <span>✓ Laporan Usaha</span>
 
                 </div>
 
@@ -231,9 +238,7 @@
 
 
                 {{-- Mockup --}}
-                <div class="relative
-                            max-w-sm
-                            mx-auto">
+                <div class="relative max-w-sm mx-auto">
 
                     <div class="rounded-[2rem]
                                 bg-gray-900
@@ -249,51 +254,38 @@
                                     border border-white/10">
 
                             {{-- Header Mockup --}}
-                            <div class="px-4 py-4
-                                        bg-gray-800
-                                        border-b border-white/10">
+{{-- Header Mockup --}}
+<div class="px-4 py-4
+            bg-gray-800
+            border-b border-white/10">
 
-                                <div class="flex items-center
-                                            justify-between">
+    <div class="flex items-center justify-between">
 
-                                    <div class="flex items-center gap-2">
+        {{-- LOGO --}}
+        <div class="flex items-center">
 
-                                        <div class="w-8 h-8
-                                                    rounded-lg
-                                                    bg-emerald-500
-                                                    flex items-center
-                                                    justify-center
-                                                    text-gray-950
-                                                    font-black">
-                                            K
-                                        </div>
+            <img
+                src="{{ asset('images/Icon-septian.png') }}"
+                alt="Kasir½M"
+                class="h-8 w-auto object-contain"
+            >
 
-                                        <div>
-                                            <p class="text-sm
-                                                      font-bold
-                                                      text-white">
-                                                KasirKU
-                                            </p>
+        </div>
 
-                                            <p class="text-[10px]
-                                                      text-gray-500">
-                                                Dashboard
-                                            </p>
-                                        </div>
+        {{-- MENU --}}
+        <div class="w-9 h-9
+                    rounded-lg
+                    bg-white/5
+                    flex items-center
+                    justify-center
+                    text-gray-300
+                    text-lg">
+            ☰
+        </div>
 
-                                    </div>
+    </div>
 
-                                    <div class="w-8 h-8
-                                                rounded-full
-                                                bg-white/5
-                                                flex items-center
-                                                justify-center">
-                                        ☰
-                                    </div>
-
-                                </div>
-
-                            </div>
+</div>
 
 
                             {{-- Isi Mockup --}}
@@ -418,7 +410,7 @@
                                             <p class="text-xs
                                                       font-semibold
                                                       text-white">
-                                                Laporan
+                                                Laporan Usaha
                                             </p>
 
                                             <p class="text-[10px]
@@ -486,15 +478,15 @@
 
 </section>
 
-{{-- KENAPA KASIRKU --}}
-<section class="py-20 sm:py-24 border-t border-white/5">
+{{-- KENAPA KASIR½M --}}
+<section id="keunggulan" class="py-20 sm:py-24 border-t border-white/5">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div class="max-w-2xl mx-auto text-center">
 
-            <span class="text-sm font-semibold text-emerald-400">
-                KENAPA KASIRKU?
+            <span class="text-sm items-center font-semibold text-emerald-400">
+                KENAPA KASIR½M?
             </span>
 
             <h2 class="mt-3 text-3xl sm:text-4xl font-black tracking-tight">
@@ -505,7 +497,7 @@
             </h2>
 
             <p class="mt-4 text-gray-400 leading-7">
-                KasirKU dirancang untuk membantu pemilik usaha
+                Kasir½M dirancang untuk membantu pemilik usaha
                 mengelola kegiatan sehari-hari dengan lebih sederhana,
                 cepat, dan terorganisir.
             </p>
@@ -686,7 +678,7 @@
         <div class="max-w-3xl mx-auto text-center">
 
             <span class="text-sm font-semibold text-indigo-400">
-                FITUR KASIRKU
+                FITUR KASIR½M
             </span>
 
             <h2 class="mt-3 text-3xl sm:text-4xl font-black tracking-tight">
@@ -737,7 +729,6 @@
                         </p>
 
                         <div class="mt-4 flex flex-wrap gap-2">
-
                             <span class="px-2.5 py-1 rounded-lg
                                          bg-white/5 text-xs text-gray-400">
                                 Kelola Produk
@@ -752,7 +743,6 @@
                                          bg-white/5 text-xs text-gray-400">
                                 SKU
                             </span>
-
                         </div>
 
                     </div>
@@ -792,7 +782,6 @@
                         </p>
 
                         <div class="mt-4 flex flex-wrap gap-2">
-
                             <span class="px-2.5 py-1 rounded-lg
                                          bg-white/5 text-xs text-gray-400">
                                 Keranjang
@@ -807,7 +796,6 @@
                                          bg-white/5 text-xs text-gray-400">
                                 Pembayaran
                             </span>
-
                         </div>
 
                     </div>
@@ -847,7 +835,6 @@
                         </p>
 
                         <div class="mt-4 flex flex-wrap gap-2">
-
                             <span class="px-2.5 py-1 rounded-lg
                                          bg-white/5 text-xs text-gray-400">
                                 Omzet
@@ -862,7 +849,6 @@
                                          bg-white/5 text-xs text-gray-400">
                                 Laporan
                             </span>
-
                         </div>
 
                     </div>
@@ -902,7 +888,6 @@
                         </p>
 
                         <div class="mt-4 flex flex-wrap gap-2">
-
                             <span class="px-2.5 py-1 rounded-lg
                                          bg-white/5 text-xs text-gray-400">
                                 Catatan Biaya
@@ -912,7 +897,6 @@
                                          bg-white/5 text-xs text-gray-400">
                                 Pengeluaran
                             </span>
-
                         </div>
 
                     </div>
@@ -951,7 +935,6 @@
                         </p>
 
                         <div class="mt-4 flex flex-wrap gap-2">
-
                             <span class="px-2.5 py-1 rounded-lg
                                          bg-white/5 text-xs text-gray-400">
                                 Multi-Toko
@@ -961,7 +944,6 @@
                                          bg-white/5 text-xs text-gray-400">
                                 Cabang
                             </span>
-
                         </div>
 
                     </div>
@@ -1000,7 +982,6 @@
                         </p>
 
                         <div class="mt-4 flex flex-wrap gap-2">
-
                             <span class="px-2.5 py-1 rounded-lg
                                          bg-white/5 text-xs text-gray-400">
                                 Admin
@@ -1015,7 +996,6 @@
                                          bg-white/5 text-xs text-gray-400">
                                 Hak Akses
                             </span>
-
                         </div>
 
                     </div>
@@ -1031,7 +1011,7 @@
 
 </section>
 
-{{-- MASALAH UMKM --}}
+{{-- MASALAH USAHA --}}
 <section class="py-20 sm:py-24 border-t border-white/5">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1055,7 +1035,7 @@
 
                 <p class="mt-5 text-gray-400 leading-7">
                     Ketika usaha mulai berkembang, mencatat semuanya secara
-                    manual bisa membuat pekerjaan semakin rumit.
+                    manual bisa membuat pekerjaan semakin rumit dan memakan waktu.
                 </p>
 
             </div>
@@ -1179,7 +1159,7 @@
             <div class="max-w-3xl">
 
                 <span class="text-sm font-semibold text-emerald-400">
-                    SOLUSI DARI KASIRKU
+                    SOLUSI DARI KASIR½M
                 </span>
 
                 <h3 class="mt-3 text-2xl sm:text-3xl font-black">
@@ -1188,7 +1168,7 @@
                 </h3>
 
                 <p class="mt-4 text-gray-400 leading-7">
-                    Dengan KasirKU, berbagai aktivitas penting seperti
+                    Dengan Kasir½M, berbagai aktivitas penting seperti
                     mengelola produk, mencatat transaksi, memantau stok,
                     mencatat pengeluaran, hingga melihat laporan dapat
                     dilakukan dalam satu aplikasi.
@@ -1211,7 +1191,7 @@
         <div class="max-w-3xl mx-auto text-center">
 
             <span class="text-sm font-semibold text-emerald-400">
-                CARA KERJA KASIRKU
+                CARA KERJA KASIR½M
             </span>
 
             <h2 class="mt-3 text-3xl sm:text-4xl font-black tracking-tight">
@@ -1223,21 +1203,26 @@
             <p class="mt-4 text-gray-400 leading-7">
                 Tidak perlu proses yang rumit.
                 Buat akun, buat toko, lalu langsung gunakan
-                KasirKU untuk membantu mengelola usaha Anda.
+                Kasir½M untuk membantu mengelola usaha Anda.
             </p>
 
         </div>
+
 
         {{-- LANGKAH --}}
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mt-14">
 
             {{-- STEP 1 --}}
-            <div class="relative p-6 rounded-3xl bg-gray-950/70 border border-white/10">
+            <div class="relative p-6 rounded-3xl
+                        bg-gray-950/70
+                        border border-white/10">
 
                 <div class="flex items-center justify-between">
 
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-500/10
-                                flex items-center justify-center text-2xl">
+                    <div class="w-12 h-12 rounded-2xl
+                                bg-indigo-500/10
+                                flex items-center justify-center
+                                text-2xl">
                         👤
                     </div>
 
@@ -1252,19 +1237,24 @@
                 </h3>
 
                 <p class="mt-2 text-sm text-gray-400 leading-6">
-                    Daftarkan akun KasirKU menggunakan
+                    Daftarkan akun Kasir½M menggunakan
                     nama dan email Anda.
                 </p>
 
             </div>
 
+
             {{-- STEP 2 --}}
-            <div class="relative p-6 rounded-3xl bg-gray-950/70 border border-white/10">
+            <div class="relative p-6 rounded-3xl
+                        bg-gray-950/70
+                        border border-white/10">
 
                 <div class="flex items-center justify-between">
 
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10
-                                flex items-center justify-center text-2xl">
+                    <div class="w-12 h-12 rounded-2xl
+                                bg-emerald-500/10
+                                flex items-center justify-center
+                                text-2xl">
                         🏪
                     </div>
 
@@ -1285,13 +1275,18 @@
 
             </div>
 
+
             {{-- STEP 3 --}}
-            <div class="relative p-6 rounded-3xl bg-gray-950/70 border border-white/10">
+            <div class="relative p-6 rounded-3xl
+                        bg-gray-950/70
+                        border border-white/10">
 
                 <div class="flex items-center justify-between">
 
-                    <div class="w-12 h-12 rounded-2xl bg-blue-500/10
-                                flex items-center justify-center text-2xl">
+                    <div class="w-12 h-12 rounded-2xl
+                                bg-blue-500/10
+                                flex items-center justify-center
+                                text-2xl">
                         📦
                     </div>
 
@@ -1312,13 +1307,18 @@
 
             </div>
 
+
             {{-- STEP 4 --}}
-            <div class="relative p-6 rounded-3xl bg-gray-950/70 border border-white/10">
+            <div class="relative p-6 rounded-3xl
+                        bg-gray-950/70
+                        border border-white/10">
 
                 <div class="flex items-center justify-between">
 
-                    <div class="w-12 h-12 rounded-2xl bg-purple-500/10
-                                flex items-center justify-center text-2xl">
+                    <div class="w-12 h-12 rounded-2xl
+                                bg-purple-500/10
+                                flex items-center justify-center
+                                text-2xl">
                         📊
                     </div>
 
@@ -1341,6 +1341,7 @@
 
         </div>
 
+
         {{-- CTA --}}
         <div class="mt-14 text-center">
 
@@ -1358,7 +1359,7 @@
                        transition
                        active:scale-95"
             >
-                🚀 Mulai Gunakan KasirKU
+                🚀 Mulai Gunakan Kasir½M
             </a>
 
         </div>
@@ -1368,7 +1369,7 @@
 </section>
 
 {{-- DETAIL FITUR --}}
-<section id="keunggulan" class="py-20 sm:py-24 border-t border-white/5">
+<section class="py-20 sm:py-24 border-t border-white/5">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -1381,13 +1382,19 @@
 
             <h2 class="mt-3 text-3xl sm:text-4xl font-black tracking-tight">
                 Semua yang Anda butuhkan
-                <span class="text-emerald-400">
-                    ada di KasirKU.
-                </span>
+                      <span class="flex text-emerald-400 items-center justify-center gap-1.5">
+                          ada di
+                            <img
+                                src="{{ asset('images/Icon-navbar.png') }}"
+                                alt="Kasir½M"
+                                class="h-8 w-auto object-contain"
+                            >
+
+                        </span>
             </h2>
 
             <p class="mt-4 text-gray-400 leading-7">
-                KasirKU membantu menghubungkan berbagai aktivitas
+                Kasir½M membantu menghubungkan berbagai aktivitas
                 usaha dalam satu sistem sehingga pekerjaan sehari-hari
                 menjadi lebih teratur.
             </p>
@@ -1800,6 +1807,7 @@
 
 </section>
 
+
 {{-- FITUR 3 & 4 --}}
 <section class="py-20 sm:py-24 bg-gray-900/40 border-t border-white/5">
 
@@ -1830,7 +1838,7 @@
 
                 <p class="mt-4 text-gray-400 leading-7">
                     Tidak hanya mencatat penjualan.
-                    KasirKU membantu Anda mencatat pengeluaran
+                    Kasir½M membantu Anda mencatat pengeluaran
                     usaha sehingga arus uang lebih mudah dipantau.
                 </p>
 
@@ -2122,6 +2130,7 @@
 
 </section>
 
+
 {{-- MULTI TOKO --}}
 <section class="py-20 sm:py-24 border-t border-white/5">
 
@@ -2146,7 +2155,7 @@
                 <p class="mt-5 text-gray-400 leading-7">
                     Punya lebih dari satu toko atau cabang?
                     Anda tidak perlu membuat akun berbeda untuk setiap toko.
-                    KasirKU memungkinkan satu akun mengelola beberapa toko
+                    Kasir½M memungkinkan satu akun mengelola beberapa toko
                     dan berpindah toko sesuai kebutuhan.
                 </p>
 
@@ -2740,13 +2749,18 @@
 
             <h2 class="mt-3 text-3xl sm:text-4xl font-black tracking-tight">
                 Apa pun usaha Anda,
-                <span class="text-indigo-400">
-                    KasirKU siap membantu.
-                </span>
+                      <span class="flex text-indigo-400 items-center justify-center gap-1.5">
+                            <img
+                                src="{{ asset('images/Icon-navbar.png') }}"
+                                alt="Kasir½M"
+                                class="h-7 w-auto object-contain"
+                            >siap membatu
+
+                        </span>
             </h2>
 
             <p class="mt-4 text-gray-400 leading-7">
-                KasirKU dirancang agar dapat digunakan oleh berbagai
+                Kasir½M dirancang agar dapat digunakan oleh berbagai
                 jenis usaha yang membutuhkan pencatatan produk,
                 transaksi, stok, dan laporan.
             </p>
@@ -2880,7 +2894,7 @@
 
 </section>
 
-{{-- KENAPA MEMILIH KASIRKU --}}
+{{-- KENAPA MEMILIH KASIR½M --}}
 <section class="py-20 sm:py-24 bg-gray-900/40 border-t border-white/5">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -2889,7 +2903,7 @@
         <div class="max-w-3xl mx-auto text-center">
 
             <span class="text-sm font-semibold text-indigo-400">
-                KENAPA KASIRKU?
+                KENAPA KASIR½M?
             </span>
 
             <h2 class="mt-3 text-3xl sm:text-4xl font-black tracking-tight">
@@ -2901,7 +2915,7 @@
 
             <p class="mt-4 text-gray-400 leading-7">
                 Bukan sekadar mencatat transaksi.
-                KasirKU dirancang untuk membantu pemilik usaha
+                Kasir½M dirancang untuk membantu pemilik usaha
                 mengelola kegiatan toko dengan lebih praktis.
             </p>
 
@@ -3099,7 +3113,7 @@
 
             <p class="mt-4 text-gray-400 leading-7">
                 Beberapa hal yang perlu Anda ketahui
-                sebelum mulai menggunakan KasirKU.
+                sebelum mulai menggunakan Kasir½M.
             </p>
 
         </div>
@@ -3128,7 +3142,7 @@
                 >
 
                     <span>
-                        Apa itu KasirKU?
+                        Apa itu Kasir½M?
                     </span>
 
                     <span class="text-gray-500
@@ -3143,7 +3157,7 @@
                 <div class="px-5 pb-5">
 
                     <p class="text-sm text-gray-400 leading-7">
-                        KasirKU adalah aplikasi untuk membantu pemilik
+                        Kasir½M adalah aplikasi untuk membantu pemilik
                         usaha mengelola produk, stok, transaksi,
                         pengeluaran, pengguna, dan laporan dalam
                         satu sistem.
@@ -3173,7 +3187,7 @@
                 >
 
                     <span>
-                        Apakah KasirKU bisa digunakan dari HP?
+                        Apakah Kasir½M bisa digunakan dari HP?
                     </span>
 
                     <span class="text-gray-500
@@ -3188,7 +3202,7 @@
                 <div class="px-5 pb-5">
 
                     <p class="text-sm text-gray-400 leading-7">
-                        Bisa. KasirKU dirancang agar dapat digunakan
+                        Bisa. Kasir½M dirancang agar dapat digunakan
                         melalui browser pada HP maupun perangkat
                         dengan layar yang lebih besar.
                     </p>
@@ -3305,7 +3319,7 @@
                 >
 
                     <span>
-                        Bagaimana cara mulai menggunakan KasirKU?
+                        Bagaimana cara mulai menggunakan Kasir½M?
                     </span>
 
                     <span class="text-gray-500
@@ -3322,7 +3336,7 @@
                     <p class="text-sm text-gray-400 leading-7">
                         Klik tombol Daftar Gratis, buat akun,
                         masukkan informasi toko, kemudian Anda
-                        dapat masuk ke aplikasi KasirKU dan mulai
+                        dapat masuk ke aplikasi Kasir½M dan mulai
                         mengelola usaha.
                     </p>
 
@@ -3350,7 +3364,7 @@
                 >
 
                     <span>
-                        Apakah KasirKU hanya untuk konter HP?
+                        Apakah Kasir½M hanya untuk konter HP?
                     </span>
 
                     <span class="text-gray-500
@@ -3365,7 +3379,7 @@
                 <div class="px-5 pb-5">
 
                     <p class="text-sm text-gray-400 leading-7">
-                        Tidak. KasirKU dapat digunakan untuk berbagai
+                        Tidak. Kasir½M dapat digunakan untuk berbagai
                         jenis usaha yang membutuhkan pengelolaan
                         produk, transaksi, stok, pengeluaran,
                         dan laporan.
@@ -3374,6 +3388,7 @@
                 </div>
 
             </details>
+
 
         </div>
 
@@ -3445,7 +3460,7 @@
                   text-gray-400
                   leading-7">
 
-            Buat akun KasirKU dan mulai kelola produk,
+            Buat akun Kasir½M dan mulai kelola produk,
             stok, transaksi, pengeluaran, serta laporan
             usaha Anda dalam satu aplikasi.
 
@@ -3526,18 +3541,13 @@
             <div class="lg:col-span-2">
 
                 <a href="{{ route('home') }}"
-                   class="inline-flex items-center gap-2">
+                   class="inline-flex items-center">
 
-                    <span class="w-9 h-9 rounded-xl
-                                 bg-emerald-500
-                                 flex items-center justify-center
-                                 font-black text-gray-950 text-xl">
-                        K
-                    </span>
-
-                    <span class="text-xl font-bold tracking-tight">
-                        <span class="text-emerald-400">asir</span><span class="text-white">KU</span>
-                    </span>
+                    <img
+                        src="{{ asset('images/Icon-septian.png') }}"
+                        alt="Kasir½M"
+                        class="h-9 w-auto object-contain"
+                    >
 
                 </a>
 
@@ -3545,7 +3555,7 @@
                           text-sm text-gray-500
                           leading-6">
 
-                    KasirKU membantu pemilik usaha
+                    Kasir½M membantu pemilik usaha
                     mengelola produk, stok, transaksi,
                     pengeluaran, dan laporan dalam
                     satu aplikasi.
@@ -3615,27 +3625,40 @@
         </div>
 
 
-             {{-- GARIS BAWAH --}}
-      <div class="mt-10 pt-6
-                  border-t border-white/5
-                  flex flex-col sm:flex-row
-                  items-center
-                  justify-between
-                  gap-3">
-      
-          <a href="{{ route('register') }}"
-             class="text-xs text-gray-600
-                    hover:text-emerald-400
-                    transition duration-200
-                    cursor-pointer">
-              © {{ date('Y') }} KasirKU. Semua hak dilindungi.
-          </a>
-      
-          <p class="text-xs text-gray-600">
-              Solusi kasir untuk usaha Anda.
-          </p>
-      
-      </div>
+        {{-- GARIS BAWAH --}}
+        <div class="mt-10 pt-6
+                    border-t border-white/5
+                    flex flex-col sm:flex-row
+                    items-center
+                    justify-between
+                    gap-3">
+
+            <a href="{{ route('register') }}"
+               class="text-xs text-gray-600
+                      hover:text-emerald-400
+                      transition duration-200
+                      cursor-pointer">
+                        <div class="flex items-center justify-center gap-1.5">
+
+                            <span class="text-[9px] text-gray-600">
+                                © {{ date('Y') }}
+                            </span>
+
+                            <img
+                                src="{{ asset('images/Icon-navbar.png') }}"
+                                alt="Kasir½M"
+                                class="h-5 w-auto object-contain"
+                            >
+
+                        </div>
+            </a>
+
+            <p class="text-xs text-gray-600">
+              Semua hak dilindungi.
+                Solusi kasir untuk usaha Anda.
+            </p>
+
+        </div>
 
     </div>
 

@@ -1279,7 +1279,7 @@ Route::get('/', function () {
     */
 
     if (!session('logged_in')) {
-        return redirect()->route('login');
+        return view('welcome.welcome');
     }
 
 
