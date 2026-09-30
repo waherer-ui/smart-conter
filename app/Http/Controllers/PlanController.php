@@ -319,7 +319,7 @@ class PlanController extends Controller
  */
 
 $midtransOrderId =
-    'KASIRKU-' .
+    'KasirSetengahM-' .
     $payment->id .
     '-' .
     strtoupper(Str::random(8));
@@ -690,7 +690,7 @@ public function checkStatus(
                 );
         }
 
-        /*
+/*
          * =====================================================
          * BELUM BERHASIL
          * =====================================================
@@ -703,10 +703,18 @@ public function checkStatus(
 
     } catch (\Throwable $e) {
 
+        \Log::error(
+            'Gagal mengecek status pembayaran Midtrans.',
+            [
+                'payment_id' => $payment->id,
+                'order_id' => $payment->midtrans_order_id,
+                'message' => $e->getMessage(),
+            ]
+        );
+
         return back()->with(
             'error',
-            'Gagal mengecek status pembayaran: ' .
-            $e->getMessage()
+            'Pembayaran belum terdeteksi. Silakan lakukan pembayaran terlebih dahulu, lalu coba cek kembali.'
         );
     }
 }
