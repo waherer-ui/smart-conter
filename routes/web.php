@@ -38,6 +38,8 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\SupportController as OwnerSupportController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\PaymentAccountController;
+use App\Http\Controllers\PaymentQrController;
 
 
 
@@ -1157,6 +1159,47 @@ Route::post('/backup/restore/preview', [BackupController::class, 'restorePreview
     
     Route::post('/backup/restore', [BackupController::class, 'restore'])
     ->name('backup.restore.execute');
+    
+    Route::get(
+    '/pengaturan-pembayaran',
+    [PaymentAccountController::class, 'index']
+)->name('payment-settings.index');
+
+Route::post(
+    '/pengaturan-pembayaran/rekening',
+    [PaymentAccountController::class, 'store']
+)->name('payment-accounts.store');
+
+Route::put(
+    '/pengaturan-pembayaran/rekening/{paymentAccount}',
+    [PaymentAccountController::class, 'update']
+)->name('payment-accounts.update');
+
+Route::delete(
+    '/pengaturan-pembayaran/rekening/{paymentAccount}',
+    [PaymentAccountController::class, 'destroy']
+)->name('payment-accounts.destroy');
+
+Route::patch(
+    '/pengaturan-pembayaran/rekening/{paymentAccount}/toggle',
+    [PaymentAccountController::class, 'toggle']
+)->name('payment-accounts.toggle');
+
+
+Route::post(
+    '/pengaturan-pembayaran/qr',
+    [PaymentQrController::class, 'store']
+)->name('payment-qrs.store');
+
+Route::delete(
+    '/pengaturan-pembayaran/qr/{paymentQr}',
+    [PaymentQrController::class, 'destroy']
+)->name('payment-qrs.destroy');
+
+Route::patch(
+    '/pengaturan-pembayaran/qr/{paymentQr}/toggle',
+    [PaymentQrController::class, 'toggle']
+)->name('payment-qrs.toggle');
         
         
     /*

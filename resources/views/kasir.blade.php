@@ -1,5 +1,39 @@
 @extends('layouts.app')
 
+@php
+    $activeStoreId = session('active_store_id');
+
+    $activePaymentQr = null;
+    $paymentAccounts = collect();
+
+    $activeStore = null;
+
+    $paymentQrEnabled = false;
+    $paymentBankEnabled = false;
+    $debtEnabled = false;
+
+    if ($activeStoreId) {
+
+        $activePaymentQr = \App\Models\PaymentQr::where('store_id', $activeStoreId)
+            ->where('is_active', true)
+            ->latest()
+            ->first();
+
+        $paymentAccounts = \App\Models\PaymentAccount::where('store_id', $activeStoreId)
+            ->where('is_active', true)
+            ->latest()
+            ->get();
+
+        $activeStore = \App\Models\Store::find($activeStoreId);
+
+        if ($activeStore) {
+            $paymentQrEnabled = $activeStore->hasFeature('payment_qr');
+            $paymentBankEnabled = $activeStore->hasFeature('payment_bank');
+            $debtEnabled = $activeStore->hasFeature('debt');
+        }
+    }
+@endphp
+
 @section('header', '🛒 Kasir')
 @section('mobile_action', 'scan')
 
@@ -339,12 +373,10 @@
 {{-- ============================================================
      MODAL PEMBAYARAN
 ============================================================ --}}
-<div
-    id="payment-modal"
-    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
->
+<div id="payment-modal"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center p-1 bg-black/60 backdrop-blur-sm overflow-y-auto">
 
-    <div class="bg-gray-800 border border-white/15 rounded-2xl w-full max-w-md p-6 shadow-2xl relative space-y-4">
+    <div class="bg-gray-800 border border-white/15 rounded-2xl w-full max-w-md p-2 shadow-2xl relative space-y-1 max-h-[84vh] overflow-y-auto">
 
         <div class="flex justify-between items-center pb-2 border-b border-white/10">
 
@@ -363,7 +395,7 @@
         </div>
 
 
-        <div class="bg-indigo-950/40 border border-indigo-500/30 p-4 rounded-xl text-center">
+        <div class="bg-indigo-950/40 border border-indigo-500/30 p-2 rounded-xl text-center">
 
             <span class="text-xs text-gray-400">
                 Total Tagihan
@@ -371,7 +403,7 @@
 
             <h2
                 id="modal-total-pay"
-                class="text-emerald-400 text-2xl font-bold mt-1"
+                class="text-emerald-400 text-xl font-bold mt-0.5"
             >
                 Rp 0
             </h2>
@@ -385,29 +417,120 @@
                 Metode Pembayaran
             </label>
 
-            <select
-                id="pay-method"
-                onchange="paymentMethodChanged()"
-                class="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs outline-none"
-            >
+<select
+    id="pay-method"
+    onchange="paymentMethodChanged()"
+    class="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs outline-none"
+>
+    <option value="Tunai">
+        Tunai (Cash)
+    </option>
 
-                <option value="Tunai">
-                    Tunai (Cash)
-                </option>
+    @if($paymentQrEnabled)
+        <option value="QRIS / Transfer">
+            QRIS / Transfer
+        </option>
+    @endif
 
-                <option value="QRIS / Transfer">
-                    QRIS / Transfer
-                </option>
+    @if($debtEnabled)
+        <option value="Cashbon / Utang">
+            Cashbon / Utang
+        </option>
+    @endif
+</select>
+            
+            @if($activePaymentQr)
+    <div id="store-qr-payment-box"
+     class="hidden mt-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-center">
 
-                <option value="Debit Card">
-                    Debit Card
-                </option>
-                
-                <option value="Cashbon / Utang">
-                    Cashbon / Utang
-                </option>
+    <div class="mb-1">
+        <p class="font-semibold text-white text-sm">
+            {{ $activePaymentQr->name }}
+        </p>
 
-            </select>
+        <p class="mt-1 text-[10px] text-gray-400">
+            Silakan scan QR untuk melakukan pembayaran
+        </p>
+    </div>
+
+    <div class="mx-auto w-fit rounded-lg bg-white p-0.5 shadow-lg">
+        <img
+            src="{{ Storage::disk('s3')->url($activePaymentQr->image_path) }}"
+            alt="{{ $activePaymentQr->name }}"
+            style="width: 150px; height: 150px; object-fit: contain;"
+        >
+    </div>
+
+    <p class="mt-2 text-[10px] text-emerald-300">
+        QR pembayaran toko
+    </p>
+
+    @if($paymentAccounts->count())
+        <div class="mt-3 pt-2 border-t border-emerald-500/20 text-left">
+
+            <p class="text-[10px] font-semibold text-white mb-1.5">
+                🏦 Rekening / E-Wallet
+            </p>
+
+            <div class="grid grid-cols-2 gap-1">
+
+                @foreach($paymentAccounts as $account)
+
+                    <div class="flex items-center gap-2 bg-gray-900/70 border border-white/10 rounded-lg px-2 py-1.5">
+
+                        <div class="w-6 h-6 rounded-md bg-gray-800 flex items-center justify-center shrink-0 text-xs">
+                            {{ $account->type === 'bank' ? '🏦' : '📱' }}
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+
+                            <div class="flex items-center justify-between gap-2">
+
+                                <span class="text-[10px] font-semibold text-white truncate">
+                                    {{ $account->provider }}
+                                </span>
+
+                                <span class="text-[10px] text-emerald-400 font-mono whitespace-nowrap">
+                                    {{ $account->account_number }}
+                                </span>
+
+                            </div>
+
+                            <p class="text-[9px] text-gray-400 truncate">
+                                {{ $account->account_name }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                @endforeach
+
+            </div>
+
+        </div>
+    @else
+        <div class="mt-3 pt-2 border-t border-white/10">
+            <p class="text-[9px] text-gray-500 text-center">
+                Belum ada rekening atau e-wallet aktif.
+            </p>
+        </div>
+    @endif
+
+</div>
+@else
+    <div id="store-qr-payment-box"
+         class="hidden mt-4 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4">
+
+        <p class="text-sm font-semibold text-yellow-300">
+            QR pembayaran belum tersedia
+        </p>
+
+        <p class="mt-1 text-xs text-gray-400">
+            Silakan tambahkan QR pembayaran toko melalui Pengaturan Pembayaran.
+        </p>
+    </div>
+@endif
 
         </div>
 
@@ -504,7 +627,7 @@
             <button
                 type="button"
                 onclick="closePaymentModal()"
-                class="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-300 py-2.5 rounded-xl text-xs font-medium transition"
+                class="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-300 py-2 rounded-lg text-[11px] font-medium transition"
             >
                 Batal
             </button>
@@ -515,7 +638,7 @@
                 onclick="submitTransaction()"
                 class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl text-xs font-semibold transition shadow"
             >
-                Selesaikan & Cetak Struk
+                Bayar
             </button>
 
         </div>
@@ -627,9 +750,8 @@
 </div>
 
 @php
-    $activeStoreId = session('active_store_id');
-
     $receiptSetting = null;
+    $customReceiptEnabled = false;
 
     if ($activeStoreId) {
         $receiptSetting = \App\Models\ReceiptSetting::where(
@@ -637,14 +759,6 @@
             $activeStoreId
         )->first();
     }
-
-    $activeStore = null;
-
-    if ($activeStoreId) {
-        $activeStore = \App\Models\Store::find($activeStoreId);
-    }
-
-    $customReceiptEnabled = false;
 
     if ($activeStore) {
         $customReceiptEnabled = $activeStore->hasFeature('custom_receipt');
@@ -699,7 +813,7 @@ STRUK
                 class="font-bold text-sm"
                 id="receipt-business-name"
             >
-                KasirKU
+                Kasir½M
             </h2>
 
         @endif
@@ -761,7 +875,7 @@ STRUK
         {{-- DEFAULT FREE --}}
 
         <h2 class="font-bold text-sm">
-            KasirKU
+            Kasir½M
         </h2>
 
     @endif
@@ -930,7 +1044,7 @@ STRUK
         </p>
 
         <p class="font-bold mt-1">
-            KasirKU
+            Kasir½M
         </p>
 
     @endif
@@ -1592,9 +1706,16 @@ function paymentMethodChanged() {
 
     const customerSelect =
         document.getElementById('cashbon-customer');
+        
+        const qrBox = document.getElementById('store-qr-payment-box');
 
     const calc =
         calculateCartTotal();
+        
+        // Sembunyikan QR secara default
+    if (qrBox) {
+        qrBox.classList.add('hidden');
+    }
 
 
     /*
@@ -1613,6 +1734,22 @@ function paymentMethodChanged() {
     calculateChange();
     return;
 }
+
+customerBox.classList.add('hidden');
+    customerSelect.value = '';
+
+    if (method === 'QRIS / Transfer') {
+        if (qrBox) {
+            qrBox.classList.remove('hidden');
+        }
+
+        input.value = calc.total;
+        input.readOnly = true;
+        input.placeholder = 'Nominal pembayaran';
+
+        calculateChange();
+        return;
+    }
 
 
     /*
@@ -2304,6 +2441,14 @@ function newTransaction() {
     document.getElementById(
         'pay-method'
     ).value = 'Tunai';
+    
+    const qrBox = document.getElementById(
+    'store-qr-payment-box'
+);
+
+if (qrBox) {
+    qrBox.classList.add('hidden');
+}
 
 
     document.getElementById(

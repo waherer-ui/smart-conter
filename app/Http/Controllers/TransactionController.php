@@ -105,110 +105,179 @@ public function store(Request $request)
         ], 401);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Toko Aktif
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| Toko Aktif
+|--------------------------------------------------------------------------
+*/
 
-    $storeId = $this->activeStoreId();
+$storeId = $this->activeStoreId();
 
-    if (!$storeId) {
+if (!$storeId) {
+
+    return response()->json([
+        'success' => false,
+        'message' =>
+            'Toko aktif tidak ditemukan.',
+    ], 422);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Ambil Toko Aktif
+|--------------------------------------------------------------------------
+*/
+
+$store = \App\Models\Store::find($storeId);
+
+if (!$store) {
+
+    return response()->json([
+        'success' => false,
+        'message' =>
+            'Toko aktif tidak ditemukan.',
+    ], 422);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| VALIDASI METODE PEMBAYARAN SESUAI PAKET
+|--------------------------------------------------------------------------
+*/
+
+$paymentMethod = $validated['payment_method'];
+
+
+/*
+|--------------------------------------------------------------------------
+| QRIS / TRANSFER
+|--------------------------------------------------------------------------
+|
+| Membutuhkan feature: payment_qr
+| Tersedia pada Pro dan Premium.
+|--------------------------------------------------------------------------
+*/
+
+if (
+    $paymentMethod === 'QRIS / Transfer'
+    && !$store->hasFeature('payment_qr')
+) {
+
+    return response()->json([
+        'success' => false,
+        'message' =>
+            'Metode pembayaran QRIS / Transfer hanya tersedia pada paket Pro dan Premium. Silakan upgrade paket terlebih dahulu.',
+    ], 422);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| DEBIT CARD
+|--------------------------------------------------------------------------
+|
+| Membutuhkan feature: payment_bank
+| Tersedia pada Pro dan Premium.
+|--------------------------------------------------------------------------
+*/
+
+if (
+    $paymentMethod === 'Debit Card'
+    && !$store->hasFeature('payment_bank')
+) {
+
+    return response()->json([
+        'success' => false,
+        'message' =>
+            'Metode pembayaran Debit Card hanya tersedia pada paket Pro dan Premium. Silakan upgrade paket terlebih dahulu.',
+    ], 422);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| IDENTIFIKASI CASHBON
+|--------------------------------------------------------------------------
+*/
+
+$isCashbon =
+    $paymentMethod === 'Cashbon / Utang';
+
+
+/*
+|--------------------------------------------------------------------------
+| CASHBON HARUS MEMAKAI FITUR UTANG
+|--------------------------------------------------------------------------
+*/
+
+if ($isCashbon) {
+
+    if (!$store->hasFeature('debt')) {
 
         return response()->json([
             'success' => false,
             'message' =>
-                'Toko aktif tidak ditemukan.',
+                'Fitur Cashbon / Utang hanya tersedia pada paket Pro dan Premium.',
         ], 422);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | IDENTIFIKASI CASHBON
+    | Cashbon Wajib Memilih Pelanggan
     |--------------------------------------------------------------------------
     */
 
-    $isCashbon =
-        $validated['payment_method'] === 'Cashbon / Utang';
+    if (empty($validated['customer_id'])) {
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Silakan pilih pelanggan untuk transaksi Cashbon / Utang.',
+        ], 422);
+    }
 
     /*
     |--------------------------------------------------------------------------
-    | CASHBON HARUS MEMAKAI FITUR UTANG
+    | Total Cashbon Tidak Boleh Nol
     |--------------------------------------------------------------------------
     */
 
-    if ($isCashbon) {
+    if ((float) $validated['total'] <= 0) {
 
-        $store = \App\Models\Store::find($storeId);
-
-        if (!$store || !$store->hasFeature('debt')) {
-
-            return response()->json([
-                'success' => false,
-                'message' =>
-                    'Fitur Cashbon / Utang hanya tersedia pada paket Pro dan Premium.',
-            ], 422);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Cashbon Wajib Memilih Pelanggan
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            empty($validated['customer_id'])
-        ) {
-
-            return response()->json([
-                'success' => false,
-                'message' =>
-                    'Silakan pilih pelanggan untuk transaksi Cashbon / Utang.',
-            ], 422);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Total Cashbon Tidak Boleh Nol
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            (float) $validated['total'] <= 0
-        ) {
-
-            return response()->json([
-                'success' => false,
-                'message' =>
-                    'Transaksi Cashbon harus memiliki total tagihan.',
-            ], 422);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Pastikan Pelanggan Milik Toko Aktif
-        |--------------------------------------------------------------------------
-        */
-
-        $customerExists = Customer::where(
-            'store_id',
-            $storeId
-        )
-        ->where(
-            'id',
-            $validated['customer_id']
-        )
-        ->exists();
-
-        if (!$customerExists) {
-
-            return response()->json([
-                'success' => false,
-                'message' =>
-                    'Pelanggan tidak ditemukan di toko aktif.',
-            ], 422);
-        }
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Transaksi Cashbon harus memiliki total tagihan.',
+        ], 422);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pastikan Pelanggan Milik Toko Aktif
+    |--------------------------------------------------------------------------
+    */
+
+    $customerExists = Customer::where(
+        'store_id',
+        $storeId
+    )
+    ->where(
+        'id',
+        $validated['customer_id']
+    )
+    ->exists();
+
+    if (!$customerExists) {
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Pelanggan tidak ditemukan di toko aktif.',
+        ], 422);
+    }
+}
 
     /*
     |--------------------------------------------------------------------------

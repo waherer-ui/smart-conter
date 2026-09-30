@@ -781,28 +781,43 @@
              TOKO SUDAH LOGIN TAPI BELUM ADA PRODUK
         ================================================== --}}
         <div
-            class="col-span-full
-                   bg-gray-800/50
-                   border border-white/10
-                   rounded-2xl
-                   py-14
-                   px-6
-                   text-center"
-        >
+    class="col-span-full
+           bg-gray-800/50
+           border border-white/10
+           rounded-2xl
+           py-14
+           px-6
+           text-center"
+>
 
-            <div class="text-4xl mb-3">
-                📦
-            </div>
+    <div class="text-4xl mb-3">
+        📦
+    </div>
 
-            <h3 class="text-white font-semibold">
-                Belum ada produk
-            </h3>
+    <h3 class="text-white font-semibold">
+        Belum ada produk
+    </h3>
 
-            <p class="text-sm text-gray-500 mt-1">
-                Belum ada produk pada kategori yang dipilih.
-            </p>
+    <p class="text-sm text-gray-500 mt-1 mb-6">
+        Tambahkan produk pertama Anda untuk mulai mengelola
+        stok dan penjualan.
+    </p>
 
-        </div>
+    <a
+        href="{{ route('produk.index') }}"
+        class="inline-flex items-center gap-2
+               bg-indigo-600 hover:bg-indigo-500
+               text-white
+               px-5 py-2.5
+               rounded-xl
+               text-sm font-medium
+               transition shadow-lg shadow-indigo-500/20"
+    >
+        <span class="text-base">＋</span>
+        Tambah Produk / Servis
+    </a>
+
+</div>
 
     @endif
 

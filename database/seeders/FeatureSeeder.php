@@ -72,6 +72,20 @@ class FeatureSeeder extends Seeder
               'description' => 'Menambahkan toko baru untuk akun pemilik.',
               'is_active' => true,
           ],
+          
+          [
+              'name' => 'Pembayaran Via Bank',
+              'slug' => 'payment_bank',
+              'description' => 'Menerima pembayaran melalui rekening bank atau e-wallet milik toko.',
+              'is_active' => true,
+          ],
+          
+          [
+              'name' => 'Pembayaran Via QR',
+              'slug' => 'payment_qr',
+              'description' => 'Menerima pembayaran melalui QR statis milik toko.',
+              'is_active' => true,
+          ],
         ];
 
         foreach ($features as $feature) {

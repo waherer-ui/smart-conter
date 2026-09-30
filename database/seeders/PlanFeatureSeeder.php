@@ -30,6 +30,9 @@ class PlanFeatureSeeder extends Seeder
             'product_import_csv',
             'custom_receipt',
              'add_store',
+               // Pembayaran toko
+              'payment_bank',
+              'payment_qr',
         ];
 
         $premiumFeatures = [

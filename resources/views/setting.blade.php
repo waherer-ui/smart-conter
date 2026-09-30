@@ -272,6 +272,25 @@
         </div>
 
     </div>
+    
+    <a href="{{ route('payment-settings.index') }}"
+   class="block rounded-xl border border-gray-700 bg-gray-800/50 p-4 transition hover:bg-gray-700/60">
+    <div class="flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+            💳
+        </div>
+
+        <div>
+            <h3 class="font-semibold text-white">
+                Rekening & Pembayaran
+            </h3>
+
+            <p class="text-sm text-gray-400">
+                Atur rekening bank, e-wallet, dan QR pembayaran toko.
+            </p>
+        </div>
+    </div>
+</a>
 
 
     {{-- =========================================================

@@ -7,6 +7,8 @@ use App\Models\Subscription;
 use App\Models\Purchase;
 use App\Models\Transaction;
 use App\Models\ReceiptSetting;
+use App\Models\PaymentAccount;
+use App\Models\PaymentQr;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,6 +40,16 @@ class Store extends Model
             ->withPivot('role')
             ->withTimestamps();
     }
+    
+    public function paymentAccounts(): HasMany
+{
+    return $this->hasMany(PaymentAccount::class);
+}
+
+public function paymentQrs(): HasMany
+{
+    return $this->hasMany(PaymentQr::class);
+}
 
 public function currentPlan()
 {
