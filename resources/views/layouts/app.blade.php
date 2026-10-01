@@ -917,6 +917,20 @@ if ($layoutUser) {
             <span>🧾</span>
             <span>Riwayat Transaksi</span>
         </a>
+        
+        <a
+            href="{{ route('attendance.index') }}"
+            class="dropdown-link
+                   {{ request()->routeIs('attendance.index') ||
+                      request()->routeIs('attendance.face-check') ||
+                      request()->routeIs('attendance.history') ||
+                      request()->routeIs('attendance.summary')
+                        ? 'bg-gray-700 text-white'
+                        : '' }}"
+        >
+            <span>🕘</span>
+            <span>Absensi</span>
+        </a>
 
         {{-- PUSAT BANTUAN --}}
 
@@ -1676,6 +1690,20 @@ if ($layoutUser) {
             <span>💸</span>
             <span>Pengeluaran</span>
         </a>
+        
+        <a
+          href="{{ route('attendance.index') }}"
+          class="dropdown-link
+                 {{ request()->routeIs('attendance.index') ||
+                    request()->routeIs('attendance.face-check') ||
+                    request()->routeIs('attendance.history') ||
+                    request()->routeIs('attendance.summary')
+                      ? 'bg-gray-700 text-white'
+                      : '' }}"
+      >
+          <span>🕘</span>
+          <span>Absensi</span>
+      </a>
 
 
         {{-- PUSAT BANTUAN --}}

@@ -160,6 +160,221 @@
         </div>
 
     </div>
+    
+{{-- =========================================================
+     LOKASI TOKO & ABSENSI
+========================================================== --}}
+
+<div class="bg-gray-800 p-6 rounded-xl border border-white/10">
+
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold text-white">
+            📍 Lokasi Toko & Absensi
+        </h2>
+
+        <p class="text-sm text-gray-400 mt-1">
+            Tentukan titik lokasi toko yang digunakan sebagai acuan absensi staf.
+        </p>
+    </div>
+
+    <div class="space-y-5">
+
+        {{-- Tombol GPS --}}
+        <div>
+
+            <button
+                type="button"
+                id="get-store-location"
+                class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2.5 rounded-lg transition"
+            >
+                📍 Gunakan Lokasi Saya
+            </button>
+
+            <p
+                id="location-status"
+                class="text-xs text-gray-500 mt-2"
+            >
+                Berdiri di lokasi toko lalu tekan tombol di atas.
+            </p>
+
+        </div>
+
+        {{-- Koordinat --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+            <div>
+
+                <label
+                    for="latitude"
+                    class="block text-sm text-gray-300 mb-2"
+                >
+                    Latitude
+                </label>
+
+                <input
+                    type="text"
+                    id="latitude"
+                    name="latitude"
+                    value="{{ old('latitude', $store->latitude ?? '') }}"
+                    readonly
+                    class="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-2.5 text-gray-300"
+                >
+
+            </div>
+
+            <div>
+
+                <label
+                    for="longitude"
+                    class="block text-sm text-gray-300 mb-2"
+                >
+                    Longitude
+                </label>
+
+                <input
+                    type="text"
+                    id="longitude"
+                    name="longitude"
+                    value="{{ old('longitude', $store->longitude ?? '') }}"
+                    readonly
+                    class="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-2.5 text-gray-300"
+                >
+
+            </div>
+
+        </div>
+
+        {{-- Radius --}}
+        <div class="max-w-md">
+
+            <label
+                for="attendance_radius"
+                class="block text-sm text-gray-300 mb-2"
+            >
+                Radius Absensi (meter)
+            </label>
+
+            <input
+                type="number"
+                id="attendance_radius"
+                name="attendance_radius"
+                value="{{ old('attendance_radius', $store->attendance_radius ?? 100) }}"
+                min="10"
+                max="1000"
+                step="1"
+                class="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500"
+            >
+
+            <p class="text-xs text-gray-500 mt-2">
+                Staf dapat melakukan absensi selama berada dalam radius yang ditentukan dari titik toko.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{{-- =========================================================
+     JAM KERJA & KETERLAMBATAN
+========================================================== --}}
+
+<div class="bg-gray-800 p-6 rounded-xl border border-white/10">
+
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold text-white">
+            ⏰ Jam Kerja & Keterlambatan
+        </h2>
+
+        <p class="text-sm text-gray-400 mt-1">
+            Atur jam kerja staf dan batas toleransi keterlambatan absensi.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+        {{-- Jam Masuk --}}
+        <div>
+
+            <label
+                for="work_start_time"
+                class="block text-sm text-gray-300 mb-2"
+            >
+                Jam Masuk
+            </label>
+
+            <input
+                type="time"
+                id="work_start_time"
+                name="work_start_time"
+                value="{{ old('work_start_time', $store->work_start_time ?? '08:00') }}"
+                required
+                class="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500"
+            >
+
+        </div>
+
+        {{-- Jam Pulang --}}
+        <div>
+
+            <label
+                for="work_end_time"
+                class="block text-sm text-gray-300 mb-2"
+            >
+                Jam Pulang
+            </label>
+
+            <input
+                type="time"
+                id="work_end_time"
+                name="work_end_time"
+                value="{{ old('work_end_time', $store->work_end_time ?? '17:00') }}"
+                required
+                class="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500"
+            >
+
+        </div>
+
+        {{-- Toleransi --}}
+        <div>
+
+            <label
+                for="late_tolerance"
+                class="block text-sm text-gray-300 mb-2"
+            >
+                Toleransi Terlambat
+            </label>
+
+            <div class="relative">
+
+                <input
+                    type="number"
+                    id="late_tolerance"
+                    name="late_tolerance"
+                    value="{{ old('late_tolerance', $store->late_tolerance ?? 15) }}"
+                    min="0"
+                    max="180"
+                    step="1"
+                    required
+                    class="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-2.5 pr-16 text-white focus:outline-none focus:border-emerald-500"
+                >
+
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+                    menit
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <p class="text-xs text-gray-500 mt-4">
+        Contoh: jam masuk 08:00 dengan toleransi 15 menit.
+        Absensi setelah 08:15 akan tercatat sebagai terlambat.
+    </p>
+
+</div>
 
 
     {{-- =========================================================
@@ -520,4 +735,87 @@
 
 </form>
 
-</div>@endsection
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const button = document.getElementById('get-store-location');
+    const status = document.getElementById('location-status');
+    const latitude = document.getElementById('latitude');
+    const longitude = document.getElementById('longitude');
+
+    if (!button) return;
+
+    button.addEventListener('click', function () {
+
+        if (!navigator.geolocation) {
+            status.textContent =
+                'GPS tidak didukung oleh browser/perangkat ini.';
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = '📍 Mengambil lokasi...';
+
+        status.textContent =
+            'Meminta lokasi GPS perangkat...';
+
+        navigator.geolocation.getCurrentPosition(
+
+            function (position) {
+
+                latitude.value =
+                    position.coords.latitude.toFixed(7);
+
+                longitude.value =
+                    position.coords.longitude.toFixed(7);
+
+                status.textContent =
+                    '✓ Lokasi berhasil diambil. Jangan lupa simpan pengaturan.';
+
+                button.disabled = false;
+                button.textContent =
+                    '📍 Perbarui Lokasi';
+            },
+
+            function (error) {
+
+                let message =
+                    'Lokasi tidak dapat diambil.';
+
+                if (error.code === 1) {
+                    message =
+                        'Izin lokasi ditolak. Silakan izinkan akses lokasi.';
+                }
+
+                if (error.code === 2) {
+                    message =
+                        'Lokasi tidak tersedia. Pastikan GPS aktif.';
+                }
+
+                if (error.code === 3) {
+                    message =
+                        'Waktu pengambilan lokasi habis. Coba lagi.';
+                }
+
+                status.textContent = message;
+
+                button.disabled = false;
+                button.textContent =
+                    '📍 Gunakan Lokasi Saya';
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+            }
+        );
+
+    });
+
+});
+</script>
+
+@endsection

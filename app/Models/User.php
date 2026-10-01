@@ -20,6 +20,8 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
     'role',
     'is_platform_admin',
     'google_id',
+    'face_embedding',
+    'face_registered_at',
 ])]
 
 #[Hidden([
@@ -82,6 +84,7 @@ class User extends Authenticatable implements CanResetPasswordContract
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_platform_admin' => 'boolean',
+            'face_registered_at' => 'datetime',
         ];
     }
 }

@@ -18,16 +18,26 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Store extends Model
 {
     protected $fillable = [
-        'owner_id',
-        'name',
-        'address',
-        'phone',
-        'is_active',
-    ];
+    'owner_id',
+    'name',
+    'address',
+    'phone',
+    'is_active',
+    'latitude',
+    'longitude',
+    'attendance_radius',
+    'work_start_time',
+    'work_end_time',
+    'late_tolerance',
+];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
+protected $casts = [
+    'is_active' => 'boolean',
+    'latitude' => 'decimal:7',
+    'longitude' => 'decimal:7',
+    'attendance_radius' => 'integer',
+    'late_tolerance' => 'integer',
+];
 
     public function owner(): BelongsTo
     {

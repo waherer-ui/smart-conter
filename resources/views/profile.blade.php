@@ -130,6 +130,40 @@
 </div>
 
 {{-- =========================================================
+     WAJAH / ABSENSI
+========================================================== --}}
+<div class="bg-gray-800/80 border border-white/10 rounded-2xl shadow-xl backdrop-blur-md overflow-hidden">
+
+    <a
+        href="{{ route('profil.face') }}"
+        class="flex items-center gap-4 px-5 py-4 hover:bg-white/5 transition group"
+    >
+
+        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/10 flex items-center justify-center text-lg">
+            📸
+        </div>
+
+        <div class="flex-1 min-w-0">
+
+            <p class="text-sm font-medium text-white">
+                Kelola Wajah
+            </p>
+
+            <p class="text-[11px] text-gray-500 mt-0.5">
+                Daftarkan atau perbarui wajah untuk absensi.
+            </p>
+
+        </div>
+
+        <div class="text-gray-500 group-hover:text-indigo-400 transition text-lg">
+            →
+        </div>
+
+    </a>
+
+</div>
+
+{{-- =========================================================
      DATA & BACKUP
 ========================================================== --}}
 <div class="bg-gray-800/80 border border-white/10 rounded-2xl shadow-xl backdrop-blur-md overflow-hidden">

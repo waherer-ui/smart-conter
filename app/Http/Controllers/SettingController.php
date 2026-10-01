@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Models\Store;
 use App\Services\AuditLogService;
 use Illuminate\Http\Request;
 
@@ -18,12 +19,6 @@ class SettingController extends Controller
      */
     public function index()
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Ambil pengaturan
-        |--------------------------------------------------------------------------
-        */
-
         $storeId = $this->activeStoreId();
 
         $settings = Setting::where(
@@ -54,9 +49,11 @@ class SettingController extends Controller
             ]);
         }
 
+        $store = Store::find($storeId);
+
         return view(
             'setting',
-            compact('settings')
+            compact('settings', 'store')
         );
     }
 
@@ -142,6 +139,54 @@ class SettingController extends Controller
                 'boolean',
             ],
 
+            /*
+            |--------------------------------------------------------------------------
+            | Lokasi Toko
+            |--------------------------------------------------------------------------
+            */
+
+            'latitude' => [
+                'nullable',
+                'numeric',
+                'between:-90,90',
+            ],
+
+            'longitude' => [
+                'nullable',
+                'numeric',
+                'between:-180,180',
+            ],
+
+            'attendance_radius' => [
+                'required',
+                'integer',
+                'min:10',
+                'max:1000',
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Jam Kerja
+            |--------------------------------------------------------------------------
+            */
+
+            'work_start_time' => [
+                'required',
+                'date_format:H:i',
+            ],
+
+            'work_end_time' => [
+                'required',
+                'date_format:H:i',
+            ],
+
+            'late_tolerance' => [
+                'required',
+                'integer',
+                'min:0',
+                'max:180',
+            ],
+
         ], [
 
             'store_name.required' =>
@@ -164,15 +209,45 @@ class SettingController extends Controller
 
             'minimum_stock.min' =>
                 'Minimum stok tidak boleh kurang dari 0.',
+
+            'latitude.between' =>
+                'Latitude tidak valid.',
+
+            'longitude.between' =>
+                'Longitude tidak valid.',
+
+            'attendance_radius.min' =>
+                'Radius absensi minimal 10 meter.',
+
+            'attendance_radius.max' =>
+                'Radius absensi maksimal 1000 meter.',
+
+            'work_start_time.date_format' =>
+                'Format jam masuk tidak valid.',
+
+            'work_end_time.date_format' =>
+                'Format jam pulang tidak valid.',
+
+            'late_tolerance.min' =>
+                'Toleransi keterlambatan tidak boleh kurang dari 0 menit.',
+
+            'late_tolerance.max' =>
+                'Toleransi keterlambatan maksimal 180 menit.',
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | ID Toko Aktif
+        |--------------------------------------------------------------------------
+        */
+
+        $storeId = $this->activeStoreId();
 
         /*
         |--------------------------------------------------------------------------
         | Ambil / Buat Setting
         |--------------------------------------------------------------------------
         */
-
-        $storeId = $this->activeStoreId();
 
         $settings = Setting::where(
             'store_id',
@@ -188,7 +263,15 @@ class SettingController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Simpan Nilai Lama Untuk Audit Log
+        | Ambil Toko
+        |--------------------------------------------------------------------------
+        */
+
+        $store = Store::findOrFail($storeId);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan Nilai Lama Untuk Audit
         |--------------------------------------------------------------------------
         */
 
@@ -229,6 +312,24 @@ class SettingController extends Controller
 
                 'show_discount' =>
                     $settings->show_discount,
+
+                'latitude' =>
+                    $store->latitude,
+
+                'longitude' =>
+                    $store->longitude,
+
+                'attendance_radius' =>
+                    $store->attendance_radius,
+
+                'work_start_time' =>
+                    $store->work_start_time,
+
+                'work_end_time' =>
+                    $store->work_end_time,
+
+                'late_tolerance' =>
+                    $store->late_tolerance,
             ]
             : null;
 
@@ -278,6 +379,32 @@ class SettingController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | Simpan Lokasi & Jam Kerja Toko
+        |--------------------------------------------------------------------------
+        */
+
+        $store->latitude =
+            $validated['latitude'] ?? null;
+
+        $store->longitude =
+            $validated['longitude'] ?? null;
+
+        $store->attendance_radius =
+            $validated['attendance_radius'];
+
+        $store->work_start_time =
+            $validated['work_start_time'];
+
+        $store->work_end_time =
+            $validated['work_end_time'];
+
+        $store->late_tolerance =
+            $validated['late_tolerance'];
+
+        $store->save();
+
+        /*
+        |--------------------------------------------------------------------------
         | Nilai Baru Untuk Audit Log
         |--------------------------------------------------------------------------
         */
@@ -318,6 +445,24 @@ class SettingController extends Controller
 
             'show_discount' =>
                 $settings->show_discount,
+
+            'latitude' =>
+                $store->latitude,
+
+            'longitude' =>
+                $store->longitude,
+
+            'attendance_radius' =>
+                $store->attendance_radius,
+
+            'work_start_time' =>
+                $store->work_start_time,
+
+            'work_end_time' =>
+                $store->work_end_time,
+
+            'late_tolerance' =>
+                $store->late_tolerance,
         ];
 
         /*

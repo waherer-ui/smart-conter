@@ -40,9 +40,45 @@ use App\Http\Controllers\SupportController as OwnerSupportController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\PaymentAccountController;
 use App\Http\Controllers\PaymentQrController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\FaceRegistrationController;
 
 
 
+/*
+|--------------------------------------------------------------------------
+| ABSENSI
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware(['auth.role', 'active.store'])->group(function () {
+
+    Route::get(
+        '/absensi',
+        [AttendanceController::class, 'index']
+    )->name('attendance.index');
+
+    Route::post(
+        '/absensi/check-in',
+        [AttendanceController::class, 'checkIn']
+    )->name('attendance.check-in');
+
+    Route::post(
+        '/absensi/check-out',
+        [AttendanceController::class, 'checkOut']
+    )->name('attendance.check-out');
+    
+    Route::get(
+    '/absensi/riwayat',
+    [AttendanceController::class, 'history']
+)->name('attendance.history');
+
+Route::get(
+    '/absensi/rekap',
+    [AttendanceController::class, 'summary']
+)->name('attendance.summary');
+
+});
 /*
 |--------------------------------------------------------------------------
 | ADMIN KASIRKU
@@ -265,6 +301,12 @@ Route::middleware(['auth.role', 'active.store'])->group(function () {
     
     Route::post('/transfer/{id}/terima', [TransferController::class, 'receive'])
     ->name('transfer.receive');
+    
+    Route::get('/absensi/check-face', [AttendanceController::class, 'faceCheck'])
+    ->name('attendance.face-check');
+
+Route::post('/absensi/check-face', [AttendanceController::class, 'verifyFace'])
+    ->name('attendance.face.verify');
 
 });
 
@@ -1079,6 +1121,21 @@ Route::middleware('auth.role')->group(function () {
         '/profil',
         [AuthController::class, 'update']
     )->name('profile.update');
+    
+    Route::get(
+    '/profil/wajah',
+    [FaceRegistrationController::class, 'create']
+)->name('profil.face');
+
+Route::post(
+    '/profil/wajah',
+    [FaceRegistrationController::class, 'store']
+)->name('profil.face.store');
+
+Route::delete(
+    '/profil/wajah',
+    [FaceRegistrationController::class, 'destroy']
+)->name('profil.face.destroy');
     
         /*
       |--------------------------------------------------------------------------
