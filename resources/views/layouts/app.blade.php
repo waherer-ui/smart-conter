@@ -34,6 +34,15 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+    
     <style>
 
     html,
@@ -121,6 +130,22 @@
         background-size: 40px 40px;
     }
 
+</style>
+
+<style>
+.leaflet-container {
+    z-index: 0 !important;
+}
+
+.leaflet-pane,
+.leaflet-control {
+    z-index: 1 !important;
+}
+
+.leaflet-top,
+.leaflet-bottom {
+    z-index: 2 !important;
+}
 </style>
 
 </head>
@@ -918,19 +943,62 @@ if ($layoutUser) {
             <span>Riwayat Transaksi</span>
         </a>
         
+{{-- ABSENSI --}}
+<div id="desktop-attendance-group" class="dropdown-group">
+
+    <button
+        type="button"
+        onclick="toggleAttendanceMenu('desktop')"
+        class="dropdown-link w-full text-left"
+    >
+        <span>🕘</span>
+
+        <span class="flex-1">
+            Absensi
+        </span>
+
+        <span
+            id="desktop-attendance-arrow"
+            class="text-xs transition-transform duration-200
+            {{ request()->routeIs('attendance.*') ? 'rotate-180' : '' }}"
+        >
+            ▼
+        </span>
+    </button>
+
+    <div
+        id="desktop-attendance-menu"
+        class="{{ request()->routeIs('attendance.*') ? '' : 'hidden' }}
+               ml-8 mt-1 space-y-1"
+    >
+
         <a
             href="{{ route('attendance.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('attendance.index') ||
-                      request()->routeIs('attendance.face-check') ||
-                      request()->routeIs('attendance.history') ||
-                      request()->routeIs('attendance.summary')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
+            class="dropdown-link text-sm"
         >
-            <span>🕘</span>
-            <span>Absensi</span>
+            <span>📍</span>
+            <span>Check-in</span>
         </a>
+
+        <a
+            href="{{ route('attendance.history') }}"
+            class="dropdown-link text-sm"
+        >
+            <span>📋</span>
+            <span>Riwayat Absen</span>
+        </a>
+
+        <a
+            href="{{ route('attendance.summary') }}"
+            class="dropdown-link text-sm"
+        >
+            <span>📊</span>
+            <span>Rekap Absen</span>
+        </a>
+
+    </div>
+
+</div>
 
         {{-- PUSAT BANTUAN --}}
 
@@ -1367,7 +1435,7 @@ if ($layoutUser) {
     <div
         id="mobile-menu"
         class="hidden absolute
-               top-16 right-3 w-64 z-[63]"
+               top-16 right-3 w-64 z-[120]"
     >
 
         <div
@@ -1691,20 +1759,62 @@ if ($layoutUser) {
             <span>Pengeluaran</span>
         </a>
         
-        <a
-          href="{{ route('attendance.index') }}"
-          class="dropdown-link
-                 {{ request()->routeIs('attendance.index') ||
-                    request()->routeIs('attendance.face-check') ||
-                    request()->routeIs('attendance.history') ||
-                    request()->routeIs('attendance.summary')
-                      ? 'bg-gray-700 text-white'
-                      : '' }}"
-      >
-          <span>🕘</span>
-          <span>Absensi</span>
-      </a>
+{{-- ABSENSI --}}
+<div id="mobile-attendance-group" class="dropdown-group">
 
+    <button
+        type="button"
+        onclick="toggleAttendanceMenu('mobile')"
+        class="dropdown-link w-full text-left"
+    >
+        <span>🕘</span>
+
+        <span class="flex-1">
+            Absensi
+        </span>
+
+        <span
+            id="mobile-attendance-arrow"
+            class="text-xs transition-transform duration-200
+            {{ request()->routeIs('attendance.*') ? 'rotate-180' : '' }}"
+        >
+            ▼
+        </span>
+    </button>
+
+    <div
+        id="mobile-attendance-menu"
+        class="{{ request()->routeIs('attendance.*') ? '' : 'hidden' }}
+               ml-8 mt-1 space-y-1"
+    >
+
+        <a
+            href="{{ route('attendance.index') }}"
+            class="dropdown-link text-sm"
+        >
+            <span>📍</span>
+            <span>Check-in</span>
+        </a>
+
+        <a
+            href="{{ route('attendance.history') }}"
+            class="dropdown-link text-sm"
+        >
+            <span>📋</span>
+            <span>Riwayat Absen</span>
+        </a>
+
+        <a
+            href="{{ route('attendance.summary') }}"
+            class="dropdown-link text-sm"
+        >
+            <span>📊</span>
+            <span>Rekap Absen</span>
+        </a>
+
+    </div>
+
+</div>
 
         {{-- PUSAT BANTUAN --}}
 
@@ -2080,6 +2190,79 @@ if ($layoutUser) {
 {{-- ========================================================= --}}
 
 <script>
+  
+/*
+|--------------------------------------------------------------------------
+| ABSENSI DROPDOWN
+|--------------------------------------------------------------------------
+*/
+
+function toggleAttendanceMenu(type) {
+
+    const menu =
+        document.getElementById(
+            type === 'desktop'
+                ? 'desktop-attendance-menu'
+                : 'mobile-attendance-menu'
+        );
+
+    const arrow =
+        document.getElementById(
+            type === 'desktop'
+                ? 'desktop-attendance-arrow'
+                : 'mobile-attendance-arrow'
+        );
+
+    if (!menu) return;
+
+    menu.classList.toggle('hidden');
+
+    if (arrow) {
+        arrow.classList.toggle('rotate-180');
+    }
+}
+
+
+function closeAttendanceMenu() {
+
+    const desktopMenu =
+        document.getElementById(
+            'desktop-attendance-menu'
+        );
+
+    const desktopArrow =
+        document.getElementById(
+            'desktop-attendance-arrow'
+        );
+
+    const mobileMenu =
+        document.getElementById(
+            'mobile-attendance-menu'
+        );
+
+    const mobileArrow =
+        document.getElementById(
+            'mobile-attendance-arrow'
+        );
+
+
+    if (desktopMenu) {
+        desktopMenu.classList.add('hidden');
+    }
+
+    if (desktopArrow) {
+        desktopArrow.classList.remove('rotate-180');
+    }
+
+
+    if (mobileMenu) {
+        mobileMenu.classList.add('hidden');
+    }
+
+    if (mobileArrow) {
+        mobileArrow.classList.remove('rotate-180');
+    }
+}
 
 
 /*
@@ -2089,14 +2272,14 @@ if ($layoutUser) {
 */
 
 function toggleUserDropdown() {
+    const dropdown = document.getElementById('user-dropdown');
 
-    const dropdown =
-        document.getElementById('user-dropdown');
-
-    if (!dropdown) return;
+    if (!dropdown) {
+        console.log('user-dropdown tidak ditemukan');
+        return;
+    }
 
     dropdown.classList.toggle('hidden');
-
 }
 
 
@@ -2145,7 +2328,7 @@ document.addEventListener('click', function (event) {
     }
 
     const profileButton = event.target.closest(
-        '[aria-label="Menu profil"]'
+    '[aria-label="Menu profil"], [aria-label="Menu"]'
     );
 
     // Klik di luar dropdown
@@ -2615,6 +2798,35 @@ window.addEventListener('click', function (event) {
 
         }
 
+    }
+    
+        /*
+    |--------------------------------------------------------------------------
+    | TUTUP ABSENSI JIKA KLIK MENU LAIN
+    |--------------------------------------------------------------------------
+    */
+
+    const desktopAttendance =
+        document.getElementById('desktop-attendance-group');
+
+    const mobileAttendance =
+        document.getElementById('mobile-attendance-group');
+
+
+    const clickedInsideDesktopAttendance =
+        desktopAttendance &&
+        desktopAttendance.contains(event.target);
+
+    const clickedInsideMobileAttendance =
+        mobileAttendance &&
+        mobileAttendance.contains(event.target);
+
+
+    if (
+        !clickedInsideDesktopAttendance &&
+        !clickedInsideMobileAttendance
+    ) {
+        closeAttendanceMenu();
     }
 
 });

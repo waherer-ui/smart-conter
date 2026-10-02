@@ -12,16 +12,18 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'store_id',
-        'sku',
-        'name',
-        'category',
-        'brand',
-        'capital_price',
-        'price',
-        'stock',
-        'image',
-    ];
+    'store_id',
+    'sku',
+    'name',
+    'category',
+    'brand',
+    'capital_price',
+    'price',
+    'member_price',
+    'reseller_price',
+    'stock',
+    'image',
+];
 
     /**
      * Relasi produk dengan toko.

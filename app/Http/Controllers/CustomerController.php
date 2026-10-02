@@ -79,6 +79,11 @@ class CustomerController extends Controller
                 'string',
                 'max:1000',
             ],
+            
+            'customer_type' => [
+              'required',
+              'in:umum,member,reseller',
+          ],
         ]);
 
         $store = Store::find(
@@ -108,6 +113,8 @@ class CustomerController extends Controller
             'address' => $request->address
                 ? trim($request->address)
                 : null,
+                
+                'customer_type' => $request->customer_type,
         ]);
 
         /*
@@ -552,23 +559,30 @@ class CustomerController extends Controller
             'string',
             'max:500',
         ],
+        
+        'customer_type' => [
+    'required',
+    'in:umum,member,reseller',
+],
     ]);
 
     $customer = Customer::create([
-        'store_id' => $storeId,
-        'name' => $validated['name'],
-        'phone' => $validated['phone'] ?? null,
-        'address' => $validated['address'] ?? null,
-    ]);
+    'store_id' => $storeId,
+    'name' => $validated['name'],
+    'phone' => $validated['phone'] ?? null,
+    'address' => $validated['address'] ?? null,
+    'customer_type' => $validated['customer_type'],
+]);
 
     return response()->json([
         'success' => true,
         'message' => 'Pelanggan berhasil ditambahkan.',
         'customer' => [
-            'id' => $customer->id,
-            'name' => $customer->name,
-            'phone' => $customer->phone,
-        ],
+    'id' => $customer->id,
+    'name' => $customer->name,
+    'phone' => $customer->phone,
+    'customer_type' => $customer->customer_type,
+],
     ]);
 }
 }

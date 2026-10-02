@@ -66,6 +66,46 @@
                 @enderror
 
             </div>
+            
+            {{-- TIPE PELANGGAN --}}
+<div>
+
+    <label class="block text-xs font-medium text-gray-300 mb-1.5">
+        Tipe Pelanggan
+    </label>
+
+    <select
+        name="customer_type"
+        required
+        class="w-full
+               bg-gray-900
+               border border-white/10
+               rounded-xl
+               px-4 py-3
+               text-sm text-white
+               focus:outline-none
+               focus:border-emerald-500"
+    >
+        <option value="umum" {{ old('customer_type', 'umum') === 'umum' ? 'selected' : '' }}>
+            👤 Umum
+        </option>
+
+        <option value="member" {{ old('customer_type') === 'member' ? 'selected' : '' }}>
+            ⭐ Member
+        </option>
+
+        <option value="reseller" {{ old('customer_type') === 'reseller' ? 'selected' : '' }}>
+            🏪 Reseller
+        </option>
+    </select>
+
+    @error('customer_type')
+        <p class="text-xs text-red-400 mt-1">
+            {{ $message }}
+        </p>
+    @enderror
+
+</div>
 
             {{-- NOMOR HP --}}
             <div>

@@ -161,6 +161,30 @@
 
     </div>
     
+    {{-- HARGA KHUSUS & PROMOSI --}}
+<a
+    href="{{ route('price-rules.index') }}"
+    class="block rounded-2xl border border-white/10 bg-gray-800 p-4 hover:bg-gray-700 transition"
+>
+    <div class="flex items-center justify-between gap-3">
+
+        <div>
+            <h3 class="font-semibold text-white">
+                🏷️ Harga Khusus & Promosi
+            </h3>
+
+            <p class="text-sm text-gray-400 mt-1">
+                Atur harga reseller/grosir dan promosi tanpa mengubah harga normal produk.
+            </p>
+        </div>
+
+        <span class="text-gray-400 text-xl">
+            ›
+        </span>
+
+    </div>
+</a>
+    
 {{-- =========================================================
      LOKASI TOKO & ABSENSI
 ========================================================== --}}
@@ -179,8 +203,8 @@
 
     <div class="space-y-5">
 
-        {{-- Tombol GPS --}}
-        <div>
+        {{-- PILIH LOKASI --}}
+        <div class="flex flex-wrap gap-2">
 
             <button
                 type="button"
@@ -190,16 +214,32 @@
                 📍 Gunakan Lokasi Saya
             </button>
 
-            <p
-                id="location-status"
-                class="text-xs text-gray-500 mt-2"
+            <button
+                type="button"
+                id="use-map-location"
+                class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2.5 rounded-lg transition"
             >
-                Berdiri di lokasi toko lalu tekan tombol di atas.
-            </p>
+                🗺️ Pilih di Peta
+            </button>
 
         </div>
 
-        {{-- Koordinat --}}
+        <p
+            id="location-status"
+            class="text-xs text-gray-500"
+        >
+            Pilih lokasi toko melalui GPS atau tentukan langsung pada peta.
+        </p>
+
+
+        {{-- PETA --}}
+        <div
+            id="store-location-map"
+            class="w-full h-80 rounded-xl overflow-hidden border border-white/10 relative z-0"
+        ></div>
+
+
+        {{-- KOORDINAT --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
             <div>
@@ -244,7 +284,8 @@
 
         </div>
 
-        {{-- Radius --}}
+
+        {{-- RADIUS --}}
         <div class="max-w-md">
 
             <label
@@ -741,79 +782,224 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     const button = document.getElementById('get-store-location');
+    const mapButton = document.getElementById('use-map-location');
+
     const status = document.getElementById('location-status');
     const latitude = document.getElementById('latitude');
     const longitude = document.getElementById('longitude');
+    const mapElement = document.getElementById('store-location-map');
 
-    if (!button) return;
+    if (!mapElement || typeof L === 'undefined') return;
 
-    button.addEventListener('click', function () {
+    /*
+     * Lokasi tersimpan
+     */
+    const savedLat = parseFloat(latitude.value);
+    const savedLng = parseFloat(longitude.value);
 
-        if (!navigator.geolocation) {
-            status.textContent =
-                'GPS tidak didukung oleh browser/perangkat ini.';
-            return;
+    let initialLat = -2.5489;
+    let initialLng = 118.0149;
+    let initialZoom = 5;
+
+    if (!isNaN(savedLat) && !isNaN(savedLng)) {
+        initialLat = savedLat;
+        initialLng = savedLng;
+        initialZoom = 17;
+    }
+
+    /*
+     * Inisialisasi peta
+     */
+    const map = L.map('store-location-map').setView(
+        [initialLat, initialLng],
+        initialZoom
+    );
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
         }
+    ).addTo(map);
 
-        button.disabled = true;
-        button.textContent = '📍 Mengambil lokasi...';
+    /*
+     * Marker lokasi toko
+     */
+    let marker = null;
 
-        status.textContent =
-            'Meminta lokasi GPS perangkat...';
+    if (!isNaN(savedLat) && !isNaN(savedLng)) {
 
-        navigator.geolocation.getCurrentPosition(
+        marker = L.marker([savedLat, savedLng], {
+            draggable: true
+        }).addTo(map);
 
-            function (position) {
+        marker.bindPopup('📍 Lokasi Toko').openPopup();
+    }
 
-                latitude.value =
-                    position.coords.latitude.toFixed(7);
+    /*
+     * Fungsi set lokasi
+     */
+    function setLocation(lat, lng, message = true) {
 
-                longitude.value =
-                    position.coords.longitude.toFixed(7);
+        lat = parseFloat(lat);
+        lng = parseFloat(lng);
+
+        if (isNaN(lat) || isNaN(lng)) return;
+
+        latitude.value = lat.toFixed(7);
+        longitude.value = lng.toFixed(7);
+
+        if (!marker) {
+
+            marker = L.marker([lat, lng], {
+                draggable: true
+            }).addTo(map);
+
+            marker.bindPopup('📍 Lokasi Toko');
+
+            /*
+             * Marker digeser
+             */
+            marker.on('dragend', function () {
+
+                const position = marker.getLatLng();
+
+                setLocation(
+                    position.lat,
+                    position.lng
+                );
 
                 status.textContent =
-                    '✓ Lokasi berhasil diambil. Jangan lupa simpan pengaturan.';
+                    '✓ Lokasi toko diperbarui. Jangan lupa simpan pengaturan.';
+            });
 
-                button.disabled = false;
-                button.textContent =
-                    '📍 Perbarui Lokasi';
-            },
+        } else {
 
-            function (error) {
+            marker.setLatLng([lat, lng]);
+        }
 
-                let message =
-                    'Lokasi tidak dapat diambil.';
+        map.setView([lat, lng], 17);
 
-                if (error.code === 1) {
-                    message =
-                        'Izin lokasi ditolak. Silakan izinkan akses lokasi.';
-                }
+        if (message) {
 
-                if (error.code === 2) {
-                    message =
-                        'Lokasi tidak tersedia. Pastikan GPS aktif.';
-                }
+            status.textContent =
+                '✓ Lokasi toko berhasil dipilih. Jangan lupa simpan pengaturan.';
+        }
+    }
 
-                if (error.code === 3) {
-                    message =
-                        'Waktu pengambilan lokasi habis. Coba lagi.';
-                }
+    /*
+     * Klik langsung pada peta
+     */
+    map.on('click', function (event) {
 
-                status.textContent = message;
-
-                button.disabled = false;
-                button.textContent =
-                    '📍 Gunakan Lokasi Saya';
-            },
-
-            {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
-            }
+        setLocation(
+            event.latlng.lat,
+            event.latlng.lng
         );
 
     });
+
+    /*
+     * Tombol pilih di peta
+     */
+    if (mapButton) {
+
+        mapButton.addEventListener('click', function () {
+
+            mapButton.textContent = '🗺️ Klik lokasi toko di peta';
+
+            status.textContent =
+                'Klik titik lokasi toko pada peta.';
+
+            mapElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+        });
+
+    }
+
+    /*
+     * Tombol GPS
+     */
+    if (button) {
+
+        button.addEventListener('click', function () {
+
+            if (!navigator.geolocation) {
+
+                status.textContent =
+                    'GPS tidak didukung oleh browser/perangkat ini.';
+
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = '📍 Mengambil lokasi...';
+
+            status.textContent =
+                'Meminta lokasi GPS perangkat...';
+
+            navigator.geolocation.getCurrentPosition(
+
+                function (position) {
+
+                    setLocation(
+                        position.coords.latitude,
+                        position.coords.longitude
+                    );
+
+                    button.disabled = false;
+                    button.textContent =
+                        '📍 Perbarui Lokasi';
+                },
+
+                function (error) {
+
+                    let message =
+                        'Lokasi tidak dapat diambil.';
+
+                    if (error.code === 1) {
+                        message =
+                            'Izin lokasi ditolak. Silakan izinkan akses lokasi.';
+                    }
+
+                    if (error.code === 2) {
+                        message =
+                            'Lokasi tidak tersedia. Pastikan GPS aktif.';
+                    }
+
+                    if (error.code === 3) {
+                        message =
+                            'Waktu pengambilan lokasi habis. Coba lagi.';
+                    }
+
+                    status.textContent = message;
+
+                    button.disabled = false;
+                    button.textContent =
+                        '📍 Gunakan Lokasi Saya';
+                },
+
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+            );
+
+        });
+
+    }
+
+    /*
+     * Perbaiki ukuran peta setelah halaman selesai tampil
+     */
+    setTimeout(function () {
+        map.invalidateSize();
+    }, 300);
 
 });
 </script>

@@ -42,6 +42,7 @@ use App\Http\Controllers\PaymentAccountController;
 use App\Http\Controllers\PaymentQrController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\FaceRegistrationController;
+use App\Http\Controllers\PriceRuleController;
 
 
 
@@ -1306,6 +1307,30 @@ Route::patch(
         [SettingController::class, 'update']
     )->name('setting.update');
     
+    
+    // =========================
+// HARGA KHUSUS & PROMOSI
+// =========================
+
+Route::get(
+    '/harga-khusus',
+    [PriceRuleController::class, 'index']
+)->name('price-rules.index');
+
+Route::post(
+    '/harga-khusus',
+    [PriceRuleController::class, 'store']
+)->name('price-rules.store');
+
+Route::patch(
+    '/harga-khusus/{priceRule}/toggle',
+    [PriceRuleController::class, 'toggle']
+)->name('price-rules.toggle');
+
+Route::delete(
+    '/harga-khusus/{priceRule}',
+    [PriceRuleController::class, 'destroy']
+)->name('price-rules.destroy');
     /*
 |--------------------------------------------------------------------------
 | PENGATURAN STRUK

@@ -11,6 +11,24 @@
     $paymentQrEnabled = false;
     $paymentBankEnabled = false;
     $debtEnabled = false;
+    
+    $activePriceRules = collect();
+
+if ($activeStoreId) {
+    $activePriceRules = \App\Models\PriceRule::where('store_id', $activeStoreId)
+        ->where('is_active', true)
+        ->get([
+            'id',
+            'product_id',
+            'type',
+            'min_quantity',
+            'discount_type',
+            'discount_value',
+            'special_price',
+            'start_at',
+            'end_at',
+        ]);
+}
 
     if ($activeStoreId) {
 
@@ -417,19 +435,29 @@
                 Metode Pembayaran
             </label>
 
-<select
-    id="pay-method"
-    onchange="paymentMethodChanged()"
-    class="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs outline-none"
->
-    <option value="Tunai">
-        Tunai (Cash)
-    </option>
+<select id="pay-method"
+        onchange="paymentMethodChanged()"
+        class="w-full rounded-xl border border-white/10 bg-gray-900
+               px-3 py-2.5 text-sm text-white focus:border-emerald-500
+               focus:outline-none">
+
+    <option value="Tunai">Tunai</option>
 
     @if($paymentQrEnabled)
-        <option value="QRIS / Transfer">
-            QRIS / Transfer
-        </option>
+        <option value="QRIS">QRIS</option>
+    @endif
+
+    @if($paymentBankEnabled)
+        @foreach($paymentAccounts as $account)
+            <option
+                value="account_{{ $account->id }}"
+                data-name="{{ $account->provider }}"
+                data-account-name="{{ $account->account_name }}"
+                data-account-number="{{ $account->account_number }}"
+            >
+                {{ $account->provider }}
+            </option>
+        @endforeach
     @endif
 
     @if($debtEnabled)
@@ -437,109 +465,84 @@
             Cashbon / Utang
         </option>
     @endif
+
 </select>
             
-            @if($activePaymentQr)
-    <div id="store-qr-payment-box"
-     class="hidden mt-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-center">
+{{-- QR PEMBAYARAN --}}
+@if($activePaymentQr)
+    <div
+        id="store-qr-payment-box"
+        class="hidden mt-1 rounded-xl border border-emerald-500/30
+               bg-emerald-500/10 p-2 text-center"
+    >
 
-    <div class="mb-1">
-        <p class="font-semibold text-white text-sm">
-            {{ $activePaymentQr->name }}
-        </p>
-
-        <p class="mt-1 text-[10px] text-gray-400">
-            Silakan scan QR untuk melakukan pembayaran
-        </p>
-    </div>
-
-    <div class="mx-auto w-fit rounded-lg bg-white p-0.5 shadow-lg">
-        <img
-            src="{{ Storage::disk('s3')->url($activePaymentQr->image_path) }}"
-            alt="{{ $activePaymentQr->name }}"
-            style="width: 150px; height: 150px; object-fit: contain;"
-        >
-    </div>
-
-    <p class="mt-2 text-[10px] text-emerald-300">
-        QR pembayaran toko
-    </p>
-
-    @if($paymentAccounts->count())
-        <div class="mt-3 pt-2 border-t border-emerald-500/20 text-left">
-
-            <p class="text-[10px] font-semibold text-white mb-1.5">
-                🏦 Rekening / E-Wallet
+        <div class="mb-1">
+            <p class="font-semibold text-white text-xs">
+                {{ $activePaymentQr->name }}
             </p>
 
-            <div class="grid grid-cols-2 gap-1">
-
-                @foreach($paymentAccounts as $account)
-
-                    <div class="flex items-center gap-2 bg-gray-900/70 border border-white/10 rounded-lg px-2 py-1.5">
-
-                        <div class="w-6 h-6 rounded-md bg-gray-800 flex items-center justify-center shrink-0 text-xs">
-                            {{ $account->type === 'bank' ? '🏦' : '📱' }}
-                        </div>
-
-                        <div class="min-w-0 flex-1">
-
-                            <div class="flex items-center justify-between gap-2">
-
-                                <span class="text-[10px] font-semibold text-white truncate">
-                                    {{ $account->provider }}
-                                </span>
-
-                                <span class="text-[10px] text-emerald-400 font-mono whitespace-nowrap">
-                                    {{ $account->account_number }}
-                                </span>
-
-                            </div>
-
-                            <p class="text-[9px] text-gray-400 truncate">
-                                {{ $account->account_name }}
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                @endforeach
-
-            </div>
-
-        </div>
-    @else
-        <div class="mt-3 pt-2 border-t border-white/10">
-            <p class="text-[9px] text-gray-500 text-center">
-                Belum ada rekening atau e-wallet aktif.
+            <p class="mt-0.5 text-[9px] text-gray-400">
+                Scan QR untuk melakukan pembayaran
             </p>
         </div>
-    @endif
 
-</div>
+        {{-- QR --}}
+        <div class="mx-auto w-fit rounded-lg bg-white p-0.5 shadow">
+            <img
+                src="{{ Storage::disk('s3')->url($activePaymentQr->image_path) }}"
+                alt="{{ $activePaymentQr->name }}"
+                style="width: 110px; height: 110px; object-fit: contain;"
+            >
+        </div>
+
+        <p class="mt-1 text-[9px] text-emerald-300">
+            QR pembayaran toko
+        </p>
+
+    </div>
 @else
-    <div id="store-qr-payment-box"
-         class="hidden mt-4 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-4">
-
-        <p class="text-sm font-semibold text-yellow-300">
+    <div
+        id="store-qr-payment-box"
+        class="hidden mt-2 rounded-xl border border-yellow-500/30
+               bg-yellow-500/10 p-2"
+    >
+        <p class="text-xs font-semibold text-yellow-300">
             QR pembayaran belum tersedia
         </p>
 
-        <p class="mt-1 text-xs text-gray-400">
+        <p class="mt-1 text-[10px] text-gray-400">
             Silakan tambahkan QR pembayaran toko melalui Pengaturan Pembayaran.
         </p>
     </div>
 @endif
 
+
+{{-- INFO REKENING / E-WALLET --}}
+<div
+    id="payment-account-box"
+    class="hidden mt-2 rounded-xl border border-blue-500/20
+           bg-blue-500/10 p-3"
+>
+    <p class="text-[9px] text-gray-400">
+        Bayar ke
+    </p>
+
+    <p
+        id="payment-account-name"
+        class="mt-0.5 text-xs font-semibold text-white"
+    ></p>
+
+    <p
+        id="payment-account-number"
+        class="mt-0.5 text-[10px] text-blue-300 font-mono"
+    ></p>
+</div>
+
         </div>
 
 
-        {{-- PELANGGAN CASHBON --}}
-<div
-    id="cashbon-customer-box"
-    class="hidden"
->
+{{-- PELANGGAN --}}
+<div id="cashbon-customer-box">
 
     <label class="block text-xs font-medium text-gray-300 mb-1">
         Pelanggan
@@ -557,12 +560,15 @@
 
         @foreach($customers as $customer)
 
-            <option value="{{ $customer->id }}">
-                {{ $customer->name }}
-                @if($customer->phone)
-                    — {{ $customer->phone }}
-                @endif
-            </option>
+<option
+    value="{{ $customer->id }}"
+    data-type="{{ $customer->customer_type }}"
+>
+    {{ $customer->name }}
+    @if($customer->phone)
+        — {{ $customer->phone }}
+    @endif
+</option>
 
         @endforeach
 
@@ -578,7 +584,7 @@
 </button>
 
 <p class="text-[10px] text-gray-500 mt-1">
-    Pelanggan wajib dipilih untuk transaksi Cashbon / Utang.
+    Pelanggan opsional. Wajib dipilih untuk Cashbon / Utang.
 </p>
 
 </div>
@@ -689,6 +695,23 @@
                 >
 
             </div>
+            
+            <div>
+
+    <label class="block text-xs font-medium text-gray-300 mb-1">
+        Tipe Pelanggan
+    </label>
+
+    <select
+        id="new-customer-type"
+        class="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-xs outline-none focus:ring-1 focus:ring-indigo-500"
+    >
+        <option value="umum">👤 Umum</option>
+        <option value="member">⭐ Member</option>
+        <option value="reseller">🏪 Reseller</option>
+    </select>
+
+</div>
 
 
             <div>
@@ -1210,6 +1233,22 @@ STRUK
 {{-- ============================================================
      JAVASCRIPT KASIR
 ============================================================ --}}
+@php
+    $priceRulesJson = $activePriceRules->map(function ($rule) {
+        return [
+            'id' => $rule->id,
+            'product_id' => $rule->product_id,
+            'type' => $rule->type,
+            'min_quantity' => $rule->min_quantity,
+            'discount_type' => $rule->discount_type,
+            'discount_value' => $rule->discount_value,
+            'special_price' => $rule->special_price,
+            'start_at' => $rule->start_at?->toIso8601String(),
+            'end_at' => $rule->end_at?->toIso8601String(),
+        ];
+    })->values();
+@endphp
+
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
 
@@ -1218,6 +1257,8 @@ let cart = [];
 let transactionProcessing = false;
 
 const CART_STORAGE_KEY = 'smart_pos_cart';
+
+const priceRules = @json($priceRulesJson);
 
 const scanUrlTemplate = @json(
     route('produk.scan', ['sku' => '__SKU__'])
@@ -1250,17 +1291,21 @@ function loadCart() {
 
                     name: item.name,
 
-                    price: Number(item.price) || 0,
+                    basePrice:
+                        Number(item.basePrice ?? item.price) || 0,
 
-                    qty: Number(item.qty) || 0,
+                    price:
+                        Number(item.basePrice ?? item.price) || 0,
 
-                    stock: Number(item.stock) || 0
+                    qty:
+                        Number(item.qty) || 0,
+
+                    stock:
+                        Number(item.stock) || 0
 
                 })).filter(item =>
-
                     item.qty > 0 &&
                     item.stock > 0
-
                 );
 
             }
@@ -1278,6 +1323,7 @@ function loadCart() {
 
     }
 
+    refreshCartPrices();
 }
 
 
@@ -1317,6 +1363,154 @@ function formatRupiah(angka) {
     return 'Rp ' +
         Number(angka || 0).toLocaleString('id-ID');
 
+}
+
+function getRulePrice(item) {
+
+    const basePrice = Number(item.basePrice) || 0;
+    const quantity = Number(item.qty) || 0;
+
+    const now = new Date();
+
+    const applicableRules = priceRules.filter(rule => {
+
+        const sameProduct =
+            Number(rule.product_id) === Number(item.id);
+
+        const globalRule =
+            rule.product_id === null;
+
+        if (!sameProduct && !globalRule) {
+            return false;
+        }
+
+        if (
+            rule.start_at &&
+            now < new Date(rule.start_at)
+        ) {
+            return false;
+        }
+
+        if (
+            rule.end_at &&
+            now > new Date(rule.end_at)
+        ) {
+            return false;
+        }
+
+        return true;
+    });
+
+    if (!applicableRules.length) {
+        return basePrice;
+    }
+
+    // Produk spesifik lebih diutamakan daripada semua produk
+    applicableRules.sort((a, b) => {
+
+        const aSpecific = a.product_id !== null ? 1 : 0;
+        const bSpecific = b.product_id !== null ? 1 : 0;
+
+        if (aSpecific !== bSpecific) {
+            return bSpecific - aSpecific;
+        }
+
+        return Number(b.id) - Number(a.id);
+    });
+
+    const rule = applicableRules[0];
+
+    // RESELLER / GROSIR
+    if (rule.type === 'reseller') {
+
+        if (
+            !rule.min_quantity ||
+            quantity < Number(rule.min_quantity)
+        ) {
+            return basePrice;
+        }
+
+        // Produk tertentu → harga khusus
+        if (
+            rule.product_id !== null &&
+            rule.special_price !== null
+        ) {
+            return Math.max(
+                0,
+                Number(rule.special_price)
+            );
+        }
+
+        // Semua produk → potongan per unit
+        if (
+            rule.product_id === null &&
+            rule.discount_value !== null
+        ) {
+
+            let price = basePrice;
+
+            if (rule.discount_type === 'nominal') {
+
+                price -= Number(
+                    rule.discount_value
+                );
+
+            } else if (
+                rule.discount_type === 'percent'
+            ) {
+
+                price -=
+                    price *
+                    (
+                        Number(rule.discount_value) / 100
+                    );
+            }
+
+            return Math.max(0, price);
+        }
+
+        return basePrice;
+    }
+
+    // PROMOSI
+    if (rule.type === 'promotion') {
+
+        let price = basePrice;
+
+        if (rule.discount_type === 'nominal') {
+
+            price -= Number(
+                rule.discount_value
+            );
+
+        } else if (
+            rule.discount_type === 'percent'
+        ) {
+
+            price -=
+                price *
+                (
+                    Number(rule.discount_value) / 100
+                );
+        }
+
+        return Math.max(0, price);
+    }
+
+    return basePrice;
+}
+
+
+function refreshCartPrices() {
+
+    cart.forEach(item => {
+
+        item.price =
+            getRulePrice(item);
+
+    });
+
+    saveCart();
 }
 
 
@@ -1361,6 +1555,8 @@ function addToCart(id, name, price, stock) {
 
             name: name,
 
+            basePrice: Number(price),
+
             price: Number(price),
 
             qty: 1,
@@ -1370,11 +1566,12 @@ function addToCart(id, name, price, stock) {
         });
 
     }
-    
+
+    refreshCartPrices();
+
     saveCart();
 
     renderCart();
-
 }
 
 
@@ -1406,9 +1603,12 @@ function updateQty(id, change) {
 
         item.qty = item.stock;
     }
-    saveCart();
-    renderCart();
 
+    refreshCartPrices();
+
+    saveCart();
+
+    renderCart();
 }
 
 
@@ -1551,9 +1751,24 @@ function renderCart() {
                         ${escapeHtml(item.name)}
                     </h5>
 
-                    <p class="text-emerald-400 text-[11px]">
-                        ${formatRupiah(item.price)}
-                    </p>
+<div class="text-[11px]">
+    ${
+        Number(item.price) < Number(item.basePrice)
+            ? `
+                <span class="text-gray-500 line-through mr-1">
+                    ${formatRupiah(item.basePrice)}
+                </span>
+                <span class="text-emerald-400 font-semibold">
+                    ${formatRupiah(item.price)}
+                </span>
+              `
+            : `
+                <span class="text-emerald-400">
+                    ${formatRupiah(item.price)}
+                </span>
+              `
+    }
+</div>
 
                 </div>
 
@@ -1651,11 +1866,6 @@ function openPaymentModal() {
     'cashbon-customer'
 ).value = '';
 
-document.getElementById(
-    'cashbon-customer-box'
-).classList.add('hidden');
-
-
     document.getElementById(
         'pay-change'
     ).innerText =
@@ -1704,41 +1914,57 @@ function paymentMethodChanged() {
     const customerBox =
         document.getElementById('cashbon-customer-box');
 
-    const customerSelect =
-        document.getElementById('cashbon-customer');
-        
-        const qrBox = document.getElementById('store-qr-payment-box');
+    const qrBox =
+        document.getElementById('store-qr-payment-box');
+
+    const accountBox =
+        document.getElementById('payment-account-box');
+
+    const accountName =
+        document.getElementById('payment-account-name');
+
+    const accountNumber =
+        document.getElementById('payment-account-number');
 
     const calc =
         calculateCartTotal();
-        
-        // Sembunyikan QR secara default
+
+
+    // Reset tampilan
     if (qrBox) {
         qrBox.classList.add('hidden');
+    }
+
+    if (accountBox) {
+        accountBox.classList.add('hidden');
     }
 
 
     /*
     |--------------------------------------------------------------------------
-    | CASHBON / UTANG
+    | TUNAI
     |--------------------------------------------------------------------------
     */
 
-    if (method === 'Cashbon / Utang') {
-    customerBox.classList.remove('hidden');
+    if (method === 'Tunai') {
 
-    input.value = '';
-    input.readOnly = false;
-    input.placeholder = 'Masukkan pembayaran sebagian...';
+        input.value = '';
+        input.readOnly = false;
+        input.placeholder = 'Ketik nominal uang...';
 
-    calculateChange();
-    return;
-}
+        calculateChange();
+        return;
+    }
 
-customerBox.classList.add('hidden');
-    customerSelect.value = '';
 
-    if (method === 'QRIS / Transfer') {
+    /*
+    |--------------------------------------------------------------------------
+    | QRIS
+    |--------------------------------------------------------------------------
+    */
+
+    if (method === 'QRIS') {
+
         if (qrBox) {
             qrBox.classList.remove('hidden');
         }
@@ -1754,40 +1980,58 @@ customerBox.classList.add('hidden');
 
     /*
     |--------------------------------------------------------------------------
-    | METODE PEMBAYARAN BIASA
+    | REKENING / E-WALLET
     |--------------------------------------------------------------------------
     */
 
-    // Sembunyikan pelanggan
-    customerBox.classList.add('hidden');
+    if (method.startsWith('account_')) {
 
-    // Bersihkan pilihan pelanggan
-    customerSelect.value = '';
+        const option =
+            document.querySelector(
+                `#pay-method option[value="${method}"]`
+            );
 
+        if (option) {
 
-    if (method !== 'Tunai') {
+            accountName.innerText =
+                option.dataset.name || '';
 
-        input.value =
-            calc.total;
+            accountNumber.innerText =
+                (
+                    option.dataset.accountName || ''
+                ) +
+                ' • ' +
+                (
+                    option.dataset.accountNumber || ''
+                );
 
+            accountBox.classList.remove('hidden');
+        }
+
+        input.value = calc.total;
         input.readOnly = true;
-
-        input.placeholder =
-            'Nominal pembayaran';
+        input.placeholder = 'Nominal pembayaran';
 
         calculateChange();
+        return;
+    }
 
-    } else {
+
+    /*
+    |--------------------------------------------------------------------------
+    | CASHBON / UTANG
+    |--------------------------------------------------------------------------
+    */
+
+    if (method === 'Cashbon / Utang') {
 
         input.value = '';
-
         input.readOnly = false;
-
         input.placeholder =
-            'Ketik nominal uang...';
+            'Masukkan pembayaran sebagian...';
 
         calculateChange();
-
+        return;
     }
 
 }
@@ -2450,6 +2694,12 @@ if (qrBox) {
     qrBox.classList.add('hidden');
 }
 
+const accountBox =
+    document.getElementById('payment-account-box');
+
+if (accountBox) {
+    accountBox.classList.add('hidden');
+}
 
     document.getElementById(
         'pay-amount'
@@ -2463,10 +2713,6 @@ if (qrBox) {
     document.getElementById(
     'cashbon-customer'
 ).value = '';
-
-document.getElementById(
-    'cashbon-customer-box'
-).classList.add('hidden');
 
 document.getElementById(
     'pay-change'
@@ -2551,6 +2797,11 @@ async function saveNewCustomer() {
         document.getElementById(
             'new-customer-address'
         );
+        
+        const typeInput =
+    document.getElementById(
+        'new-customer-type'
+    );
 
     const button =
         document.getElementById(
@@ -2566,6 +2817,9 @@ async function saveNewCustomer() {
 
     const address =
         addressInput.value.trim();
+        
+        const customerType =
+    typeInput.value;
 
 
     if (!name) {
@@ -2606,14 +2860,11 @@ async function saveNewCustomer() {
                     },
 
                     body: JSON.stringify({
-
-                        name: name,
-
-                        phone: phone,
-
-                        address: address
-
-                    })
+                    name: name,
+                    phone: phone,
+                    address: address,
+                    customer_type: customerType
+                })
                 }
             );
 
@@ -2652,6 +2903,8 @@ async function saveNewCustomer() {
 
         option.value =
             result.customer.id;
+            
+            option.dataset.type = result.customer?.customer_type ?? 'umum';
 
 
         option.textContent =
@@ -2686,8 +2939,10 @@ async function saveNewCustomer() {
         nameInput.value = '';
 
         phoneInput.value = '';
-
+        
         addressInput.value = '';
+        
+        typeInput.value = 'umum';
 
 
         closeAddCustomerModal();

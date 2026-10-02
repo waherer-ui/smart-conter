@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Customer extends Model
 {
     protected $fillable = [
-        'store_id',
-        'name',
-        'phone',
-        'address',
-    ];
+    'store_id',
+    'name',
+    'phone',
+    'address',
+    'customer_type',
+];
 
     public function store()
     {
