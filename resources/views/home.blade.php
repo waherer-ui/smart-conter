@@ -144,7 +144,7 @@
     Kelola penjualan, stok, pelanggan, dan operasional toko dengan
     <span class="font-semibold text-white">
       <img
-        src="{{ asset('images/Icon-septian.png') }}"
+        src="{{ asset('images/Icon-Septian.png') }}"
         alt="Kasir½M"
         class="h-4 w-auto object-contain"
     >
@@ -200,7 +200,7 @@
 <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white">
     🚀 Tingkatkan kemampuan
     <img
-        src="{{ asset('images/Icon-septian.png') }}"
+        src="{{ asset('images/Icon-Septian.png') }}"
         alt="Kasir½M"
         class="h-4 w-auto object-contain"
     >
