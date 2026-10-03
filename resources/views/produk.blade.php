@@ -1052,7 +1052,8 @@ MODAL TAMBAH PRODUK
            rounded-2xl w-full max-w-lg
            p-4 sm:p-6
            shadow-2xl relative
-           max-h-[94vh] sm:max-h-[90vh]
+           max-h-[calc(100dvh-120px)]
+           sm:max-h-[90vh]
            overflow-y-auto"
 >
 
