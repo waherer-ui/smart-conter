@@ -5,165 +5,274 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="manifest" href="{{ asset('manifest.json') }}">
 
-<meta name="theme-color" content="#059669">
+    <meta name="theme-color" content="#059669">
 
-<meta name="mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 
-<meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
 
-<meta
-    name="apple-mobile-web-app-status-bar-style"
-    content="black-translucent"
->
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
 
-<meta
-    name="apple-mobile-web-app-title"
-    content="Kasir½M"
->
+    <meta
+        name="apple-mobile-web-app-title"
+        content="Kasir½M"
+    >
 
     <title>
         Kasir½M - @yield('title', 'Dashboard')
     </title>
 
+    {{-- =========================================================
+         TAILWIND
+    ========================================================== --}}
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
+    {{-- =========================================================
+         LEAFLET
+    ========================================================== --}}
+
     <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
-    
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-    </script>
-    
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    {{-- =========================================================
+         GLOBAL STYLE
+    ========================================================== --}}
+
     <style>
 
-    html,
-    body {
-        min-height: 100%;
-    }
+        html,
+        body {
+            min-height: 100%;
+        }
 
-    body {
-        background:
-            radial-gradient(
-                circle at 15% 20%,
-                rgba(16, 185, 129, 0.14),
-                transparent 28%
-            ),
-            radial-gradient(
-                circle at 85% 75%,
-                rgba(132, 204, 22, 0.11),
-                transparent 30%
-            ),
-            radial-gradient(
-                circle at 50% 100%,
-                rgba(16, 185, 129, 0.07),
-                transparent 35%
-            ),
-            #020807;
-    }
+        body {
+            background:
+                radial-gradient(
+                    circle at 15% 20%,
+                    rgba(16, 185, 129, 0.14),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 85% 75%,
+                    rgba(132, 204, 22, 0.11),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 50% 100%,
+                    rgba(16, 185, 129, 0.07),
+                    transparent 35%
+                ),
+                #020807;
+        }
 
-    /* =========================================
-       GLOBAL BACKGROUND GLOW
-       ========================================= */
+        /* =====================================================
+           BACKGROUND GLOW
+        ====================================================== */
 
-    .background-glow {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        overflow: hidden;
-        z-index: 0;
-    }
+        .background-glow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
 
-    .background-glow::before {
-        content: "";
-        position: absolute;
-        width: 420px;
-        height: 420px;
-        left: -180px;
-        top: 20%;
-        background: rgba(34, 197, 94, 0.09);
-        filter: blur(110px);
-        border-radius: 9999px;
-    }
+        .background-glow::before {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            left: -180px;
+            top: 20%;
+            background: rgba(34, 197, 94, 0.09);
+            filter: blur(110px);
+            border-radius: 9999px;
+        }
 
-    .background-glow::after {
-        content: "";
-        position: absolute;
-        width: 380px;
-        height: 380px;
-        right: -160px;
-        bottom: 5%;
-        background: rgba(132, 204, 22, 0.08);
-        filter: blur(110px);
-        border-radius: 9999px;
-    }
+        .background-glow::after {
+            content: "";
+            position: absolute;
+            width: 380px;
+            height: 380px;
+            right: -160px;
+            bottom: 5%;
+            background: rgba(132, 204, 22, 0.08);
+            filter: blur(110px);
+            border-radius: 9999px;
+        }
 
-    /* =========================================
-       GLOBAL GRID
-       ========================================= */
+        /* =====================================================
+           GRID
+        ====================================================== */
 
-    .grid-overlay {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        opacity: 0.025;
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.025;
 
-        background-image:
-            linear-gradient(
-                rgba(255, 255, 255, 0.5) 1px,
-                transparent 1px
-            ),
-            linear-gradient(
-                90deg,
-                rgba(255, 255, 255, 0.5) 1px,
-                transparent 1px
-            );
+            background-image:
+                linear-gradient(
+                    rgba(255, 255, 255, 0.5) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0.5) 1px,
+                    transparent 1px
+                );
 
-        background-size: 40px 40px;
-    }
+            background-size: 40px 40px;
+        }
 
-</style>
+        /* =====================================================
+           LEAFLET
+        ====================================================== */
 
-<style>
-.leaflet-container {
-    z-index: 0 !important;
-}
+        .leaflet-container {
+            z-index: 0 !important;
+        }
 
-.leaflet-pane,
-.leaflet-control {
-    z-index: 1 !important;
-}
+        .leaflet-pane,
+        .leaflet-control {
+            z-index: 1 !important;
+        }
 
-.leaflet-top,
-.leaflet-bottom {
-    z-index: 2 !important;
-}
-</style>
+        .leaflet-top,
+        .leaflet-bottom {
+            z-index: 2 !important;
+        }
+
+        /* =====================================================
+           DROPDOWN LINK
+        ====================================================== */
+
+        .dropdown-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.65rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: rgb(209 213 219);
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-link:hover {
+            background: rgb(55 65 81);
+            color: white;
+        }
+
+        /* =====================================================
+           SUB MENU
+        ====================================================== */
+
+        .management-submenu {
+            margin-left: 0.75rem;
+            margin-right: 0.5rem;
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
+            padding-left: 0.5rem;
+            border-left: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .management-submenu .dropdown-link {
+            padding-top: 0.55rem;
+            padding-bottom: 0.55rem;
+            font-size: 0.8125rem;
+        }
+
+        /* =====================================================
+           MOBILE BOTTOM NAV
+        ====================================================== */
+
+        .mobile-bottom-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            min-width: 58px;
+            height: 58px;
+            border-radius: 14px;
+            font-size: 10px;
+            font-weight: 600;
+            color: rgb(156 163 175);
+            transition: all 0.2s ease;
+        }
+
+        .mobile-bottom-item:hover {
+            color: white;
+            background: rgb(31 41 55 / 0.7);
+        }
+
+        .mobile-bottom-active {
+            color: rgb(52 211 153);
+        }
+
+        .mobile-bottom-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            width: 58px;
+            height: 58px;
+            margin-top: -18px;
+            border-radius: 18px;
+            background: rgb(16 185 129);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            border: 4px solid rgb(17 24 39);
+            box-shadow:
+                0 8px 25px rgb(16 185 129 / 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .mobile-bottom-action:hover {
+            transform: translateY(-2px);
+        }
+
+        /* =====================================================
+           MENU ARROW
+        ====================================================== */
+
+        .menu-arrow {
+            transition: transform 0.2s ease;
+        }
+
+    </style>
 
 </head>
 
 
 <body class="min-h-screen text-gray-200 flex flex-col">
-  
-  {{-- ========================================================= --}}
-{{-- GLOBAL BACKGROUND --}}
-{{-- ========================================================= --}}
+
+{{-- =========================================================
+     GLOBAL BACKGROUND
+========================================================= --}}
 
 <div class="background-glow"></div>
 <div class="grid-overlay"></div>
 
 
-{{-- ========================================================= --}}
-{{-- KASIRKU SPLASH SCREEN --}}
-{{-- ========================================================= --}}
+{{-- =========================================================
+     SPLASH SCREEN
+========================================================= --}}
 
 @if(session('logged_in'))
 
@@ -176,379 +285,359 @@
                transition-opacity duration-500"
     >
 
-<div class="w-full h-full flex items-center justify-center">
+        <div class="w-full h-full flex items-center justify-center">
 
-    <img
-        src="{{ asset('images/Icon-Splash.png') }}"
-        alt="Kasir½M"
-        class="w-full h-full object-cover"
-    >
+            <img
+                src="{{ asset('images/Icon-Splash.png') }}"
+                alt="Kasir½M"
+                class="w-full h-full object-cover"
+            >
 
-</div>
+        </div>
 
     </div>
 
 @endif
 
-{{-- ========================================================= --}}
-{{-- DATA USER & TOKO AKTIF --}}
-{{-- ========================================================= --}}
+
+{{-- =========================================================
+     DATA USER & TOKO
+========================================================= --}}
 
 @php
 
-$layoutUser = session('logged_in')
-    ? \App\Models\User::find(session('user_id'))
-    : null;
+    $layoutUser = session('logged_in')
+        ? \App\Models\User::find(session('user_id'))
+        : null;
 
-$avatarUrl = ($layoutUser && $layoutUser->avatar)
-    ? \Illuminate\Support\Facades\Storage::disk('s3')->url($layoutUser->avatar)
-    : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100';
+    $avatarUrl = ($layoutUser && $layoutUser->avatar)
+        ? \Illuminate\Support\Facades\Storage::disk('s3')->url(
+            $layoutUser->avatar
+        )
+        : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100';
 
-$layoutStores = $layoutUser
-    ? $layoutUser->stores()
-        ->orderBy('stores.id')
-        ->get()
-    : collect();
+    $layoutStores = $layoutUser
+        ? $layoutUser->stores()
+            ->orderBy('stores.id')
+            ->get()
+        : collect();
 
-$activeStoreId = session('active_store_id');
+    $activeStoreId = session('active_store_id');
 
-$activeStore = $layoutStores->firstWhere(
-    'id',
-    $activeStoreId
-);
+    $activeStore = $layoutStores->firstWhere(
+        'id',
+        $activeStoreId
+    );
 
-$supportWaitingCount = 0;
+    $supportWaitingCount = 0;
 
-if ($layoutUser) {
-    $supportWaitingCount = \App\Models\SupportTicket::where(
-        'owner_id',
-        $layoutUser->id
-    )
-    ->where('status', 'waiting')
-    ->count();
-}
+    if ($layoutUser) {
+
+        $supportWaitingCount =
+            \App\Models\SupportTicket::where(
+                'owner_id',
+                $layoutUser->id
+            )
+            ->where('status', 'waiting')
+            ->count();
+
+    }
 
 @endphp
 
 
+{{-- =========================================================
+     NAVBAR
+========================================================= --}}
 
-{{-- ========================================================= --}}
-{{-- NAVBAR GLOBAL --}}
-{{-- ========================================================= --}}
-
-<nav class="bg-gray-900/40 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
+<nav
+    class="bg-gray-900/40 backdrop-blur-md
+           border-b border-white/10
+           sticky top-0 z-50"
+>
 
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         <div class="flex h-16 items-center justify-between">
 
-
-{{-- ================================================= --}}
-{{-- LOGO --}}
-{{-- ================================================= --}}
-
-<div class="flex items-center">
-
-    <a
-        href="{{ session('logged_in')
-            ? route('dashboard')
-            : route('login') }}"
-        class="flex items-center"
-    >
-
-        <img
-            src="{{ asset('images/Icon-navbar.png') }}"
-            alt="Kasir½M"
-            class="h-10 w-auto object-contain"
-        >
-
-    </a>
-
-</div>
-
-
-
-            {{-- ================================================= --}}
-            {{-- DESKTOP --}}
-            {{-- ================================================= --}}
-
-            <div class="hidden md:flex items-center">
-
-                <div class="relative">
-
-
-                    {{-- ========================================= --}}
-                    {{-- USER LOGIN --}}
-                    {{-- ========================================= --}}
-
-                    @if(session('logged_in'))
-
-                        <div class="flex items-center gap-2">
-
-                          {{-- ================================= --}}
-{{-- QUICK HELP --}}
-{{-- ================================= --}}
-
-<a
-    href="{{ route('support.index') }}"
-    class="relative
-           flex items-center justify-center
-           w-10 h-10
-           rounded-xl
-           text-gray-300
-           hover:bg-gray-700
-           hover:text-white
-           transition
-           focus:outline-none
-           focus:ring-2
-           focus:ring-indigo-500"
-    aria-label="Pusat Bantuan"
-    title="Pusat Bantuan"
->
-    <span class="text-lg">
-        💬
-    </span>
-
-    @if($supportWaitingCount > 0)
-        <span
-            class="absolute
-                   top-1 right-1
-                   min-w-[15px] h-[15px]
-                   px-1
-                   rounded-full
-                   bg-amber-500
-                   text-[9px]
-                   font-bold
-                   text-gray-900
-                   flex items-center justify-center
-                   border-2 border-gray-800"
-        >
-            {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
-        </span>
-    @endif
-</a>
-
-
-{{-- ================================= --}}
-{{-- STORE SWITCHER / PLATFORM ACCESS --}}
-{{-- ================================= --}}
-
-@if(session('is_platform_admin'))
-
-    {{-- ========================================= --}}
-    {{-- SUPER ADMIN --}}
-    {{-- ========================================= --}}
-
-    <div class="hidden md:block text-right">
-
-        <div
-            class="text-sm font-semibold
-                   text-emerald-400"
-        >
-            🛡️ Super Admin
-        </div>
-
-        <div class="text-xs text-gray-400">
-            Platform KasirKU
-        </div>
-
-    </div>
-
-@elseif($activeStore)
-
-    {{-- ========================================= --}}
-    {{-- OWNER / ADMIN TOKO --}}
-    {{-- ========================================= --}}
-
-    @if(session('user_role') === 'admin')
-
-        <div class="relative">
-
-            <button
-                type="button"
-                onclick="toggleStoreDropdown(event)"
-                class="text-right rounded-xl px-3 py-2
-                       hover:bg-gray-700 transition
-                       focus:outline-none
-                       focus:ring-2
-                       focus:ring-emerald-500"
-            >
-
-                <div
-                    class="text-sm font-semibold
-                           text-emerald-400
-                           truncate max-w-[180px]"
-                >
-                    🏪 {{ $activeStore->name }} ▾
-                </div>
-
-                <div class="text-xs text-gray-400">
-                    Toko aktif
-                </div>
-
-            </button>
-
-
-            <div
-                id="desktop-store-dropdown"
-                class="hidden absolute right-0 mt-2
-                       w-56 rounded-2xl
-                       bg-gray-800
-                       border border-white/10
-                       shadow-2xl
-                       overflow-hidden z-50"
-            >
-
-                @php
-                    $storeLimit = $activeStore?->getLimit('max_stores');
-                @endphp
-
-
-                @foreach($layoutStores as $index => $store)
-
-                    @php
-                        $storeLocked =
-                            $storeLimit !== null &&
-                            $index >= $storeLimit;
-                    @endphp
-
-
-                    @if($storeLocked)
-
-                        {{-- TOKO TERKUNCI --}}
-
-                        <div
-                            class="dropdown-link
-                                   cursor-not-allowed
-                                   opacity-60"
-                        >
-
-                            <span>
-                                🏪
-                            </span>
-
-                            <span
-                                class="flex-1
-                                       text-left
-                                       truncate"
-                            >
-                                {{ $store->name }}
-                            </span>
-
-                            <span
-                                class="text-xs
-                                       text-amber-400
-                                       font-semibold"
-                            >
-                                🔒
-                            </span>
-
-                        </div>
-
-                    @else
-
-                        {{-- TOKO BISA DIAKSES --}}
-
-                        <form
-                            action="{{ route('store.switch', $store->id) }}"
-                            method="POST"
-                        >
-
-                            @csrf
-
-                            <button
-                                type="submit"
-                                class="dropdown-link"
-                            >
-
-                                <span>
-                                    🏪
-                                </span>
-
-                                <span
-                                    class="flex-1
-                                           text-left
-                                           truncate"
-                                >
-                                    {{ $store->name }}
-                                </span>
-
-
-                                @if($store->id == $activeStoreId)
-
-                                    <span
-                                        class="text-emerald-400
-                                               font-bold"
-                                    >
-                                        ✓
-                                    </span>
-
-                                @endif
-
-                            </button>
-
-                        </form>
-
-                    @endif
-
-                @endforeach
-
+            {{-- =================================================
+                 LOGO
+            ================================================== --}}
+
+            <div class="flex items-center">
 
                 <a
-                    href="{{ route('store.create') }}"
-                    class="dropdown-link
-                           border-t
-                           border-white/10"
+                    href="{{ session('logged_in')
+                        ? route('dashboard')
+                        : route('login') }}"
+                    class="flex items-center"
                 >
 
-                    <span>
-                        ➕
-                    </span>
-
-                    <span class="flex-1 text-left">
-                        Tambah Toko/Cabang
-                    </span>
+                    <img
+                        src="{{ asset('images/Icon-navbar.png') }}"
+                        alt="Kasir½M"
+                        class="h-10 w-auto object-contain"
+                    >
 
                 </a>
 
             </div>
 
-        </div>
 
-    @else
+            {{-- =================================================
+                 DESKTOP NAVBAR
+            ================================================== --}}
 
-        {{-- ================================= --}}
-        {{-- KASIR --}}
-        {{-- ================================= --}}
+            <div class="hidden md:flex items-center">
 
-        <div class="text-right">
+                <div class="relative">
 
-            <div
-                class="text-sm font-semibold
-                       text-emerald-400
-                       truncate max-w-[180px]"
-            >
-                🏪 {{ $activeStore->name }}
-            </div>
+                    @if(session('logged_in'))
 
-            <div class="text-xs text-gray-400">
-                Toko aktif
-            </div>
+                        <div class="flex items-center gap-2">
 
-        </div>
+                            {{-- =================================
+                                 QUICK HELP
+                            ================================== --}}
 
-    @endif
+                            <a
+                                href="{{ route('support.index') }}"
+                                class="relative flex items-center justify-center
+                                       w-10 h-10 rounded-xl
+                                       text-gray-300
+                                       hover:bg-gray-700
+                                       hover:text-white
+                                       transition
+                                       focus:outline-none
+                                       focus:ring-2
+                                       focus:ring-indigo-500"
+                                aria-label="Pusat Bantuan"
+                                title="Pusat Bantuan"
+                            >
 
-@endif
+                                <span class="text-lg">
+                                    💬
+                                </span>
+
+                                @if($supportWaitingCount > 0)
+
+                                    <span
+                                        class="absolute top-1 right-1
+                                               min-w-[15px] h-[15px]
+                                               px-1 rounded-full
+                                               bg-amber-500
+                                               text-[9px]
+                                               font-bold
+                                               text-gray-900
+                                               flex items-center justify-center
+                                               border-2 border-gray-800"
+                                    >
+                                        {{ $supportWaitingCount > 9
+                                            ? '9+'
+                                            : $supportWaitingCount }}
+                                    </span>
+
+                                @endif
+
+                            </a>
 
 
+                            {{-- =================================
+                                 STORE / PLATFORM
+                            ================================== --}}
 
-                            {{-- ================================= --}}
-                            {{-- PROFILE BUTTON --}}
-                            {{-- ================================= --}}
+                            @if(session('is_platform_admin'))
+
+                                <div class="hidden md:block text-right">
+
+                                    <div
+                                        class="text-sm font-semibold
+                                               text-emerald-400"
+                                    >
+                                        🛡️ Super Admin
+                                    </div>
+
+                                    <div class="text-xs text-gray-400">
+                                        Platform KasirKU
+                                    </div>
+
+                                </div>
+
+                            @elseif($activeStore)
+
+                                @if(session('user_role') === 'admin')
+
+                                    <div class="relative">
+
+                                        <button
+                                            type="button"
+                                            onclick="toggleDropdown('desktop-store')"
+                                            class="text-right rounded-xl px-3 py-2
+                                                   hover:bg-gray-700 transition
+                                                   focus:outline-none
+                                                   focus:ring-2
+                                                   focus:ring-emerald-500"
+                                        >
+
+                                            <div
+                                                class="text-sm font-semibold
+                                                       text-emerald-400
+                                                       truncate max-w-[180px]"
+                                            >
+                                                🏪 {{ $activeStore->name }} ▾
+                                            </div>
+
+                                            <div class="text-xs text-gray-400">
+                                                Toko aktif
+                                            </div>
+
+                                        </button>
+
+
+                                        {{-- STORE DROPDOWN --}}
+
+                                        <div
+                                            id="desktop-store-dropdown"
+                                            class="hidden absolute right-0 mt-2
+                                                   w-56 rounded-2xl
+                                                   bg-gray-800
+                                                   border border-white/10
+                                                   shadow-2xl
+                                                   overflow-hidden z-50"
+                                        >
+
+                                            @php
+                                                $storeLimit =
+                                                    $activeStore?->getLimit('max_stores');
+                                            @endphp
+
+                                            @foreach($layoutStores as $index => $store)
+
+                                                @php
+                                                    $storeLocked =
+                                                        $storeLimit !== null &&
+                                                        $index >= $storeLimit;
+                                                @endphp
+
+                                                @if($storeLocked)
+
+                                                    <div
+                                                        class="dropdown-link
+                                                               cursor-not-allowed
+                                                               opacity-60"
+                                                    >
+
+                                                        <span>🏪</span>
+
+                                                        <span
+                                                            class="flex-1 text-left truncate"
+                                                        >
+                                                            {{ $store->name }}
+                                                        </span>
+
+                                                        <span
+                                                            class="text-xs
+                                                                   text-amber-400
+                                                                   font-semibold"
+                                                        >
+                                                            🔒
+                                                        </span>
+
+                                                    </div>
+
+                                                @else
+
+                                                    <form
+                                                        action="{{ route(
+                                                            'store.switch',
+                                                            $store->id
+                                                        ) }}"
+                                                        method="POST"
+                                                    >
+
+                                                        @csrf
+
+                                                        <button
+                                                            type="submit"
+                                                            class="dropdown-link"
+                                                        >
+
+                                                            <span>🏪</span>
+
+                                                            <span
+                                                                class="flex-1
+                                                                       text-left
+                                                                       truncate"
+                                                            >
+                                                                {{ $store->name }}
+                                                            </span>
+
+                                                            @if($store->id == $activeStoreId)
+
+                                                                <span
+                                                                    class="text-emerald-400
+                                                                           font-bold"
+                                                                >
+                                                                    ✓
+                                                                </span>
+
+                                                            @endif
+
+                                                        </button>
+
+                                                    </form>
+
+                                                @endif
+
+                                            @endforeach
+
+                                            <a
+                                                href="{{ route('store.create') }}"
+                                                class="dropdown-link
+                                                       border-t border-white/10"
+                                            >
+
+                                                <span>➕</span>
+
+                                                <span class="flex-1 text-left">
+                                                    Tambah Toko/Cabang
+                                                </span>
+
+                                            </a>
+
+                                        </div>
+
+                                    </div>
+
+                                @else
+
+                                    <div class="text-right">
+
+                                        <div
+                                            class="text-sm font-semibold
+                                                   text-emerald-400
+                                                   truncate max-w-[180px]"
+                                        >
+                                            🏪 {{ $activeStore->name }}
+                                        </div>
+
+                                        <div class="text-xs text-gray-400">
+                                            Toko aktif
+                                        </div>
+
+                                    </div>
+
+                                @endif
+
+                            @endif
+
+
+                            {{-- =================================
+                                 PROFILE
+                            ================================== --}}
 
                             <button
-                                onclick="toggleUserDropdown()"
+                                onclick="toggleDropdown('user')"
                                 type="button"
                                 class="flex items-center gap-3
                                        rounded-xl px-3 py-2
@@ -561,8 +650,7 @@ if ($layoutUser) {
                                 <div class="text-right">
 
                                     <div
-                                        class="text-sm font-semibold
-                                               text-white"
+                                        class="text-sm font-semibold text-white"
                                     >
                                         {{ session('username') }}
                                     </div>
@@ -587,27 +675,24 @@ if ($layoutUser) {
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
                                 >
-
                                     <path
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
                                         stroke-width="2"
                                         d="M19 9l-7 7-7-7"
                                     />
-
                                 </svg>
 
                             </button>
 
                         </div>
 
-
                     @else
 
                         {{-- GUEST --}}
 
                         <button
-                            onclick="toggleUserDropdown()"
+                            onclick="toggleDropdown('user')"
                             type="button"
                             class="flex items-center justify-center
                                    w-11 h-11 rounded-xl
@@ -639,20 +724,21 @@ if ($layoutUser) {
                     @endif
 
 
-
-                    {{-- ========================================= --}}
-                    {{-- DESKTOP PROFILE DROPDOWN --}}
-                    {{-- ========================================= --}}
+                    {{-- =================================================
+                         DESKTOP PROFILE DROPDOWN
+                    ================================================== --}}
 
                     <div
                         id="user-dropdown"
-                        class="hidden absolute right-0 mt-2 w-64
+                        class="hidden absolute right-0 mt-2 w-72
                                rounded-2xl bg-gray-800
                                border border-white/10
                                shadow-2xl overflow-hidden z-50"
                     >
 
                         @if(session('logged_in'))
+
+                            {{-- PROFILE HEADER --}}
 
                             <div class="px-4 py-4 bg-gray-800/80">
 
@@ -669,15 +755,13 @@ if ($layoutUser) {
                                     <div class="min-w-0">
 
                                         <div
-                                            class="font-semibold text-white
-                                                   truncate"
+                                            class="font-semibold text-white truncate"
                                         >
                                             {{ session('username') }}
                                         </div>
 
                                         <div
-                                            class="text-xs text-gray-400
-                                                   uppercase"
+                                            class="text-xs text-gray-400 uppercase"
                                         >
                                             {{ session('user_role') }}
                                         </div>
@@ -685,443 +769,776 @@ if ($layoutUser) {
                                     </div>
 
                                 </div>
-                                {{-- ========================================= --}}
-                            {{-- INFORMASI PAKET --}}
-                            {{-- ========================================= --}}
+
+                            </div>
+
+
+                            {{-- PLAN INFO --}}
 
                             <div class="px-4 pb-4">
 
-                                 <x-plan-info :active-store="$activeStore" />
-
-                            </div>
+                                <x-plan-info :active-store="$activeStore" />
 
                             </div>
 
                         @endif
 
 
-{{-- NAVIGASI DESKTOP --}}
+                        {{-- =================================================
+                             PLATFORM ADMIN
+                        ================================================== --}}
 
-@if(session('is_platform_admin'))
+                        @if(session('is_platform_admin'))
 
-    {{-- ==============================
-         SUPER ADMIN KASIRKU
-    =============================== --}}
+                            <div class="border-t border-white/10 py-2">
+
+                                <div
+                                    class="px-4 py-1.5 text-xs
+                                           font-semibold text-gray-500
+                                           uppercase"
+                                >
+                                    Platform
+                                </div>
+
+                                <a
+                                    href="{{ route('admin-kasirku.dashboard') }}"
+                                    class="dropdown-link"
+                                >
+                                    <span>🏠</span>
+                                    <span>Dashboard</span>
+                                </a>
+
+                                <a
+                                    href="{{ route('admin-kasirku.users.index') }}"
+                                    class="dropdown-link"
+                                >
+                                    <span>👥</span>
+                                    <span>Pengguna</span>
+                                </a>
+
+                                <a
+                                    href="{{ route('admin-kasirku.stores.index') }}"
+                                    class="dropdown-link"
+                                >
+                                    <span>🏪</span>
+                                    <span>Toko</span>
+                                </a>
+
+                                <a
+                                    href="{{ route('admin-kasirku.subscriptions.index') }}"
+                                    class="dropdown-link"
+                                >
+                                    <span>💳</span>
+                                    <span>Langganan</span>
+                                </a>
+
+                                <a
+                                    href="{{ route('admin-kasirku.plans.index') }}"
+                                    class="dropdown-link"
+                                >
+                                    <span>📦</span>
+                                    <span>Paket</span>
+                                </a>
+
+                                <a
+                                    href="{{ route('admin-kasirku.audit-log.index') }}"
+                                    class="dropdown-link
+                                           {{ request()->routeIs(
+                                                'admin-kasirku.audit-log.*'
+                                           )
+                                                ? 'bg-gray-700 text-white'
+                                                : '' }}"
+                                >
+                                    <span>📋</span>
+                                    <span>Semua Aktivitas</span>
+                                </a>
+
+                            </div>
+
+
+                            {{-- OPERASIONAL --}}
+
+                            <div class="border-t border-white/10 py-2">
+
+                                <div
+                                    class="px-4 py-1.5 text-xs
+                                           font-semibold text-gray-500
+                                           uppercase"
+                                >
+                                    Operasional
+                                </div>
+
+                                <a
+                                    href="{{ route(
+                                        'admin-kasirku.support.index'
+                                    ) }}"
+                                    class="dropdown-link"
+                                >
+
+                                    <span class="relative">
+                                        💬
+
+                                        @if($supportWaitingCount > 0)
+
+                                            <span
+                                                class="absolute -top-1 -right-2
+                                                       min-w-[16px] h-4
+                                                       px-1 rounded-full
+                                                       bg-amber-500
+                                                       text-[9px]
+                                                       font-bold
+                                                       text-gray-900
+                                                       flex items-center justify-center"
+                                            >
+                                                {{ $supportWaitingCount > 9
+                                                    ? '9+'
+                                                    : $supportWaitingCount }}
+                                            </span>
+
+                                        @endif
+
+                                    </span>
+
+                                    <span class="flex-1">
+                                        Bantuan
+                                    </span>
+
+                                    @if($supportWaitingCount > 0)
+
+                                        <span
+                                            class="text-xs
+                                                   text-amber-400
+                                                   font-semibold"
+                                        >
+                                            {{ $supportWaitingCount }}
+                                        </span>
+
+                                    @endif
+
+                                </a>
+
+                            </div>
+
+
+                            {{-- SISTEM --}}
+
+                            <div class="border-t border-white/10 py-2">
+
+                                <div
+                                    class="px-4 py-1.5 text-xs
+                                           font-semibold text-gray-500
+                                           uppercase"
+                                >
+                                    Sistem
+                                </div>
+
+                                <a
+                                    href="{{ route(
+                                        'admin-kasirku.settings'
+                                    ) }}"
+                                    class="dropdown-link"
+                                >
+                                    <span>⚙️</span>
+                                    <span>Pengaturan</span>
+                                </a>
+
+                            </div>
+
+
+                        @else
+
+                            {{-- =================================================
+                                 MENU TOKO
+                            ================================================== --}}
+
+                            <div class="border-t border-white/10 py-2">
+
+                                <div
+                                    class="px-4 py-1.5 text-xs
+                                           font-semibold text-gray-500
+                                           uppercase"
+                                >
+                                    Navigasi
+                                </div>
+
+
+                                {{-- DASHBOARD --}}
+
+                                <a
+                                    href="{{ route('dashboard') }}"
+                                    class="dropdown-link
+                                           {{ request()->routeIs('dashboard')
+                                                ? 'bg-gray-700 text-white'
+                                                : '' }}"
+                                >
+                                    <span>🏠</span>
+                                    <span>Dashboard</span>
+                                </a>
+
+
+                                {{-- =================================================
+                                     MANAJEMEN PRODUK
+                                ================================================== --}}
+
+                                <div>
+
+                                    <button
+                                        type="button"
+                                        onclick="toggleManagementMenu('desktop-product')"
+                                        class="dropdown-link w-full text-left"
+                                    >
+
+                                        <span>📦</span>
+
+                                        <span class="flex-1">
+                                            Manajemen Produk
+                                        </span>
+
+                                        <span
+                                            id="desktop-product-arrow"
+                                            class="menu-arrow text-xs
+                                                {{ request()->routeIs(
+                                                    'kasir.*',
+                                                    'produk.*',
+                                                    'supplier.*',
+                                                    'transfer.*'
+                                                )
+                                                    ? 'rotate-180'
+                                                    : '' }}"
+                                        >
+                                            ▼
+                                        </span>
+
+                                    </button>
+
+
+                                    <div
+                                        id="desktop-product-menu"
+                                        class="management-submenu
+                                            {{ request()->routeIs(
+                                                'kasir.*',
+                                                'produk.*',
+                                                'supplier.*',
+                                                'transfer.*'
+                                            )
+                                                ? ''
+                                                : 'hidden' }}"
+                                    >
+
+                                        <a
+                                            href="{{ route('kasir.index') }}"
+                                            class="dropdown-link
+                                                   {{ request()->routeIs(
+                                                        'kasir.*'
+                                                   )
+                                                        ? 'bg-gray-700 text-white'
+                                                        : '' }}"
+                                        >
+                                            <span>🛒</span>
+                                            <span>Kasir</span>
+                                        </a>
+
+                                        <a
+                                            href="{{ route('produk.index') }}"
+                                            class="dropdown-link
+                                                   {{ request()->routeIs(
+                                                        'produk.*'
+                                                   )
+                                                        ? 'bg-gray-700 text-white'
+                                                        : '' }}"
+                                        >
+                                            <span>📦</span>
+                                            <span>Restok Produk</span>
+                                        </a>
+
+                                        <a
+                                            href="{{ route('supplier.index') }}"
+                                            class="dropdown-link
+                                                   {{ request()->routeIs(
+                                                        'supplier.*'
+                                                   )
+                                                        ? 'bg-gray-700 text-white'
+                                                        : '' }}"
+                                        >
+                                            <span>🚚</span>
+                                            <span>Supplier</span>
+                                        </a>
+
+                                        <a
+                                            href="{{ route('transfer.index') }}"
+                                            class="dropdown-link
+                                                   {{ request()->routeIs(
+                                                        'transfer.*'
+                                                   )
+                                                        ? 'bg-gray-700 text-white'
+                                                        : '' }}"
+                                        >
+                                            <span>🔄</span>
+                                            <span>Transfer Antar Toko</span>
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+
+                                {{-- =================================================
+                                     MANAJEMEN LAPORAN
+                                ================================================== --}}
+
+                                <div>
+
+                                    <button
+                                        type="button"
+                                        onclick="toggleManagementMenu('desktop-report')"
+                                        class="dropdown-link w-full text-left"
+                                    >
+
+                                        <span>📊</span>
+
+                                        <span class="flex-1">
+                                            Manajemen Laporan
+                                        </span>
+
+                                        <span
+                                            id="desktop-report-arrow"
+                                            class="menu-arrow text-xs
+                                                {{ request()->routeIs(
+                                                    'pengeluaran',
+                                                    'laporan',
+                                                    'pelanggan.*'
+                                                )
+                                                    ? 'rotate-180'
+                                                    : '' }}"
+                                        >
+                                            ▼
+                                        </span>
+
+                                    </button>
+
+
+                                    <div
+                                        id="desktop-report-menu"
+                                        class="management-submenu
+                                            {{ request()->routeIs(
+                                                'pengeluaran',
+                                                'laporan',
+                                                'pelanggan.*'
+                                            )
+                                                ? ''
+                                                : 'hidden' }}"
+                                    >
+
+                                        <a
+                                            href="{{ route('pengeluaran') }}"
+                                            class="dropdown-link
+                                                   {{ request()->routeIs(
+                                                        'pengeluaran'
+                                                   )
+                                                        ? 'bg-gray-700 text-white'
+                                                        : '' }}"
+                                        >
+                                            <span>💸</span>
+                                            <span>Pengeluaran</span>
+                                        </a>
+
+                                        <a
+                                            href="{{ route('laporan') }}"
+                                            class="dropdown-link
+                                                   {{ request()->routeIs(
+                                                        'laporan'
+                                                   )
+                                                        ? 'bg-gray-700 text-white'
+                                                        : '' }}"
+                                        >
+                                            <span>📈</span>
+                                            <span>Laporan Dasar</span>
+                                        </a>
+
+                                        <a
+                                            href="{{ route('pelanggan.index') }}"
+                                            class="dropdown-link
+                                                   {{ request()->routeIs(
+                                                        'pelanggan.*'
+                                                   )
+                                                        ? 'bg-gray-700 text-white'
+                                                        : '' }}"
+                                        >
+                                            <span>👥</span>
+                                            <span>Pelanggan</span>
+                                        </a>
+
+                                        {{-- 
+                                            Saat ini Casbon diarahkan ke modul
+                                            pelanggan karena route khusus Casbon
+                                            belum ada pada kode asli.
+                                        --}}
+
+                                        <a
+                                            href="{{ route('pelanggan.index') }}"
+                                            class="dropdown-link text-sm"
+                                        >
+                                            <span>💳</span>
+                                            <span>Casbon</span>
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+
+                                {{-- =================================================
+                                     RIWAYAT TRANSAKSI
+                                ================================================== --}}
+
+                                <a
+                                    href="{{ route('riwayat') }}"
+                                    class="dropdown-link
+                                           {{ request()->routeIs('riwayat')
+                                                ? 'bg-gray-700 text-white'
+                                                : '' }}"
+                                >
+                                    <span>🧾</span>
+                                    <span>Riwayat Transaksi</span>
+                                </a>
+
+
+                                {{-- =================================================
+                                     MANAJEMEN ABSEN
+                                ================================================== --}}
+
+                                <div>
+
+                                    <button
+                                        type="button"
+                                        onclick="toggleManagementMenu('desktop-attendance')"
+                                        class="dropdown-link w-full text-left"
+                                    >
+
+                                        <span>🕘</span>
+
+                                        <span class="flex-1">
+                                            Manajemen Absen
+                                        </span>
+
+                                        <span
+                                            id="desktop-attendance-arrow"
+                                            class="menu-arrow text-xs
+                                                {{ request()->routeIs(
+                                                    'attendance.*'
+                                                )
+                                                    ? 'rotate-180'
+                                                    : '' }}"
+                                        >
+                                            ▼
+                                        </span>
+
+                                    </button>
+
+
+                                    <div
+                                        id="desktop-attendance-menu"
+                                        class="management-submenu
+                                            {{ request()->routeIs(
+                                                'attendance.*'
+                                            )
+                                                ? ''
+                                                : 'hidden' }}"
+                                    >
+
+                                        <a
+                                            href="{{ route('attendance.index') }}"
+                                            class="dropdown-link"
+                                        >
+                                            <span>📍</span>
+                                            <span>Check-in / Check-out</span>
+                                        </a>
+
+                                        <a
+                                            href="{{ route(
+                                                'attendance.history'
+                                            ) }}"
+                                            class="dropdown-link"
+                                        >
+                                            <span>📋</span>
+                                            <span>Riwayat Absen</span>
+                                        </a>
+
+                                        <a
+                                            href="{{ route(
+                                                'attendance.summary'
+                                            ) }}"
+                                            class="dropdown-link"
+                                        >
+                                            <span>📊</span>
+                                            <span>Rekap Absen</span>
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+
+                                {{-- =================================================
+                                     BANTUAN
+                                ================================================== --}}
+
+                                <a
+                                    href="{{ route('support.index') }}"
+                                    class="dropdown-link
+                                           {{ request()->routeIs(
+                                                'support.*'
+                                           )
+                                                ? 'bg-gray-700 text-white'
+                                                : '' }}"
+                                >
+
+                                    <span class="relative">
+                                        💬
+
+                                        @if($supportWaitingCount > 0)
+
+                                            <span
+                                                class="absolute -top-1 -right-2
+                                                       min-w-[16px] h-4
+                                                       px-1 rounded-full
+                                                       bg-amber-500
+                                                       text-[9px]
+                                                       font-bold
+                                                       text-gray-900
+                                                       flex items-center justify-center"
+                                            >
+                                                {{ $supportWaitingCount > 9
+                                                    ? '9+'
+                                                    : $supportWaitingCount }}
+                                            </span>
+
+                                        @endif
+
+                                    </span>
+
+                                    <span class="flex-1">
+                                        Pusat Bantuan
+                                    </span>
+
+                                    @if($supportWaitingCount > 0)
+
+                                        <span
+                                            class="text-xs
+                                                   text-amber-400
+                                                   font-semibold"
+                                        >
+                                            {{ $supportWaitingCount }}
+                                        </span>
+
+                                    @endif
+
+                                </a>
+
+
+                                {{-- =================================================
+                                     PROFIL
+                                ================================================== --}}
+
+                                @if(session('logged_in'))
+
+                                    <a
+                                        href="{{ route('profil') }}"
+                                        class="dropdown-link"
+                                    >
+                                        <span>👤</span>
+                                        <span>Profil Saya</span>
+                                    </a>
+
+                                @else
+
+                                    <a
+                                        href="{{ route('login') }}"
+                                        class="dropdown-link"
+                                    >
+                                        <span>🔐</span>
+                                        <span>Masuk / Daftar</span>
+                                    </a>
+
+                                @endif
+
+                            </div>
+
+
+{{-- =================================================
+     MANAJEMEN ADMIN TOKO
+================================================== --}}
+
+@if(session('user_role') === 'admin')
 
     <div class="border-t border-white/10 py-2">
 
-        <div
-            class="px-4 py-1.5 text-xs
-                   font-semibold text-gray-500
-                   uppercase"
-        >
-            Platform
+        <div class="px-4 py-1.5 text-xs font-semibold text-gray-500 uppercase">
+            Administrator
         </div>
 
-        <a
-            href="{{ route('admin-kasirku.dashboard') }}"
-            class="dropdown-link"
+        {{-- MANAJEMEN ADMIN --}}
+        <button
+            type="button"
+            onclick="toggleManagementMenu('desktop-admin')"
+            class="dropdown-link w-full text-left"
         >
-            <span>🏠</span>
-            <span>Dashboard</span>
-        </a>
-
-        <a
-            href="{{ route('admin-kasirku.users.index') }}"
-            class="dropdown-link"
-        >
-            <span>👥</span>
-            <span>Pengguna</span>
-        </a>
-
-        <a
-            href="{{ route('admin-kasirku.stores.index') }}"
-            class="dropdown-link"
-        >
-            <span>🏪</span>
-            <span>Toko</span>
-        </a>
-
-        <a
-            href="{{ route('admin-kasirku.subscriptions.index') }}"
-            class="dropdown-link"
-        >
-            <span>💳</span>
-            <span>Langganan</span>
-        </a>
-
-        <a
-            href="{{ route('admin-kasirku.plans.index') }}"
-            class="dropdown-link"
-        >
-            <span>📦</span>
-            <span>Paket</span>
-        </a>
-
-        <a
-              href="{{ route('admin-kasirku.audit-log.index') }}"
-              class="dropdown-link
-                     {{ request()->routeIs('admin-kasirku.audit-log.*')
-                          ? 'bg-gray-700 text-white'
-                          : '' }}"
-          >
-              <span>📋</span>
-              <span>Semua Aktivitas</span>
-          </a>
-
-    </div>
-
-
-    {{-- OPERASIONAL --}}
-
-    <div class="border-t border-white/10 py-2">
-
-        <div
-            class="px-4 py-1.5 text-xs
-                   font-semibold text-gray-500
-                   uppercase"
-        >
-            Operasional
-        </div>
-
-        <a
-            href="{{ route('admin-kasirku.support.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('admin-kasirku.support.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span class="relative">
-                💬
-
-                @if($supportWaitingCount > 0)
-                    <span
-                        class="absolute -top-1 -right-2
-                               min-w-[16px] h-4
-                               px-1
-                               rounded-full
-                               bg-amber-500
-                               text-[9px]
-                               font-bold
-                               text-gray-900
-                               flex items-center justify-center"
-                    >
-                        {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
-                    </span>
-                @endif
-            </span>
+            <span>🛡️</span>
 
             <span class="flex-1">
-                Bantuan
+                Manajemen Admin
             </span>
 
-            @if($supportWaitingCount > 0)
-                <span class="text-xs text-amber-400 font-semibold">
-                    {{ $supportWaitingCount }}
-                </span>
-            @endif
-        </a>
+            <span
+                id="desktop-admin-arrow"
+                class="menu-arrow text-xs
+                {{ request()->routeIs('admin.*', 'setting', 'receipt-settings.*', 'payment-settings.*', 'price-rules.*')
+                    ? 'rotate-180'
+                    : '' }}"
+            >
+                ▼
+            </span>
+        </button>
 
-    </div>
 
-
-    {{-- SISTEM --}}
-
-    <div class="border-t border-white/10 py-2">
-
+        {{-- MENU ADMIN --}}
         <div
-            class="px-4 py-1.5 text-xs
-                   font-semibold text-gray-500
-                   uppercase"
+            id="desktop-admin-menu"
+            class="management-submenu
+            {{ request()->routeIs('admin.*', 'setting', 'receipt-settings.*', 'payment-settings.*', 'price-rules.*')
+                ? ''
+                : 'hidden' }}"
         >
-            Sistem
-        </div>
 
-        <a
-            href="{{ route('admin-kasirku.settings') }}"
-            class="dropdown-link"
-        >
-            <span>⚙️</span>
-            <span>Pengaturan</span>
-        </a>
-
-    </div>
-
-
-@else
-
-    {{-- ==============================
-         OWNER / KASIR
-         MENU LAMA
-    =============================== --}}
-
-    <div class="border-t border-white/10 py-2">
-
-        <div
-            class="px-4 py-1.5 text-xs
-                   font-semibold text-gray-500
-                   uppercase"
-        >
-            Navigasi
-        </div>
-
-        <a
-            href="{{ route('dashboard') }}"
-            class="dropdown-link"
-        >
-            <span>🏠</span>
-            <span>Dashboard</span>
-        </a>
-
-        <a
-            href="{{ route('kasir.index') }}"
-            class="dropdown-link"
-        >
-            <span>🛒</span>
-            <span>Kasir / keranjang</span>
-        </a>
-
-        <a
-            href="{{ route('produk.index') }}"
-            class="dropdown-link"
-        >
-            <span>📦</span>
-            <span>Produk / restock produk</span>
-        </a>
-
-        <a
-            href="{{ route('transfer.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('transfer.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span>🔄</span>
-            <span>Transfer Antar Toko</span>
-        </a>
-
-        <a
-            href="{{ route('pelanggan.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('pelanggan.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span>👥</span>
-            <span>Pelanggan & Piutang</span>
-        </a>
-
-        <a
-            href="{{ route('supplier.index') }}"
-            class="dropdown-link"
-        >
-            <span>🚚</span>
-            <span>Supplier & pembelian produk</span>
-        </a>
-
-        <a
-            href="{{ route('pengeluaran') }}"
-            class="dropdown-link"
-        >
-            <span>💸</span>
-            <span>Pengeluaran</span>
-        </a>
-
-        <a
-            href="{{ route('laporan') }}"
-            class="dropdown-link"
-        >
-            <span>📊</span>
-            <span>Laporan & Piutang</span>
-        </a>
-
-        <a
-            href="{{ route('riwayat') }}"
-            class="dropdown-link"
-        >
-            <span>🧾</span>
-            <span>Riwayat Transaksi</span>
-        </a>
-        
-{{-- ABSENSI --}}
-<div id="desktop-attendance-group" class="dropdown-group">
-
-    <button
-        type="button"
-        onclick="toggleAttendanceMenu('desktop')"
-        class="dropdown-link w-full text-left"
-    >
-        <span>🕘</span>
-
-        <span class="flex-1">
-            Absensi
-        </span>
-
-        <span
-            id="desktop-attendance-arrow"
-            class="text-xs transition-transform duration-200
-            {{ request()->routeIs('attendance.*') ? 'rotate-180' : '' }}"
-        >
-            ▼
-        </span>
-    </button>
-
-    <div
-        id="desktop-attendance-menu"
-        class="{{ request()->routeIs('attendance.*') ? '' : 'hidden' }}
-               ml-8 mt-1 space-y-1"
-    >
-
-        <a
-            href="{{ route('attendance.index') }}"
-            class="dropdown-link text-sm"
-        >
-            <span>📍</span>
-            <span>Check-in</span>
-        </a>
-
-        <a
-            href="{{ route('attendance.history') }}"
-            class="dropdown-link text-sm"
-        >
-            <span>📋</span>
-            <span>Riwayat Absen</span>
-        </a>
-
-        <a
-            href="{{ route('attendance.summary') }}"
-            class="dropdown-link text-sm"
-        >
-            <span>📊</span>
-            <span>Rekap Absen</span>
-        </a>
-
-    </div>
-
-</div>
-
-        {{-- PUSAT BANTUAN --}}
-
-        <a
-            href="{{ route('support.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('support.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span class="relative">
-                💬
-
-                @if($supportWaitingCount > 0)
-                    <span
-                        class="absolute -top-1 -right-2
-                               min-w-[16px] h-4
-                               px-1
-                               rounded-full
-                               bg-amber-500
-                               text-[9px]
-                               font-bold
-                               text-gray-900
-                               flex items-center justify-center"
-                    >
-                        {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
-                    </span>
-                @endif
-            </span>
-
-            <span class="flex-1">
-                Pusat Bantuan
-            </span>
-
-            @if($supportWaitingCount > 0)
-                <span class="text-xs text-amber-400 font-semibold">
-                    {{ $supportWaitingCount }} perlu respons
-                </span>
-            @endif
-        </a>
-
-
-        @if(session('logged_in'))
-
+            {{-- Administrasi --}}
             <a
-                href="{{ route('profil') }}"
+                href="{{ route('admin.index') }}"
                 class="dropdown-link"
             >
-                <span>👤</span>
-                <span>Profil Saya</span>
+                <span>👨‍💼</span>
+                <span>Administrasi</span>
             </a>
 
-        @else
 
-            <a
-                href="{{ route('login') }}"
-                class="dropdown-link"
-            >
-                <span>🔐</span>
-                <span>Masuk / Daftar</span>
-            </a>
-
-        @endif
-
-    </div>
-
-
-    {{-- ADMIN TOKO --}}
-
-    @if(session('user_role') === 'admin')
-
-        <div class="border-t border-white/10 py-2">
-
-            <div
-                class="px-4 py-1.5 text-xs
-                       font-semibold text-gray-500
-                       uppercase"
-            >
-                Administrator
-            </div>
-
+            {{-- Staf --}}
             <a
                 href="{{ route('admin.index') }}"
                 class="dropdown-link"
             >
                 <span>👥</span>
-                <span>Manajemen Admin</span>
+                <span>Staf</span>
             </a>
 
-            <a
-                href="{{ route('setting') }}"
-                class="dropdown-link"
+
+            {{-- PENGATURAN --}}
+            <button
+                type="button"
+                onclick="toggleManagementMenu('desktop-pengaturan')"
+                class="dropdown-link w-full text-left"
             >
                 <span>⚙️</span>
-                <span>Pengaturan</span>
-            </a>
+
+                <span class="flex-1">
+                    Pengaturan
+                </span>
+
+                <span
+                    id="desktop-pengaturan-arrow"
+                    class="menu-arrow text-xs
+                    {{ request()->routeIs('setting', 'receipt-settings.*', 'payment-settings.*', 'price-rules.*')
+                        ? 'rotate-180'
+                        : '' }}"
+                >
+                    ▼
+                </span>
+            </button>
+
+
+            {{-- SUBMENU PENGATURAN --}}
+            <div
+                id="desktop-pengaturan-menu"
+                class="management-submenu ml-4 border-l border-white/10 pl-2
+                {{ request()->routeIs('setting', 'receipt-settings.*', 'payment-settings.*', 'price-rules.*')
+                    ? ''
+                    : 'hidden' }}"
+            >
+
+                {{-- Pengaturan Toko --}}
+                <a
+                    href="{{ route('setting') }}"
+                    class="dropdown-link"
+                >
+                    <span>🏪</span>
+                    <span>Pengaturan Toko</span>
+                </a>
+
+
+                {{-- Tampilan Struk --}}
+                <a
+                    href="{{ route('receipt-settings.index') }}"
+                    class="dropdown-link"
+                >
+                    <span>🧾</span>
+                    <span>Tampilan Struk</span>
+                </a>
+
+
+                {{-- Pembayaran & Rekening --}}
+                <a
+                    href="{{ route('payment-settings.index') }}"
+                    class="dropdown-link"
+                >
+                    <span>💳</span>
+                    <span>Pembayaran &amp; Rekening</span>
+                </a>
+
+
+                {{-- Harga, Promosi & Diskon --}}
+                <a
+                    href="{{ route('price-rules.index') }}"
+                    class="dropdown-link"
+                >
+                    <span>🏷️</span>
+                    <span>Harga, Promosi &amp; Diskon</span>
+                </a>
+
+            </div>
 
         </div>
-
-    @endif
-
-@endif
-
-
-{{-- LOGOUT DESKTOP --}}
-
-@if(session('logged_in'))
-
-    <div class="border-t border-white/10 py-2">
-
-        <a
-            href="{{ route('logout') }}"
-            class="dropdown-link text-red-400
-                   hover:bg-red-500/10
-                   hover:text-red-300"
-        >
-            <span>🚪</span>
-            <span>Keluar</span>
-        </a>
 
     </div>
 
 @endif
+
+                        @endif
+
+
+                        {{-- =================================================
+                             LOGOUT
+                        ================================================== --}}
+
+                        @if(session('logged_in'))
+
+                            <div class="border-t border-white/10 py-2">
+
+                                <a
+                                    href="{{ route('logout') }}"
+                                    onclick="
+                                        localStorage.removeItem(
+                                            'smart_pos_cart'
+                                        )
+                                    "
+                                    class="dropdown-link text-red-400
+                                           hover:bg-red-500/10
+                                           hover:text-red-300"
+                                >
+                                    <span>🚪</span>
+                                    <span>Keluar</span>
+                                </a>
+
+                            </div>
+
+                        @endif
 
                     </div>
 
@@ -1130,19 +1547,15 @@ if ($layoutUser) {
             </div>
 
 
-
-            {{-- ================================================= --}}
-            {{-- MOBILE — RADIKAL --}}
-            {{-- ================================================= --}}
+            {{-- =================================================
+                 MOBILE NAVBAR
+            ================================================== --}}
 
             <div class="md:hidden flex items-center gap-1">
 
                 @if(session('logged_in'))
 
-
-                    {{-- ========================================= --}}
                     {{-- MOBILE STORE --}}
-                    {{-- ========================================= --}}
 
                     @if($activeStore)
 
@@ -1152,13 +1565,10 @@ if ($layoutUser) {
 
                                 <button
                                     type="button"
-                                    onclick="toggleMobileStoreDropdown(event)"
+                                    onclick="toggleDropdown('mobile-store')"
                                     class="flex items-center gap-1
                                            rounded-xl px-2 py-2
-                                           hover:bg-gray-700 transition
-                                           focus:outline-none
-                                           focus:ring-2
-                                           focus:ring-emerald-500"
+                                           hover:bg-gray-700 transition"
                                 >
 
                                     <div class="text-right">
@@ -1172,18 +1582,13 @@ if ($layoutUser) {
                                             🏪 {{ $activeStore->name }}
                                         </div>
 
-                                        <div
-                                            class="text-[10px]
-                                                   text-gray-500"
-                                        >
+                                        <div class="text-[10px] text-gray-500">
                                             Toko aktif
                                         </div>
 
                                     </div>
 
-                                    <span
-                                        class="text-xs text-gray-400"
-                                    >
+                                    <span class="text-xs text-gray-400">
                                         ▾
                                     </span>
 
@@ -1199,124 +1604,115 @@ if ($layoutUser) {
                                            bg-gray-800
                                            border border-white/10
                                            shadow-2xl
-                                           overflow-hidden z-[60]"
+                                           overflow-hidden z-[150]"
                                 >
 
                                     <div
                                         class="px-4 py-3
                                                border-b border-white/10"
                                     >
-
                                         <div
-                                            class="text-xs
-                                                   text-gray-500
-                                                   uppercase
-                                                   font-semibold"
+                                            class="text-xs text-gray-500
+                                                   uppercase font-semibold"
                                         >
                                             Pilih Toko
                                         </div>
-
                                     </div>
 
+                                    @php
+                                        $storeLimit =
+                                            $activeStore?->getLimit('max_stores');
+                                    @endphp
 
-@php
-    $storeLimit = $activeStore?->getLimit('max_stores');
-@endphp
+                                    @foreach($layoutStores as $index => $store)
 
-@foreach($layoutStores as $index => $store)
+                                        @php
+                                            $storeLocked =
+                                                $storeLimit !== null &&
+                                                $index >= $storeLimit;
+                                        @endphp
 
-    @php
-        $storeLocked =
-            $storeLimit !== null &&
-            $index >= $storeLimit;
-    @endphp
+                                        @if($storeLocked)
 
-    @if($storeLocked)
+                                            <div
+                                                class="dropdown-link
+                                                       cursor-not-allowed
+                                                       opacity-60"
+                                            >
+                                                <span>🏪</span>
 
-        {{-- TOKO TERKUNCI --}}
-        <div
-            class="dropdown-link
-                   cursor-not-allowed
-                   opacity-60"
-        >
+                                                <span
+                                                    class="flex-1
+                                                           text-left
+                                                           truncate"
+                                                >
+                                                    {{ $store->name }}
+                                                </span>
 
-            <span>🏪</span>
+                                                <span
+                                                    class="text-xs
+                                                           text-amber-400"
+                                                >
+                                                    🔒
+                                                </span>
+                                            </div>
 
-            <span
-                class="flex-1
-                       text-left
-                       truncate"
-            >
-                {{ $store->name }}
-            </span>
+                                        @else
 
-            <span
-                class="text-xs
-                       text-amber-400
-                       font-semibold"
-            >
-                🔒
-            </span>
+                                            <form
+                                                action="{{ route(
+                                                    'store.switch',
+                                                    $store->id
+                                                ) }}"
+                                                method="POST"
+                                            >
 
-        </div>
+                                                @csrf
 
-    @else
+                                                <button
+                                                    type="submit"
+                                                    class="dropdown-link"
+                                                >
 
-        {{-- TOKO BISA DIAKSES --}}
-        <form
-            action="{{ route('store.switch', $store->id) }}"
-            method="POST"
-        >
+                                                    <span>🏪</span>
 
-            @csrf
+                                                    <span
+                                                        class="flex-1
+                                                               text-left
+                                                               truncate"
+                                                    >
+                                                        {{ $store->name }}
+                                                    </span>
 
-            <button
-                type="submit"
-                class="dropdown-link"
-            >
+                                                    @if($store->id == $activeStoreId)
 
-                <span>🏪</span>
+                                                        <span
+                                                            class="text-emerald-400
+                                                                   font-bold"
+                                                        >
+                                                            ✓
+                                                        </span>
 
-                <span
-                    class="flex-1
-                           text-left
-                           truncate"
-                >
-                    {{ $store->name }}
-                </span>
+                                                    @endif
 
-                @if($store->id == $activeStoreId)
+                                                </button>
 
-                    <span
-                        class="text-emerald-400
-                               font-bold"
-                    >
-                        ✓
-                    </span>
+                                            </form>
 
-                @endif
+                                        @endif
 
-            </button>
-
-        </form>
-
-    @endif
-
-@endforeach
-
+                                    @endforeach
 
                                     <a
                                         href="{{ route('store.create') }}"
                                         class="dropdown-link
                                                border-t border-white/10"
                                     >
-
                                         <span>➕</span>
 
                                         <span class="flex-1 text-left">
                                             Tambah Toko/Cabang
                                         </span>
-
                                     </a>
 
                                 </div>
@@ -1324,8 +1720,6 @@ if ($layoutUser) {
                             </div>
 
                         @else
-
-                            {{-- MOBILE KASIR --}}
 
                             <div class="px-2">
 
@@ -1338,10 +1732,7 @@ if ($layoutUser) {
                                     🏪 {{ $activeStore->name }}
                                 </div>
 
-                                <div
-                                    class="text-[10px]
-                                           text-gray-500"
-                                >
+                                <div class="text-[10px] text-gray-500">
                                     Toko aktif
                                 </div>
 
@@ -1352,22 +1743,14 @@ if ($layoutUser) {
                     @endif
 
 
-
-                    {{-- ========================================= --}}
-                    {{-- MOBILE PROFILE BUTTON --}}
-                    {{-- ========================================= --}}
+                    {{-- MOBILE PROFILE --}}
 
                     <button
                         type="button"
-                        onclick="toggleMobileMenu()"
+                        onclick="toggleDropdown('mobile')"
                         class="flex items-center justify-center
-                               w-10 h-10
-                               rounded-xl
-                               hover:bg-gray-700
-                               transition
-                               focus:outline-none
-                               focus:ring-2
-                               focus:ring-indigo-500"
+                               w-10 h-10 rounded-xl
+                               hover:bg-gray-700 transition"
                         aria-label="Menu profil"
                     >
 
@@ -1381,22 +1764,14 @@ if ($layoutUser) {
 
                     </button>
 
-
                 @else
 
-                    {{-- ========================================= --}}
-                    {{-- MOBILE GUEST --}}
-                    {{-- ========================================= --}}
-
                     <button
-                        onclick="toggleMobileMenu()"
+                        onclick="toggleDropdown('mobile')"
                         type="button"
                         class="flex items-center justify-center
                                w-11 h-11 rounded-xl
-                               hover:bg-gray-700 transition
-                               focus:outline-none
-                               focus:ring-2
-                               focus:ring-indigo-500"
+                               hover:bg-gray-700 transition"
                         aria-label="Menu"
                     >
 
@@ -1427,32 +1802,28 @@ if ($layoutUser) {
     </div>
 
 
-
-    {{-- ========================================================= --}}
-    {{-- MOBILE PROFILE MENU --}}
-    {{-- ========================================================= --}}
+    {{-- =========================================================
+         MOBILE MENU
+    ========================================================== --}}
 
     <div
         id="mobile-menu"
         class="hidden absolute
-               top-16 right-3 w-64 z-[120]"
+               top-16 right-3 w-72 z-[120]"
     >
 
         <div
-    class="bg-gray-800
-           border border-white/10
-           rounded-2xl
-           shadow-2xl
-           overflow-y-auto
-           max-h-[75vh]"
-    >
-
-
-            {{-- ============================================= --}}
-            {{-- PROFILE --}}
-            {{-- ============================================= --}}
+            class="bg-gray-800
+                   border border-white/10
+                   rounded-2xl
+                   shadow-2xl
+                   overflow-y-auto
+                   max-h-[78vh]"
+        >
 
             @if(session('logged_in'))
+
+                {{-- PROFILE --}}
 
                 <div class="p-4">
 
@@ -1472,9 +1843,7 @@ if ($layoutUser) {
                                 {{ session('username') }}
                             </div>
 
-                            <div
-                                class="text-xs text-gray-400 uppercase"
-                            >
+                            <div class="text-xs text-gray-400 uppercase">
                                 {{ session('user_role') }}
                             </div>
 
@@ -1484,471 +1853,602 @@ if ($layoutUser) {
 
                 </div>
 
+
+                {{-- PLAN --}}
+
+                <div class="px-4 pb-4">
+
+                    <x-plan-info :active-store="$activeStore" />
+
+                </div>
+
             @endif
 
-            {{-- ============================================= --}}
-          {{-- INFORMASI PAKET MOBILE --}}
-          {{-- ============================================= --}}
 
-          @if(session('logged_in'))
+            {{-- =================================================
+                 PLATFORM ADMIN MOBILE
+            ================================================== --}}
 
-              <div class="px-4 pb-4">
-                   <x-plan-info :active-store="$activeStore" />
-              </div>
+            @if(session('is_platform_admin'))
 
-          @endif
+                <div class="border-t border-white/10 py-2">
 
-{{-- ============================================= --}}
-{{-- NAVIGASI MOBILE --}}
-{{-- ============================================= --}}
-
-@if(session('is_platform_admin'))
-
-    {{-- ========================================= --}}
-    {{-- SUPER ADMIN MOBILE --}}
-    {{-- ========================================= --}}
-
-    <div class="border-t border-white/10 py-2">
-
-        <div
-            class="px-4 py-1.5 text-xs
-                   font-semibold text-gray-500
-                   uppercase"
-        >
-            Platform
-        </div>
-
-
-        <a
-            href="{{ route('admin-kasirku.dashboard') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('admin-kasirku.dashboard')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span>🏠</span>
-            <span>Dashboard</span>
-        </a>
-
-
-        <a
-            href="{{ route('admin-kasirku.users.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('admin-kasirku.users.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span>👥</span>
-            <span>Pengguna</span>
-        </a>
-
-
-        <a
-            href="{{ route('admin-kasirku.stores.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('admin-kasirku.stores.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span>🏪</span>
-            <span>Toko</span>
-        </a>
-
-
-        <a
-            href="{{ route('admin-kasirku.subscriptions.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('admin-kasirku.subscriptions.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span>💳</span>
-            <span>Langganan</span>
-        </a>
-
-
-        <a
-            href="{{ route('admin-kasirku.plans.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('admin-kasirku.plans.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span>📦</span>
-            <span>Paket</span>
-        </a>
-
-        {{-- SEMUA AKTIVITAS --}}
-          <a
-              href="{{ route('admin-kasirku.audit-log.index') }}"
-              class="mobile-bottom-item
-                     {{ request()->routeIs('admin-kasirku.audit-log.*')
-                          ? 'mobile-bottom-active'
-                          : '' }}"
-          >
-              <span class="text-xl leading-none">
-                  📋
-              </span>
-
-              <span>
-                  Aktivitas
-              </span>
-          </a>
-
-    </div>
-
-
-    {{-- ========================================= --}}
-    {{-- OPERASIONAL --}}
-    {{-- ========================================= --}}
-
-    <div class="border-t border-white/10 py-2">
-
-        <div
-            class="px-4 py-1.5 text-xs
-                   font-semibold text-gray-500
-                   uppercase"
-        >
-            Operasional
-        </div>
-
-
-        <a
-            href="{{ route('admin-kasirku.support.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('admin-kasirku.support.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-
-            <span class="relative">
-                💬
-
-                @if($supportWaitingCount > 0)
-                    <span
-                        class="absolute -top-1 -right-2
-                               min-w-[16px] h-4
-                               px-1
-                               rounded-full
-                               bg-amber-500
-                               text-[9px]
-                               font-bold
-                               text-gray-900
-                               flex items-center justify-center"
+                    <div
+                        class="px-4 py-1.5 text-xs
+                               font-semibold text-gray-500
+                               uppercase"
                     >
-                        {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
-                    </span>
-                @endif
-            </span>
+                        Platform
+                    </div>
 
-            <span class="flex-1">
-                Bantuan
-            </span>
-
-            @if($supportWaitingCount > 0)
-                <span class="text-xs text-amber-400">
-                    {{ $supportWaitingCount }}
-                </span>
-            @endif
-
-        </a>
-
-    </div>
-
-
-    {{-- ========================================= --}}
-    {{-- SISTEM --}}
-    {{-- ========================================= --}}
-
-    <div class="border-t border-white/10 py-2">
-
-        <div
-            class="px-4 py-1.5 text-xs
-                   font-semibold text-gray-500
-                   uppercase"
-        >
-            Sistem
-        </div>
-
-
-        <a
-            href="{{ route('admin-kasirku.settings') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('admin-kasirku.settings')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span>⚙️</span>
-            <span>Pengaturan</span>
-        </a>
-
-    </div>
-
-
-@else
-
-    {{-- ========================================= --}}
-    {{-- OWNER / KASIR MOBILE --}}
-    {{-- ========================================= --}}
-
-    <div class="border-t border-white/10 py-2">
-
-        <div
-            class="px-4 py-1.5 text-xs
-                   font-semibold text-gray-500
-                   uppercase"
-        >
-            Navigasi
-        </div>
-
-
-        <a
-            href="{{ route('kasir.index') }}"
-            class="dropdown-link"
-        >
-            <span>🛒</span>
-            <span>Kasir / keranjang</span>
-        </a>
-
-
-        <a
-            href="{{ route('produk.index') }}"
-            class="dropdown-link"
-        >
-            <span>📦</span>
-            <span>Produk / restock produk</span>
-        </a>
-
-        <a
-            href="{{ route('transfer.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('transfer.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span>🔄</span>
-            <span>Transfer Antar Toko</span>
-        </a>
-
-        <a
-            href="{{ route('pelanggan.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('pelanggan.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-            <span>👥</span>
-            <span>Pelanggan & Piutang</span>
-        </a>
-
-
-        <a
-            href="{{ route('supplier.index') }}"
-            class="dropdown-link"
-        >
-            <span>🚚</span>
-            <span>Supplier / pembelian produk</span>
-        </a>
-
-
-        <a
-            href="{{ route('pengeluaran') }}"
-            class="dropdown-link"
-        >
-            <span>💸</span>
-            <span>Pengeluaran</span>
-        </a>
-        
-{{-- ABSENSI --}}
-<div id="mobile-attendance-group" class="dropdown-group">
-
-    <button
-        type="button"
-        onclick="toggleAttendanceMenu('mobile')"
-        class="dropdown-link w-full text-left"
-    >
-        <span>🕘</span>
-
-        <span class="flex-1">
-            Absensi
-        </span>
-
-        <span
-            id="mobile-attendance-arrow"
-            class="text-xs transition-transform duration-200
-            {{ request()->routeIs('attendance.*') ? 'rotate-180' : '' }}"
-        >
-            ▼
-        </span>
-    </button>
-
-    <div
-        id="mobile-attendance-menu"
-        class="{{ request()->routeIs('attendance.*') ? '' : 'hidden' }}
-               ml-8 mt-1 space-y-1"
-    >
-
-        <a
-            href="{{ route('attendance.index') }}"
-            class="dropdown-link text-sm"
-        >
-            <span>📍</span>
-            <span>Check-in</span>
-        </a>
-
-        <a
-            href="{{ route('attendance.history') }}"
-            class="dropdown-link text-sm"
-        >
-            <span>📋</span>
-            <span>Riwayat Absen</span>
-        </a>
-
-        <a
-            href="{{ route('attendance.summary') }}"
-            class="dropdown-link text-sm"
-        >
-            <span>📊</span>
-            <span>Rekap Absen</span>
-        </a>
-
-    </div>
-
-</div>
-
-        {{-- PUSAT BANTUAN --}}
-
-        <a
-            href="{{ route('support.index') }}"
-            class="dropdown-link
-                   {{ request()->routeIs('support.*')
-                        ? 'bg-gray-700 text-white'
-                        : '' }}"
-        >
-
-            <span class="relative">
-                💬
-
-                @if($supportWaitingCount > 0)
-                    <span
-                        class="absolute -top-1 -right-2
-                               min-w-[16px] h-4
-                               px-1
-                               rounded-full
-                               bg-amber-500
-                               text-[9px]
-                               font-bold
-                               text-gray-900
-                               flex items-center justify-center"
+                    <a
+                        href="{{ route('admin-kasirku.dashboard') }}"
+                        class="dropdown-link"
                     >
-                        {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
-                    </span>
+                        <span>🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <a
+                        href="{{ route('admin-kasirku.users.index') }}"
+                        class="dropdown-link"
+                    >
+                        <span>👥</span>
+                        <span>Pengguna</span>
+                    </a>
+
+                    <a
+                        href="{{ route('admin-kasirku.stores.index') }}"
+                        class="dropdown-link"
+                    >
+                        <span>🏪</span>
+                        <span>Toko</span>
+                    </a>
+
+                    <a
+                        href="{{ route(
+                            'admin-kasirku.subscriptions.index'
+                        ) }}"
+                        class="dropdown-link"
+                    >
+                        <span>💳</span>
+                        <span>Langganan</span>
+                    </a>
+
+                    <a
+                        href="{{ route('admin-kasirku.plans.index') }}"
+                        class="dropdown-link"
+                    >
+                        <span>📦</span>
+                        <span>Paket</span>
+                    </a>
+
+                    <a
+                        href="{{ route(
+                            'admin-kasirku.audit-log.index'
+                        ) }}"
+                        class="dropdown-link"
+                    >
+                        <span>📋</span>
+                        <span>Semua Aktivitas</span>
+                    </a>
+
+                </div>
+
+
+                {{-- OPERASIONAL --}}
+
+                <div class="border-t border-white/10 py-2">
+
+                    <div
+                        class="px-4 py-1.5 text-xs
+                               font-semibold text-gray-500
+                               uppercase"
+                    >
+                        Operasional
+                    </div>
+
+                    <a
+                        href="{{ route(
+                            'admin-kasirku.support.index'
+                        ) }}"
+                        class="dropdown-link"
+                    >
+
+                        <span class="relative">
+                            💬
+
+                            @if($supportWaitingCount > 0)
+
+                                <span
+                                    class="absolute -top-1 -right-2
+                                           min-w-[16px] h-4
+                                           px-1 rounded-full
+                                           bg-amber-500
+                                           text-[9px]
+                                           font-bold
+                                           text-gray-900
+                                           flex items-center justify-center"
+                                >
+                                    {{ $supportWaitingCount > 9
+                                        ? '9+'
+                                        : $supportWaitingCount }}
+                                </span>
+
+                            @endif
+
+                        </span>
+
+                        <span class="flex-1">
+                            Bantuan
+                        </span>
+
+                        @if($supportWaitingCount > 0)
+
+                            <span class="text-xs text-amber-400">
+                                {{ $supportWaitingCount }}
+                            </span>
+
+                        @endif
+
+                    </a>
+
+                </div>
+
+
+                {{-- SISTEM --}}
+
+                <div class="border-t border-white/10 py-2">
+
+                    <div
+                        class="px-4 py-1.5 text-xs
+                               font-semibold text-gray-500
+                               uppercase"
+                    >
+                        Sistem
+                    </div>
+
+                    <a
+                        href="{{ route('admin-kasirku.settings') }}"
+                        class="dropdown-link"
+                    >
+                        <span>⚙️</span>
+                        <span>Pengaturan</span>
+                    </a>
+
+                </div>
+
+
+            @else
+
+                {{-- =================================================
+                     MOBILE TOKO
+                ================================================== --}}
+
+                <div class="border-t border-white/10 py-2">
+
+                    <div
+                        class="px-4 py-1.5 text-xs
+                               font-semibold text-gray-500
+                               uppercase"
+                    >
+                        Navigasi
+                    </div>
+
+
+                    {{-- DASHBOARD --}}
+
+                    <a
+                        href="{{ route('dashboard') }}"
+                        class="dropdown-link
+                               {{ request()->routeIs('dashboard')
+                                    ? 'bg-gray-700 text-white'
+                                    : '' }}"
+                    >
+                        <span>🏠</span>
+                        <span>Dashboard</span>
+                    </a>
+
+
+                    {{-- =================================================
+                         MANAJEMEN PRODUK
+                    ================================================== --}}
+
+                    <button
+                        type="button"
+                        onclick="toggleManagementMenu('mobile-product')"
+                        class="dropdown-link w-full text-left"
+                    >
+
+                        <span>📦</span>
+
+                        <span class="flex-1">
+                            Manajemen Produk
+                        </span>
+
+                        <span
+                            id="mobile-product-arrow"
+                            class="menu-arrow text-xs
+                                {{ request()->routeIs(
+                                    'kasir.*',
+                                    'produk.*',
+                                    'supplier.*',
+                                    'transfer.*'
+                                )
+                                    ? 'rotate-180'
+                                    : '' }}"
+                        >
+                            ▼
+                        </span>
+
+                    </button>
+
+
+                    <div
+                        id="mobile-product-menu"
+                        class="management-submenu
+                            {{ request()->routeIs(
+                                'kasir.*',
+                                'produk.*',
+                                'supplier.*',
+                                'transfer.*'
+                            )
+                                ? ''
+                                : 'hidden' }}"
+                    >
+
+                        <a
+                            href="{{ route('kasir.index') }}"
+                            class="dropdown-link"
+                        >
+                            <span>🛒</span>
+                            <span>Kasir</span>
+                        </a>
+
+                        <a
+                            href="{{ route('produk.index') }}"
+                            class="dropdown-link"
+                        >
+                            <span>📦</span>
+                            <span>Restok Produk</span>
+                        </a>
+
+                        <a
+                            href="{{ route('supplier.index') }}"
+                            class="dropdown-link"
+                        >
+                            <span>🚚</span>
+                            <span>Supplier</span>
+                        </a>
+
+                        <a
+                            href="{{ route('transfer.index') }}"
+                            class="dropdown-link"
+                        >
+                            <span>🔄</span>
+                            <span>Transfer Antar Toko</span>
+                        </a>
+
+                    </div>
+
+
+                    {{-- =================================================
+                         MANAJEMEN LAPORAN
+                    ================================================== --}}
+
+                    <button
+                        type="button"
+                        onclick="toggleManagementMenu('mobile-report')"
+                        class="dropdown-link w-full text-left"
+                    >
+
+                        <span>📊</span>
+
+                        <span class="flex-1">
+                            Manajemen Laporan
+                        </span>
+
+                        <span
+                            id="mobile-report-arrow"
+                            class="menu-arrow text-xs
+                                {{ request()->routeIs(
+                                    'pengeluaran',
+                                    'laporan',
+                                    'pelanggan.*'
+                                )
+                                    ? 'rotate-180'
+                                    : '' }}"
+                        >
+                            ▼
+                        </span>
+
+                    </button>
+
+
+                    <div
+                        id="mobile-report-menu"
+                        class="management-submenu
+                            {{ request()->routeIs(
+                                'pengeluaran',
+                                'laporan',
+                                'pelanggan.*'
+                            )
+                                ? ''
+                                : 'hidden' }}"
+                    >
+
+                        <a
+                            href="{{ route('pengeluaran') }}"
+                            class="dropdown-link"
+                        >
+                            <span>💸</span>
+                            <span>Pengeluaran</span>
+                        </a>
+
+                        <a
+                            href="{{ route('laporan') }}"
+                            class="dropdown-link"
+                        >
+                            <span>📈</span>
+                            <span>Laporan Dasar</span>
+                        </a>
+
+                        <a
+                            href="{{ route('pelanggan.index') }}"
+                            class="dropdown-link"
+                        >
+                            <span>👥</span>
+                            <span>Pelanggan</span>
+                        </a>
+
+                        <a
+                            href="{{ route('pelanggan.index') }}"
+                            class="dropdown-link"
+                        >
+                            <span>💳</span>
+                            <span>Casbon</span>
+                        </a>
+
+                    </div>
+
+
+                    {{-- RIWAYAT --}}
+
+                    <a
+                        href="{{ route('riwayat') }}"
+                        class="dropdown-link
+                               {{ request()->routeIs('riwayat')
+                                    ? 'bg-gray-700 text-white'
+                                    : '' }}"
+                    >
+                        <span>🧾</span>
+                        <span>Riwayat Transaksi</span>
+                    </a>
+
+
+                    {{-- =================================================
+                         MANAJEMEN ABSEN
+                    ================================================== --}}
+
+                    <button
+                        type="button"
+                        onclick="toggleManagementMenu('mobile-attendance')"
+                        class="dropdown-link w-full text-left"
+                    >
+
+                        <span>🕘</span>
+
+                        <span class="flex-1">
+                            Manajemen Absen
+                        </span>
+
+                        <span
+                            id="mobile-attendance-arrow"
+                            class="menu-arrow text-xs
+                                {{ request()->routeIs('attendance.*')
+                                    ? 'rotate-180'
+                                    : '' }}"
+                        >
+                            ▼
+                        </span>
+
+                    </button>
+
+
+                    <div
+                        id="mobile-attendance-menu"
+                        class="management-submenu
+                            {{ request()->routeIs('attendance.*')
+                                ? ''
+                                : 'hidden' }}"
+                    >
+
+                        <a
+                            href="{{ route('attendance.index') }}"
+                            class="dropdown-link"
+                        >
+                            <span>📍</span>
+                            <span>Check-in / Check-out</span>
+                        </a>
+
+                        <a
+                            href="{{ route('attendance.history') }}"
+                            class="dropdown-link"
+                        >
+                            <span>📋</span>
+                            <span>Riwayat Absen</span>
+                        </a>
+
+                        <a
+                            href="{{ route('attendance.summary') }}"
+                            class="dropdown-link"
+                        >
+                            <span>📊</span>
+                            <span>Rekap Absen</span>
+                        </a>
+
+                    </div>
+
+
+                    {{-- BANTUAN --}}
+
+                    <a
+                        href="{{ route('support.index') }}"
+                        class="dropdown-link"
+                    >
+
+                        <span class="relative">
+                            💬
+
+                            @if($supportWaitingCount > 0)
+
+                                <span
+                                    class="absolute -top-1 -right-2
+                                           min-w-[16px] h-4
+                                           px-1 rounded-full
+                                           bg-amber-500
+                                           text-[9px]
+                                           font-bold
+                                           text-gray-900
+                                           flex items-center justify-center"
+                                >
+                                    {{ $supportWaitingCount > 9
+                                        ? '9+'
+                                        : $supportWaitingCount }}
+                                </span>
+
+                            @endif
+
+                        </span>
+
+                        <span class="flex-1">
+                            Pusat Bantuan
+                        </span>
+
+                    </a>
+
+
+                    {{-- PROFIL --}}
+
+                    <a
+                        href="{{ route('profil') }}"
+                        class="dropdown-link"
+                    >
+                        <span>👤</span>
+                        <span>Profil Saya</span>
+                    </a>
+
+                </div>
+
+
+                {{-- =================================================
+                     MANAJEMEN ADMIN
+                ================================================== --}}
+
+                @if(session('user_role') === 'admin')
+
+                    <div class="border-t border-white/10 py-2">
+
+                        <button
+                            type="button"
+                            onclick="toggleManagementMenu('mobile-admin')"
+                            class="dropdown-link w-full text-left"
+                        >
+
+                            <span>🛡️</span>
+
+                            <span class="flex-1">
+                                Manajemen Admin
+                            </span>
+
+                            <span
+                                id="mobile-admin-arrow"
+                                class="menu-arrow text-xs
+                                    {{ request()->routeIs(
+                                        'admin.*',
+                                        'setting'
+                                    )
+                                        ? 'rotate-180'
+                                        : '' }}"
+                            >
+                                ▼
+                            </span>
+
+                        </button>
+
+
+                        <div
+                            id="mobile-admin-menu"
+                            class="management-submenu
+                                {{ request()->routeIs(
+                                    'admin.*',
+                                    'setting'
+                                )
+                                    ? ''
+                                    : 'hidden' }}"
+                        >
+
+                            <a
+                                href="{{ route('admin.index') }}"
+                                class="dropdown-link"
+                            >
+                                <span>👥</span>
+                                <span>Administrasi</span>
+                            </a>
+
+                            <a
+                                href="{{ route('admin.index') }}"
+                                class="dropdown-link"
+                            >
+                                <span>🧑‍💼</span>
+                                <span>Staf</span>
+                            </a>
+
+                            <a
+                                href="{{ route('setting') }}"
+                                class="dropdown-link"
+                            >
+                                <span>⚙️</span>
+                                <span>Pengaturan</span>
+                            </a>
+
+                        </div>
+
+                    </div>
+
                 @endif
-            </span>
 
-            <span class="flex-1">
-                Pusat Bantuan
-            </span>
-
-            @if($supportWaitingCount > 0)
-                <span class="text-xs text-amber-400">
-                    {{ $supportWaitingCount }}
-                </span>
             @endif
 
-        </a>
 
+            {{-- =================================================
+                 LOGOUT
+            ================================================== --}}
 
-        @if(session('logged_in'))
+            @if(session('logged_in'))
 
-            <a
-                href="{{ route('profil') }}"
-                class="dropdown-link"
-            >
-                <span>👤</span>
-                <span>Profil Saya</span>
-            </a>
+                <div class="border-t border-white/10 py-2">
 
-        @else
+                    <a
+                        href="{{ route('logout') }}"
+                        onclick="
+                            localStorage.removeItem(
+                                'smart_pos_cart'
+                            )
+                        "
+                        class="dropdown-link text-red-400
+                               hover:bg-red-500/10
+                               hover:text-red-300"
+                    >
 
-            <a
-                href="{{ route('login') }}"
-                class="dropdown-link"
-            >
-                <span>🔐</span>
-                <span>Masuk / Daftar</span>
-            </a>
+                        <span>🚪</span>
+                        <span>Keluar</span>
 
-        @endif
+                    </a>
 
-    </div>
+                </div>
 
-
-    {{-- ========================================= --}}
-    {{-- ADMIN TOKO MOBILE --}}
-    {{-- ========================================= --}}
-
-    @if(session('user_role') === 'admin')
-
-        <div class="border-t border-white/10 py-2">
-
-            <div
-                class="px-4 py-1.5 text-xs
-                       font-semibold text-gray-500
-                       uppercase"
-            >
-                Administrator
-            </div>
-
-
-            <a
-                href="{{ route('admin.index') }}"
-                class="dropdown-link"
-            >
-                <span>👥</span>
-                <span>Manajemen Admin</span>
-            </a>
-
-
-            <a
-                href="{{ route('setting') }}"
-                class="dropdown-link"
-            >
-                <span>⚙️</span>
-                <span>Pengaturan</span>
-            </a>
-
-        </div>
-
-    @endif
-
-@endif
-
-
-{{-- ============================================= --}}
-{{-- LOGOUT --}}
-{{-- ============================================= --}}
-
-@if(session('logged_in'))
-
-    <div class="border-t border-white/10 py-2">
-
-        <a
-            href="{{ route('logout') }}"
-            onclick="localStorage.removeItem('smart_pos_cart')"
-            class="dropdown-link text-red-400
-                   hover:bg-red-500/10
-                   hover:text-red-300"
-        >
-
-            <span>🚪</span>
-            <span>Keluar</span>
-
-        </a>
-
-    </div>
-
-@endif
+            @endif
 
         </div>
 
@@ -1957,10 +2457,9 @@ if ($layoutUser) {
 </nav>
 
 
-
-{{-- ========================================================= --}}
-{{-- HEADER HALAMAN --}}
-{{-- ========================================================= --}}
+{{-- =========================================================
+     HEADER HALAMAN
+========================================================= --}}
 
 <header
     class="relative bg-gray-800/50
@@ -1970,26 +2469,19 @@ if ($layoutUser) {
     <div
         class="mx-auto max-w-7xl
                px-4 py-3
-               sm:px-6
-               lg:px-8"
+               sm:px-6 lg:px-8"
     >
 
         <div class="flex items-center gap-4">
 
-            {{-- JUDUL --}}
             <h1
-                class="text-2xl
-                       sm:text-3xl
-                       font-bold
-                       tracking-tight
-                       text-white
-                       shrink-0"
+                class="text-2xl sm:text-3xl
+                       font-bold tracking-tight
+                       text-white shrink-0"
             >
                 @yield('header', 'Dashboard')
             </h1>
 
-
-            {{-- FITUR HALAMAN --}}
             <div class="flex-1 min-w-0">
 
                 @yield('header_tools')
@@ -2003,30 +2495,26 @@ if ($layoutUser) {
 </header>
 
 
-
-{{-- ========================================================= --}}
-{{-- MAIN CONTENT --}}
-{{-- ========================================================= --}}
+{{-- =========================================================
+     MAIN CONTENT
+========================================================= --}}
 
 <main class="flex-grow">
 
     <div
         class="mx-auto max-w-7xl
                px-4 py-6
-               sm:px-6
-               lg:px-8"
+               sm:px-6 lg:px-8"
     >
 
         @if(session('error'))
 
             <div
-                class="mb-5
-                       rounded-xl
+                class="mb-5 rounded-xl
                        border border-red-500/20
                        bg-red-500/10
                        px-4 py-3
-                       text-sm
-                       text-red-300"
+                       text-sm text-red-300"
             >
                 {{ session('error') }}
             </div>
@@ -2040,36 +2528,36 @@ if ($layoutUser) {
 </main>
 
 
+{{-- =========================================================
+     FOOTER
+========================================================= --}}
 
-{{-- ========================================================= --}}
-{{-- FOOTER --}}
-{{-- ========================================================= --}}
+<footer class="mt-5 text-center pb-20 md:pb-5">
 
-                    <footer class="mt-5 text-center">
+    <div class="flex items-center justify-center gap-1.5">
 
-                        <div class="flex items-center justify-center gap-1.5">
+        <span class="text-[9px] text-gray-600">
+            © {{ date('Y') }}
+        </span>
 
-                            <span class="text-[9px] text-gray-600">
-                                © {{ date('Y') }}
-                            </span>
+        <img
+            src="{{ asset('images/Icon-navbar.png') }}"
+            alt="Kasir½M"
+            class="h-5 w-auto object-contain"
+        >
 
-                            <img
-                                src="{{ asset('images/Icon-navbar.png') }}"
-                                alt="Kasir½M"
-                                class="h-5 w-auto object-contain"
-                            >
+    </div>
 
-                        </div>
+    <p class="text-[9px] text-gray-700 mt-1">
+        Solusi kasir untuk usaha Anda.
+    </p>
 
-                        <p class="text-[9px] text-gray-700 mt-1">
-                            Solusi kasir untuk usaha Anda.
-                        </p>
+</footer>
 
-                    </footer>
 
-{{-- ========================================================= --}}
-{{-- GLOBAL QR SCANNER --}}
-{{-- ========================================================= --}}
+{{-- =========================================================
+     GLOBAL QR SCANNER
+========================================================= --}}
 
 @if(
     session('logged_in') &&
@@ -2089,11 +2577,8 @@ if ($layoutUser) {
                    rounded-2xl
                    bg-gray-800
                    border border-white/10
-                   shadow-2xl
-                   overflow-hidden"
+                   shadow-2xl overflow-hidden"
         >
-
-            {{-- HEADER --}}
 
             <div
                 class="flex items-center justify-between
@@ -2113,7 +2598,6 @@ if ($layoutUser) {
 
                 </div>
 
-
                 <button
                     type="button"
                     onclick="closeGlobalQrScanner()"
@@ -2130,21 +2614,17 @@ if ($layoutUser) {
             </div>
 
 
-            {{-- CAMERA --}}
-
             <div class="p-4">
 
                 <div
                     id="global-qr-reader"
-                    class="w-full overflow-hidden rounded-xl bg-black"
+                    class="w-full overflow-hidden
+                           rounded-xl bg-black"
                 ></div>
-
 
                 <div
                     id="global-qr-scan-status"
-                    class="mt-3
-                           text-sm text-gray-400
-                           text-center"
+                    class="mt-3 text-sm text-gray-400 text-center"
                 >
                     Menyiapkan kamera...
                 </div>
@@ -2152,22 +2632,17 @@ if ($layoutUser) {
             </div>
 
 
-            {{-- FOOTER --}}
-
             <div class="px-4 pb-4">
 
                 <button
                     type="button"
                     onclick="closeGlobalQrScanner()"
-                    class="w-full
-                           rounded-xl
+                    class="w-full rounded-xl
                            bg-gray-700
                            hover:bg-gray-600
                            py-2.5
-                           text-sm
-                           font-semibold
-                           text-white
-                           transition"
+                           text-sm font-semibold
+                           text-white transition"
                 >
                     Tutup
                 </button>
@@ -2184,33 +2659,344 @@ if ($layoutUser) {
 @endif
 
 
+{{-- =========================================================
+     MOBILE BOTTOM NAVIGATION
+========================================================= --}}
 
-{{-- ========================================================= --}}
-{{-- JAVASCRIPT --}}
-{{-- ========================================================= --}}
+@if(session('logged_in'))
+
+    @php
+        $mobileAction =
+            trim($__env->yieldContent('mobile_action', 'scan'));
+    @endphp
+
+    <nav
+        class="md:hidden fixed bottom-0 left-0 right-0
+               z-[70]
+               bg-gray-900/95
+               backdrop-blur-xl
+               border-t border-white/10
+               shadow-2xl"
+    >
+
+        <div
+            class="mx-auto max-w-md
+                   h-[68px]
+                   px-2
+                   flex items-center justify-around"
+        >
+
+            {{-- =================================================
+                 PLATFORM ADMIN
+            ================================================== --}}
+
+            @if(request()->routeIs('admin-kasirku.*'))
+
+                <a
+                    href="{{ route('admin-kasirku.dashboard') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs(
+                                'admin-kasirku.dashboard'
+                           )
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+                    <span class="text-xl leading-none">
+                        🏠
+                    </span>
+
+                    <span>Dashboard</span>
+                </a>
+
+
+                <a
+                    href="{{ route('admin-kasirku.users.index') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs(
+                                'admin-kasirku.users.*'
+                           )
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+                    <span class="text-xl leading-none">
+                        👤
+                    </span>
+
+                    <span>Pengguna</span>
+                </a>
+
+
+                <a
+                    href="{{ route('admin-kasirku.stores.index') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs(
+                                'admin-kasirku.stores.*'
+                           )
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+                    <span class="text-xl leading-none">
+                        🏪
+                    </span>
+
+                    <span>Toko</span>
+                </a>
+
+
+                <a
+                    href="{{ route(
+                        'admin-kasirku.subscriptions.index'
+                    ) }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs(
+                                'admin-kasirku.subscriptions.*'
+                           )
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+                    <span class="text-xl leading-none">
+                        💳
+                    </span>
+
+                    <span>Langganan</span>
+                </a>
+
+
+                <a
+                    href="{{ route(
+                        'admin-kasirku.plans.index'
+                    ) }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs(
+                                'admin-kasirku.plans.*'
+                           )
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+                    <span class="text-xl leading-none">
+                        📦
+                    </span>
+
+                    <span>Paket</span>
+                </a>
+
+
+            @else
+
+                {{-- =================================================
+                     TOKO
+                ================================================== --}}
+
+                <a
+                    href="{{ route('dashboard') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('dashboard')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+
+                    <span class="text-xl leading-none">
+                        🏠
+                    </span>
+
+                    <span>
+                        Beranda
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="{{ route('riwayat') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('riwayat')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+
+                    <span class="text-xl leading-none">
+                        🧾
+                    </span>
+
+                    <span>
+                        Riwayat
+                    </span>
+
+                </a>
+
+
+                {{-- QUICK ACTION --}}
+
+                @if($mobileAction === 'tambah')
+
+                    <button
+                        type="button"
+                        onclick="toggleProductModal()"
+                        class="mobile-bottom-action"
+                    >
+                        <span>➕</span>
+                        <span>Tambah</span>
+                    </button>
+
+                @elseif($mobileAction === 'kasir')
+
+                    <a
+                        href="{{ route('kasir.index') }}"
+                        class="mobile-bottom-action"
+                    >
+                        <span>🛒</span>
+                        <span>Kasir</span>
+                    </a>
+
+                @else
+
+                    @if(
+                        request()->routeIs('dashboard') ||
+                        request()->routeIs('kasir.index')
+                    )
+
+                        <button
+                            type="button"
+                            onclick="openQrScanner()"
+                            class="mobile-bottom-action"
+                        >
+                            <span>📷</span>
+                            <span>Scan</span>
+                        </button>
+
+                    @else
+
+                        <button
+                            type="button"
+                            onclick="openGlobalQrScanner()"
+                            class="mobile-bottom-action"
+                        >
+                            <span>📷</span>
+                            <span>Scan</span>
+                        </button>
+
+                    @endif
+
+                @endif
+
+
+                <a
+                    href="{{ route('laporan') }}"
+                    class="mobile-bottom-item
+                           {{ request()->routeIs('laporan')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+
+                    <span class="text-xl leading-none">
+                        📊
+                    </span>
+
+                    <span>
+                        Laporan
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="{{ route('support.index') }}"
+                    class="mobile-bottom-item relative
+                           {{ request()->routeIs('support.*')
+                                ? 'mobile-bottom-active'
+                                : '' }}"
+                >
+
+                    <span class="relative text-xl leading-none">
+
+                        💬
+
+                        @if($supportWaitingCount > 0)
+
+                            <span
+                                class="absolute -top-1 -right-2
+                                       min-w-[15px] h-[15px]
+                                       px-1 rounded-full
+                                       bg-amber-500
+                                       text-[9px]
+                                       font-bold
+                                       text-gray-900
+                                       flex items-center justify-center"
+                            >
+                                {{ $supportWaitingCount > 9
+                                    ? '9+'
+                                    : $supportWaitingCount }}
+                            </span>
+
+                        @endif
+
+                    </span>
+
+                    <span>
+                        Bantuan
+                    </span>
+
+                </a>
+
+            @endif
+
+        </div>
+
+    </nav>
+
+@endif
+
+
+{{-- =========================================================
+     JAVASCRIPT
+========================================================= --}}
 
 <script>
-  
+
 /*
 |--------------------------------------------------------------------------
-| ABSENSI DROPDOWN
+| GENERIC DROPDOWN
 |--------------------------------------------------------------------------
 */
 
-function toggleAttendanceMenu(type) {
+function toggleDropdown(type) {
+
+    const ids = {
+        user: 'user-dropdown',
+        mobile: 'mobile-menu',
+        'desktop-store': 'desktop-store-dropdown',
+        'mobile-store': 'mobile-store-dropdown'
+    };
+
+    const id = ids[type];
+
+    if (!id) return;
+
+    const dropdown =
+        document.getElementById(id);
+
+    if (!dropdown) return;
+
+    dropdown.classList.toggle('hidden');
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| MANAGEMENT MENU
+|--------------------------------------------------------------------------
+*/
+
+function toggleManagementMenu(type) {
 
     const menu =
         document.getElementById(
-            type === 'desktop'
-                ? 'desktop-attendance-menu'
-                : 'mobile-attendance-menu'
+            type + '-menu'
         );
 
     const arrow =
         document.getElementById(
-            type === 'desktop'
-                ? 'desktop-attendance-arrow'
-                : 'mobile-attendance-arrow'
+            type + '-arrow'
         );
 
     if (!menu) return;
@@ -2220,149 +3006,13 @@ function toggleAttendanceMenu(type) {
     if (arrow) {
         arrow.classList.toggle('rotate-180');
     }
-}
-
-
-function closeAttendanceMenu() {
-
-    const desktopMenu =
-        document.getElementById(
-            'desktop-attendance-menu'
-        );
-
-    const desktopArrow =
-        document.getElementById(
-            'desktop-attendance-arrow'
-        );
-
-    const mobileMenu =
-        document.getElementById(
-            'mobile-attendance-menu'
-        );
-
-    const mobileArrow =
-        document.getElementById(
-            'mobile-attendance-arrow'
-        );
-
-
-    if (desktopMenu) {
-        desktopMenu.classList.add('hidden');
-    }
-
-    if (desktopArrow) {
-        desktopArrow.classList.remove('rotate-180');
-    }
-
-
-    if (mobileMenu) {
-        mobileMenu.classList.add('hidden');
-    }
-
-    if (mobileArrow) {
-        mobileArrow.classList.remove('rotate-180');
-    }
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| DESKTOP PROFILE DROPDOWN
-|--------------------------------------------------------------------------
-*/
-
-function toggleUserDropdown() {
-    const dropdown = document.getElementById('user-dropdown');
-
-    if (!dropdown) {
-        console.log('user-dropdown tidak ditemukan');
-        return;
-    }
-
-    dropdown.classList.toggle('hidden');
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| DESKTOP STORE DROPDOWN
-|--------------------------------------------------------------------------
-*/
-
-function toggleStoreDropdown(event) {
-
-    event.stopPropagation();
-
-    const dropdown =
-        document.getElementById('desktop-store-dropdown');
-
-    if (!dropdown) return;
-
-    dropdown.classList.toggle('hidden');
 
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| MOBILE PROFILE MENU
-|--------------------------------------------------------------------------
-*/
-
-function toggleMobileMenu() {
-
-    const menu =
-        document.getElementById('mobile-menu');
-
-    if (!menu) return;
-
-    menu.classList.toggle('hidden');
-
-}
-
-document.addEventListener('click', function (event) {
-    const menu = document.getElementById('mobile-menu');
-
-    if (!menu || menu.classList.contains('hidden')) {
-        return;
-    }
-
-    const profileButton = event.target.closest(
-    '[aria-label="Menu profil"], [aria-label="Menu"]'
-    );
-
-    // Klik di luar dropdown
-    if (!menu.contains(event.target) && !profileButton) {
-        menu.classList.add('hidden');
-    }
-});
-/*
-|--------------------------------------------------------------------------
-| MOBILE STORE DROPDOWN
-|--------------------------------------------------------------------------
-*/
-
-function toggleMobileStoreDropdown(event) {
-
-    event.stopPropagation();
-
-    const dropdown =
-        document.getElementById(
-            'mobile-store-dropdown'
-        );
-
-    if (!dropdown) return;
-
-    dropdown.classList.toggle('hidden');
-
-}
 
 /*
 |--------------------------------------------------------------------------
 | GLOBAL QR SCANNER
-|--------------------------------------------------------------------------
-| Dipakai halaman selain Dashboard dan Kasir.
-| Tidak menggunakan openQrScanner() agar tidak bentrok.
 |--------------------------------------------------------------------------
 */
 
@@ -2377,16 +3027,23 @@ const globalScanUrlTemplate =
 function openGlobalQrScanner() {
 
     const modal =
-        document.getElementById('globalQrScannerModal');
+        document.getElementById(
+            'globalQrScannerModal'
+        );
 
     const status =
-        document.getElementById('global-qr-scan-status');
+        document.getElementById(
+            'global-qr-scan-status'
+        );
 
     if (!modal || !status) {
-        console.error('Global QR Scanner tidak tersedia.');
+
+        console.error(
+            'Global QR Scanner tidak tersedia.'
+        );
+
         return;
     }
-
 
     modal.classList.remove('hidden');
     modal.classList.add('flex');
@@ -2397,43 +3054,46 @@ function openGlobalQrScanner() {
         'Mengaktifkan kamera...';
 
     startGlobalQrScanner();
-
 }
 
 
 async function startGlobalQrScanner() {
 
     const status =
-        document.getElementById('global-qr-scan-status');
+        document.getElementById(
+            'global-qr-scan-status'
+        );
 
     if (typeof Html5Qrcode === 'undefined') {
 
         if (status) {
+
             status.innerText =
                 'Scanner gagal dimuat. Periksa koneksi internet.';
+
         }
 
         return;
     }
 
-
     if (globalQrScanning) {
         return;
     }
 
-
     globalQrProcessing = false;
-
 
     try {
 
         globalQrScanner =
-            new Html5Qrcode('global-qr-reader');
-
+            new Html5Qrcode(
+                'global-qr-reader'
+            );
 
         await globalQrScanner.start(
 
-            { facingMode: 'environment' },
+            {
+                facingMode: 'environment'
+            },
 
             {
                 fps: 10,
@@ -2445,19 +3105,19 @@ async function startGlobalQrScanner() {
 
             function(decodedText) {
 
-                handleGlobalScannedSku(decodedText);
+                handleGlobalScannedSku(
+                    decodedText
+                );
 
             },
 
             function(errorMessage) {
-                // Abaikan error scanning biasa
+                // Abaikan error scan biasa
             }
 
         );
 
-
         globalQrScanning = true;
-
 
         if (status) {
 
@@ -2466,14 +3126,12 @@ async function startGlobalQrScanner() {
 
         }
 
-
     } catch (error) {
 
         console.error(
             'Global QR Scanner Error:',
             error
         );
-
 
         if (status) {
 
@@ -2487,19 +3145,20 @@ async function startGlobalQrScanner() {
 }
 
 
-async function handleGlobalScannedSku(decodedText) {
+async function handleGlobalScannedSku(
+    decodedText
+) {
 
     if (globalQrProcessing) {
         return;
     }
 
-
     globalQrProcessing = true;
 
-
     const sku =
-        String(decodedText || '').trim();
-
+        String(
+            decodedText || ''
+        ).trim();
 
     if (!sku) {
 
@@ -2509,12 +3168,10 @@ async function handleGlobalScannedSku(decodedText) {
 
     }
 
-
     const status =
         document.getElementById(
             'global-qr-scan-status'
         );
-
 
     if (status) {
 
@@ -2523,18 +3180,15 @@ async function handleGlobalScannedSku(decodedText) {
 
     }
 
-
     try {
 
         await stopGlobalQrScanner();
-
 
         const url =
             globalScanUrlTemplate.replace(
                 '__SKU__',
                 encodeURIComponent(sku)
             );
-
 
         const response =
             await fetch(
@@ -2547,10 +3201,8 @@ async function handleGlobalScannedSku(decodedText) {
                 }
             );
 
-
         const data =
             await response.json();
-
 
         if (
             !response.ok ||
@@ -2568,21 +3220,8 @@ async function handleGlobalScannedSku(decodedText) {
 
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | PRODUK DITEMUKAN
-        |--------------------------------------------------------------------------
-        |
-        | Simpan SKU ke URL Kasir.
-        | Kasir akan mengambil produk tersebut
-        | lalu memasukkannya ke cart.
-        |
-        */
-
         const kasirUrl =
             @json(route('kasir.index'));
-
 
         window.location.href =
             kasirUrl +
@@ -2591,7 +3230,6 @@ async function handleGlobalScannedSku(decodedText) {
                 data.product.sku
             );
 
-
     } catch (error) {
 
         console.error(
@@ -2599,11 +3237,9 @@ async function handleGlobalScannedSku(decodedText) {
             error
         );
 
-
         alert(
             'Terjadi kesalahan saat membaca produk.'
         );
-
 
         globalQrProcessing = false;
 
@@ -2636,9 +3272,7 @@ async function stopGlobalQrScanner() {
 
     }
 
-
     globalQrScanning = false;
-
 }
 
 
@@ -2646,48 +3280,37 @@ async function closeGlobalQrScanner() {
 
     await stopGlobalQrScanner();
 
-
     globalQrProcessing = false;
-
 
     const modal =
         document.getElementById(
             'globalQrScannerModal'
         );
 
-
     if (modal) {
 
         modal.classList.add('hidden');
-
         modal.classList.remove('flex');
 
     }
 
-
     document.body.classList.remove(
         'overflow-hidden'
     );
-
 
     const reader =
         document.getElementById(
             'global-qr-reader'
         );
 
-
     if (reader) {
-
         reader.innerHTML = '';
-
     }
-
 
     const status =
         document.getElementById(
             'global-qr-scan-status'
         );
-
 
     if (status) {
 
@@ -2701,720 +3324,242 @@ async function closeGlobalQrScanner() {
 
 /*
 |--------------------------------------------------------------------------
-| KLIK DI LUAR DROPDOWN
+| CLICK OUTSIDE
 |--------------------------------------------------------------------------
 */
 
-window.addEventListener('click', function (event) {
+window.addEventListener(
+    'click',
+    function(event) {
 
+        const dropdowns = [
 
-    /*
-    |--------------------------------------------------------------------------
-    | DESKTOP PROFILE
-    |--------------------------------------------------------------------------
-    */
+            'user-dropdown',
 
-    const userDropdown =
-        document.getElementById('user-dropdown');
+            'mobile-menu',
 
-    if (userDropdown) {
+            'desktop-store-dropdown',
 
-        const userButton =
-            userDropdown.parentElement
-                ?.querySelector(
-                    'button[onclick="toggleUserDropdown()"]'
-                );
-
-        if (
-            !userDropdown.contains(event.target) &&
-            !userButton?.contains(event.target)
-        ) {
-
-            userDropdown.classList.add('hidden');
-
-        }
-
-    }
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | DESKTOP STORE
-    |--------------------------------------------------------------------------
-    */
-
-    const storeDropdown =
-        document.getElementById(
-            'desktop-store-dropdown'
-        );
-
-    if (storeDropdown) {
-
-        const storeButton =
-            storeDropdown.parentElement
-                ?.querySelector(
-                    'button[onclick="toggleStoreDropdown(event)"]'
-                );
-
-        if (
-            !storeDropdown.contains(event.target) &&
-            !storeButton?.contains(event.target)
-        ) {
-
-            storeDropdown.classList.add('hidden');
-
-        }
-
-    }
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | MOBILE STORE
-    |--------------------------------------------------------------------------
-    */
-
-    const mobileStoreDropdown =
-        document.getElementById(
             'mobile-store-dropdown'
+
+        ];
+
+        dropdowns.forEach(
+            function(id) {
+
+                const dropdown =
+                    document.getElementById(id);
+
+                if (!dropdown) return;
+
+                if (
+                    !dropdown.contains(
+                        event.target
+                    )
+                ) {
+
+                    /*
+                     * Jangan menutup jika klik
+                     * berasal dari button dropdown.
+                     */
+
+                    const button =
+                        event.target.closest(
+                            'button'
+                        );
+
+                    if (!button) {
+
+                        dropdown.classList.add(
+                            'hidden'
+                        );
+
+                    }
+
+                }
+
+            }
         );
 
-    if (mobileStoreDropdown) {
-
-        const mobileStoreButton =
-            mobileStoreDropdown.parentElement
-                ?.querySelector(
-                    'button[onclick="toggleMobileStoreDropdown(event)"]'
-                );
-
-        if (
-            !mobileStoreDropdown.contains(event.target) &&
-            !mobileStoreButton?.contains(event.target)
-        ) {
-
-            mobileStoreDropdown.classList.add('hidden');
-
-        }
-
     }
-    
-        /*
-    |--------------------------------------------------------------------------
-    | TUTUP ABSENSI JIKA KLIK MENU LAIN
-    |--------------------------------------------------------------------------
-    */
-
-    const desktopAttendance =
-        document.getElementById('desktop-attendance-group');
-
-    const mobileAttendance =
-        document.getElementById('mobile-attendance-group');
-
-
-    const clickedInsideDesktopAttendance =
-        desktopAttendance &&
-        desktopAttendance.contains(event.target);
-
-    const clickedInsideMobileAttendance =
-        mobileAttendance &&
-        mobileAttendance.contains(event.target);
-
-
-    if (
-        !clickedInsideDesktopAttendance &&
-        !clickedInsideMobileAttendance
-    ) {
-        closeAttendanceMenu();
-    }
-
-});
+);
 
 
 /*
 |--------------------------------------------------------------------------
-| TUTUP MOBILE MENU SETELAH KLIK LINK
+| MOBILE LINK
 |--------------------------------------------------------------------------
 */
 
-document
-    .querySelectorAll('#mobile-menu a')
-    .forEach(function (link) {
+document.addEventListener(
+    'DOMContentLoaded',
+    function() {
 
-        link.addEventListener('click', function () {
+        document
+            .querySelectorAll(
+                '#mobile-menu a'
+            )
+            .forEach(
+                function(link) {
 
-            const menu =
-                document.getElementById('mobile-menu');
+                    link.addEventListener(
+                        'click',
+                        function() {
 
-            if (menu) {
+                            const menu =
+                                document.getElementById(
+                                    'mobile-menu'
+                                );
 
-                menu.classList.add('hidden');
+                            if (menu) {
 
-            }
+                                menu.classList.add(
+                                    'hidden'
+                                );
 
-        });
+                            }
 
-    });
+                        }
+                    );
 
+                }
+            );
+
+    }
+);
 
 </script>
 
 
-
-{{-- ========================================================= --}}
-{{-- STYLE --}}
-{{-- ========================================================= --}}
-
-<style>
-
-.dropdown-link {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 0.75rem;
-
-    width: 100%;
-
-    padding: 0.65rem 1rem;
-
-    font-size: 0.875rem;
-
-    font-weight: 500;
-
-    color: rgb(209 213 219);
-
-    transition: all 0.2s ease;
-
-}
-
-
-.dropdown-link:hover {
-
-    background: rgb(55 65 81);
-
-    color: white;
-
-}
-
-.mobile-bottom-item {
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 3px;
-
-    min-width: 58px;
-
-    height: 58px;
-
-    border-radius: 14px;
-
-    font-size: 10px;
-
-    font-weight: 600;
-
-    color: rgb(156 163 175);
-
-    transition: all 0.2s ease;
-
-}
-
-
-.mobile-bottom-item:hover {
-
-    color: white;
-
-    background: rgb(31 41 55 / 0.7);
-
-}
-
-
-.mobile-bottom-active {
-
-    color: rgb(52 211 153);
-
-}
-
-
-.mobile-bottom-action {
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 2px;
-
-    width: 58px;
-
-    height: 58px;
-
-    margin-top: -18px;
-
-    border-radius: 18px;
-
-    background: rgb(16 185 129);
-
-    color: white;
-
-    font-size: 10px;
-
-    font-weight: 700;
-
-    border: 4px solid rgb(17 24 39);
-
-    box-shadow:
-        0 8px 25px rgb(16 185 129 / 0.25);
-
-    transition: all 0.2s ease;
-
-}
-
-
-.mobile-bottom-action:hover {
-
-    transform: translateY(-2px);
-
-}
-
-</style>
-
-{{-- ========================================================= --}}
-{{-- MOBILE BOTTOM NAVIGATION --}}
-{{-- ========================================================= --}}
-
-@if(session('logged_in'))
-
-    @php
-        $mobileAction = trim($__env->yieldContent('mobile_action', 'scan'));
-    @endphp
-
-    <nav
-        class="md:hidden fixed bottom-0 left-0 right-0 z-[70]
-               bg-gray-900/95 backdrop-blur-xl
-               border-t border-white/10
-               shadow-2xl"
-    >
-
-        <div
-            class="mx-auto max-w-md
-                   h-[68px]
-                   px-2
-                   flex items-center justify-around"
-        >
-
-            {{-- ================================================= --}}
-            {{-- ADMIN KASIRKU --}}
-            {{-- ================================================= --}}
-
-            @if(request()->routeIs('admin-kasirku.*'))
-
-                {{-- DASHBOARD --}}
-                <a
-                    href="{{ route('admin-kasirku.dashboard') }}"
-                    class="mobile-bottom-item
-                           {{ request()->routeIs('admin-kasirku.dashboard')
-                                ? 'mobile-bottom-active'
-                                : '' }}"
-                >
-
-                    <span class="text-xl leading-none">
-                        🏠
-                    </span>
-
-                    <span>
-                        Dashboard
-                    </span>
-
-                </a>
-
-
-                {{-- PENGGUNA --}}
-                <a
-                    href="{{ route('admin-kasirku.users.index') }}"
-                    class="mobile-bottom-item
-                           {{ request()->routeIs('admin-kasirku.users.*')
-                                ? 'mobile-bottom-active'
-                                : '' }}"
-                >
-
-                    <span class="text-xl leading-none">
-                        👤
-                    </span>
-
-                    <span>
-                        Pengguna
-                    </span>
-
-                </a>
-
-
-                {{-- TOKO --}}
-                <a
-                    href="{{ route('admin-kasirku.stores.index') }}"
-                    class="mobile-bottom-item
-                           {{ request()->routeIs('admin-kasirku.stores.*')
-                                ? 'mobile-bottom-active'
-                                : '' }}"
-                >
-
-                    <span class="text-xl leading-none">
-                        🏪
-                    </span>
-
-                    <span>
-                        Toko
-                    </span>
-
-                </a>
-
-
-                {{-- LANGGANAN --}}
-                <a
-                    href="{{ route('admin-kasirku.subscriptions.index') }}"
-                    class="mobile-bottom-item
-                           {{ request()->routeIs('admin-kasirku.subscriptions.*')
-                                ? 'mobile-bottom-active'
-                                : '' }}"
-                >
-
-                    <span class="text-xl leading-none">
-                        💳
-                    </span>
-
-                    <span>
-                        Langganan
-                    </span>
-
-                </a>
-
-
-                {{-- PAKET --}}
-                <a
-                    href="{{ route('admin-kasirku.plans.index') }}"
-                    class="mobile-bottom-item
-                           {{ request()->routeIs('admin-kasirku.plans.*')
-                                ? 'mobile-bottom-active'
-                                : '' }}"
-                >
-
-                    <span class="text-xl leading-none">
-                        📦
-                    </span>
-
-                    <span>
-                        Paket
-                    </span>
-
-                </a>
-
-
-            @else
-
-                {{-- ================================================= --}}
-                {{-- KASIRKU / TOKO --}}
-                {{-- ================================================= --}}
-
-                {{-- BERANDA --}}
-                <a
-                    href="{{ route('dashboard') }}"
-                    class="mobile-bottom-item
-                           {{ request()->routeIs('dashboard')
-                                ? 'mobile-bottom-active'
-                                : '' }}"
-                >
-
-                    <span class="text-xl leading-none">
-                        🏠
-                    </span>
-
-                    <span>
-                        Beranda
-                    </span>
-
-                </a>
-
-
-                {{-- RIWAYAT --}}
-                <a
-                    href="{{ route('riwayat') }}"
-                    class="mobile-bottom-item
-                           {{ request()->routeIs('riwayat')
-                                ? 'mobile-bottom-active'
-                                : '' }}"
-                >
-
-                    <span class="text-xl leading-none">
-                        🧾
-                    </span>
-
-                    <span>
-                        Riwayat Transaksi
-                    </span>
-
-                </a>
-
-
-                {{-- QUICK ACTION --}}
-                @if($mobileAction === 'tambah')
-
-                    <button
-                        type="button"
-                        onclick="toggleProductModal()"
-                        class="mobile-bottom-action"
-                    >
-
-                        <span>
-                            ➕
-                        </span>
-
-                        <span>
-                            Tambah
-                        </span>
-
-                    </button>
-
-                @elseif($mobileAction === 'kasir')
-
-                    <a
-                        href="{{ route('kasir.index') }}"
-                        class="mobile-bottom-action"
-                    >
-
-                        <span>
-                            🛒
-                        </span>
-
-                        <span>
-                            Kasir
-                        </span>
-
-                    </a>
-
-                @elseif($mobileAction === 'scan')
-
-                    @if(
-                        request()->routeIs('dashboard') ||
-                        request()->routeIs('kasir.index')
-                    )
-
-                        {{-- Scanner Dashboard / Kasir --}}
-                        <button
-                            type="button"
-                            onclick="openQrScanner()"
-                            class="mobile-bottom-action"
-                        >
-
-                            <span>
-                                📷
-                            </span>
-
-                            <span>
-                                Scan
-                            </span>
-
-                        </button>
-
-                    @else
-
-                        {{-- Scanner Global --}}
-                        <button
-                            type="button"
-                            onclick="openGlobalQrScanner()"
-                            class="mobile-bottom-action"
-                        >
-
-                            <span>
-                                📷
-                            </span>
-
-                            <span>
-                                Scan
-                            </span>
-
-                        </button>
-
-                    @endif
-
-                @else
-
-                    {{-- DEFAULT --}}
-                    <button
-                        type="button"
-                        onclick="openGlobalQrScanner()"
-                        class="mobile-bottom-action"
-                    >
-
-                        <span>
-                            📷
-                        </span>
-
-                        <span>
-                            Scan
-                        </span>
-
-                    </button>
-
-                @endif
-
-
-                {{-- LAPORAN --}}
-                <a
-                    href="{{ route('laporan') }}"
-                    class="mobile-bottom-item
-                           {{ request()->routeIs('laporan')
-                                ? 'mobile-bottom-active'
-                                : '' }}"
-                >
-
-                    <span class="text-xl leading-none">
-                        📊
-                    </span>
-
-                    <span>
-                        Laporan & Piutang
-                    </span>
-
-                </a>
-
-
-{{-- BANTUAN --}}
-<a
-    href="{{ route('support.index') }}"
-    class="mobile-bottom-item
-           relative
-           {{ request()->routeIs('support.*')
-                ? 'mobile-bottom-active'
-                : '' }}"
->
-
-    <span class="relative text-xl leading-none">
-
-        💬
-
-        @if($supportWaitingCount > 0)
-            <span
-                class="absolute
-                       -top-1 -right-2
-                       min-w-[15px] h-[15px]
-                       px-1
-                       rounded-full
-                       bg-amber-500
-                       text-[9px]
-                       font-bold
-                       text-gray-900
-                       flex items-center justify-center"
-            >
-                {{ $supportWaitingCount > 9 ? '9+' : $supportWaitingCount }}
-            </span>
-        @endif
-
-    </span>
-
-    <span>
-        Bantuan
-    </span>
-
-</a>
-
-            @endif
-
-        </div>
-
-    </nav>
-
-@endif
+{{-- =========================================================
+     SERVICE WORKER
+========================================================= --}}
 
 <script>
+
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/sw.js')
-            .then(function (registration) {
-                console.log(
-                    'KasirKU Service Worker aktif:',
-                    registration.scope
+
+    window.addEventListener(
+        'load',
+        function() {
+
+            navigator.serviceWorker
+                .register('/sw.js')
+
+                .then(
+                    function(registration) {
+
+                        console.log(
+                            'KasirKU Service Worker aktif:',
+                            registration.scope
+                        );
+
+                    }
+                )
+
+                .catch(
+                    function(error) {
+
+                        console.error(
+                            'KasirKU Service Worker gagal:',
+                            error
+                        );
+
+                    }
                 );
-            })
-            .catch(function (error) {
-                console.error(
-                    'KasirKU Service Worker gagal:',
-                    error
-                );
-            });
-    });
+
+        }
+    );
+
 }
+
 </script>
+
+
+{{-- =========================================================
+     SPLASH SCREEN SCRIPT
+========================================================= --}}
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
 
-    const splash = document.getElementById('kasirku-splash');
+document.addEventListener(
+    'DOMContentLoaded',
+    function() {
 
-    if (!splash) {
-        return;
-    }
+        const splash =
+            document.getElementById(
+                'kasirku-splash'
+            );
 
-    const splashShown = sessionStorage.getItem(
-        'kasirku_splash_shown'
-    );
+        if (!splash) {
+            return;
+        }
 
-    /*
-     * Kalau splash sudah pernah ditampilkan
-     * dalam sesi aplikasi ini, jangan tampilkan lagi.
-     */
-    if (splashShown) {
-        splash.remove();
-        return;
-    }
+        const splashShown =
+            sessionStorage.getItem(
+                'kasirku_splash_shown'
+            );
 
-    /*
-     * Tandai bahwa splash sudah ditampilkan.
-     */
-    sessionStorage.setItem(
-        'kasirku_splash_shown',
-        '1'
-    );
+        if (splashShown) {
 
-    /*
-     * Tampilkan splash.
-     */
-    splash.classList.remove('hidden');
-
-    /*
-     * Tunggu sebentar sebelum fade out.
-     */
-    setTimeout(function () {
-
-        splash.classList.remove('opacity-0');
-        splash.classList.add('opacity-100');
-
-    }, 50);
-
-    setTimeout(function () {
-
-        splash.classList.remove('opacity-100');
-        splash.classList.add('opacity-0');
-
-        setTimeout(function () {
             splash.remove();
-        }, 500);
 
-    }, 750);
+            return;
+        }
 
-});
+        sessionStorage.setItem(
+            'kasirku_splash_shown',
+            '1'
+        );
+
+        splash.classList.remove(
+            'hidden'
+        );
+
+        setTimeout(
+            function() {
+
+                splash.classList.remove(
+                    'opacity-0'
+                );
+
+                splash.classList.add(
+                    'opacity-100'
+                );
+
+            },
+            50
+        );
+
+        setTimeout(
+            function() {
+
+                splash.classList.remove(
+                    'opacity-100'
+                );
+
+                splash.classList.add(
+                    'opacity-0'
+                );
+
+                setTimeout(
+                    function() {
+
+                        splash.remove();
+
+                    },
+                    500
+                );
+
+            },
+            750
+        );
+
+    }
+);
+
 </script>
+
 
 </body>
-
 </html>
