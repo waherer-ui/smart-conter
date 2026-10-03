@@ -2341,82 +2341,164 @@
                 </div>
 
 
-                {{-- =================================================
-                     MANAJEMEN ADMIN
-                ================================================== --}}
+{{-- =================================================
+     MANAJEMEN ADMIN TOKO - MOBILE
+================================================== --}}
 
-                @if(session('user_role') === 'admin')
+@if(session('user_role') === 'admin')
 
-                    <div class="border-t border-white/10 py-2">
+    <div class="border-t border-white/10 py-2">
 
-                        <button
-                            type="button"
-                            onclick="toggleManagementMenu('mobile-admin')"
-                            class="dropdown-link w-full text-left"
-                        >
+        <div class="px-4 py-1.5 text-xs font-semibold text-gray-500 uppercase">
+            Administrator
+        </div>
 
-                            <span>🛡️</span>
+        {{-- MANAJEMEN ADMIN --}}
+        <button
+            type="button"
+            onclick="toggleManagementMenu('mobile-admin')"
+            class="dropdown-link w-full text-left"
+        >
+            <span>🛡️</span>
 
-                            <span class="flex-1">
-                                Manajemen Admin
-                            </span>
+            <span class="flex-1">
+                Manajemen Admin
+            </span>
 
-                            <span
-                                id="mobile-admin-arrow"
-                                class="menu-arrow text-xs
-                                    {{ request()->routeIs(
-                                        'admin.*',
-                                        'setting'
-                                    )
-                                        ? 'rotate-180'
-                                        : '' }}"
-                            >
-                                ▼
-                            </span>
+            <span
+                id="mobile-admin-arrow"
+                class="menu-arrow text-xs
+                {{ request()->routeIs(
+                    'admin.*',
+                    'setting',
+                    'receipt-settings.*',
+                    'payment-settings.*',
+                    'price-rules.*'
+                ) ? 'rotate-180' : '' }}"
+            >
+                ▼
+            </span>
+        </button>
 
-                        </button>
+
+        {{-- MENU ADMIN MOBILE --}}
+        <div
+            id="mobile-admin-menu"
+            class="management-submenu
+            {{ request()->routeIs(
+                'admin.*',
+                'setting',
+                'receipt-settings.*',
+                'payment-settings.*',
+                'price-rules.*'
+            ) ? '' : 'hidden' }}"
+        >
+
+            {{-- Administrasi --}}
+            <a
+                href="{{ route('admin.index') }}"
+                class="dropdown-link"
+            >
+                <span>👨‍💼</span>
+                <span>Administrasi</span>
+            </a>
 
 
-                        <div
-                            id="mobile-admin-menu"
-                            class="management-submenu
-                                {{ request()->routeIs(
-                                    'admin.*',
-                                    'setting'
-                                )
-                                    ? ''
-                                    : 'hidden' }}"
-                        >
+            {{-- Staf --}}
+            <a
+                href="{{ route('admin.index') }}"
+                class="dropdown-link"
+            >
+                <span>👥</span>
+                <span>Staf</span>
+            </a>
 
-                            <a
-                                href="{{ route('admin.index') }}"
-                                class="dropdown-link"
-                            >
-                                <span>👥</span>
-                                <span>Administrasi</span>
-                            </a>
 
-                            <a
-                                href="{{ route('admin.index') }}"
-                                class="dropdown-link"
-                            >
-                                <span>🧑‍💼</span>
-                                <span>Staf</span>
-                            </a>
+            {{-- PENGATURAN --}}
+            <button
+                type="button"
+                onclick="toggleManagementMenu('mobile-pengaturan')"
+                class="dropdown-link w-full text-left"
+            >
+                <span>⚙️</span>
 
-                            <a
-                                href="{{ route('setting') }}"
-                                class="dropdown-link"
-                            >
-                                <span>⚙️</span>
-                                <span>Pengaturan</span>
-                            </a>
+                <span class="flex-1">
+                    Pengaturan
+                </span>
 
-                        </div>
+                <span
+                    id="mobile-pengaturan-arrow"
+                    class="menu-arrow text-xs
+                    {{ request()->routeIs(
+                        'setting',
+                        'receipt-settings.*',
+                        'payment-settings.*',
+                        'price-rules.*'
+                    ) ? 'rotate-180' : '' }}"
+                >
+                    ▼
+                </span>
+            </button>
 
-                    </div>
 
-                @endif
+            {{-- SUBMENU PENGATURAN MOBILE --}}
+            <div
+                id="mobile-pengaturan-menu"
+                class="management-submenu ml-4 border-l border-white/10 pl-2
+                {{ request()->routeIs(
+                    'setting',
+                    'receipt-settings.*',
+                    'payment-settings.*',
+                    'price-rules.*'
+                ) ? '' : 'hidden' }}"
+            >
+
+                {{-- Pengaturan Toko --}}
+                <a
+                    href="{{ route('setting') }}"
+                    class="dropdown-link"
+                >
+                    <span>🏪</span>
+                    <span>Pengaturan Toko</span>
+                </a>
+
+
+                {{-- Tampilan Struk --}}
+                <a
+                    href="{{ route('receipt-settings.index') }}"
+                    class="dropdown-link"
+                >
+                    <span>🧾</span>
+                    <span>Tampilan Struk</span>
+                </a>
+
+
+                {{-- Pembayaran & Rekening --}}
+                <a
+                    href="{{ route('payment-settings.index') }}"
+                    class="dropdown-link"
+                >
+                    <span>💳</span>
+                    <span>Pembayaran &amp; Rekening</span>
+                </a>
+
+
+                {{-- Harga, Promosi & Diskon --}}
+                <a
+                    href="{{ route('price-rules.index') }}"
+                    class="dropdown-link"
+                >
+                    <span>🏷️</span>
+                    <span>Harga, Promosi &amp; Diskon</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+@endif
 
             @endif
 
