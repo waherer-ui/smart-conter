@@ -1044,13 +1044,17 @@ MODAL TAMBAH PRODUK
     id="product-modal"
     class="hidden fixed inset-0 z-50
            flex items-center justify-center
-           p-4 bg-black/60 backdrop-blur-sm"
+           p-2 sm:p-4
+           bg-black/60 backdrop-blur-sm"
 >
-    <div
-        class="bg-gray-800 border border-white/15
-               rounded-2xl w-full max-w-lg p-6
-               shadow-2xl relative"
-    >
+<div
+    class="bg-gray-800 border border-white/15
+           rounded-2xl w-full max-w-lg
+           p-4 sm:p-6
+           shadow-2xl relative
+           max-h-[94vh] sm:max-h-[90vh]
+           overflow-y-auto"
+>
 
         {{-- HEADER MODAL --}}
         <div
@@ -1078,13 +1082,13 @@ MODAL TAMBAH PRODUK
              PILIH CARA MENAMBAH PRODUK
         ====================================================== --}}
 
-        <div class="mb-5">
+<div class="mb-4 sm:mb-5">
 
-            <p class="text-[11px] text-gray-400 mb-2">
-                Pilih cara penambahan produk:
-            </p>
+    <p class="text-[11px] text-gray-400 mb-2">
+        Pilih cara penambahan produk:
+    </p>
 
-            <div class="grid grid-cols-2 gap-2">
+    <div class="grid grid-cols-2 gap-1.5 sm:gap-2">
 
                 {{-- CARA CEPAT --}}
                 <button
@@ -1095,7 +1099,7 @@ MODAL TAMBAH PRODUK
                            border border-indigo-500/30
                            text-indigo-300
                            rounded-xl
-                           px-3 py-2.5
+                           px-2.5 py-2 sm:px-3 sm:py-2.5
                            text-xs font-medium
                            transition
                            text-left"
@@ -1139,11 +1143,11 @@ MODAL TAMBAH PRODUK
         </div>
 
 
-    <form
-        action="{{ route('produk.store') }}"
-        method="POST"
-        enctype="multipart/form-data"
-        class="space-y-4"
+<form
+    action="{{ route('produk.store') }}"
+    method="POST"
+    enctype="multipart/form-data"
+    class="space-y-3 sm:space-y-4"
         @if(!session('logged_in'))
         onsubmit="return blockGuestAction(event, 'Simpan Produk')"
         @endif
@@ -1224,7 +1228,7 @@ MODAL TAMBAH PRODUK
 
 
         {{-- HARGA --}}
-        <div class="grid grid-cols-2 gap-4">
+<div class="grid grid-cols-2 gap-2 sm:gap-4">
 
             <div>
 
@@ -1240,7 +1244,7 @@ MODAL TAMBAH PRODUK
                     min="0"
                     class="w-full bg-gray-900
                            border border-white/10
-                           rounded-xl px-4 py-2.5
+                           rounded-xl px-3 sm:px-4 py-2.5
                            text-white text-sm
                            focus:ring-2 focus:ring-indigo-500
                            outline-none"
