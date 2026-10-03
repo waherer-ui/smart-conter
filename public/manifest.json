@@ -3,6 +3,7 @@
     "short_name": "Kasir½M",
     "description": "Solusi kasir untuk usaha Anda",
     "start_url": "/",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#111827",
     "theme_color": "#059669",
