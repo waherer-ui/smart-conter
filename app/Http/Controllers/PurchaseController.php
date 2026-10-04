@@ -47,11 +47,11 @@ class PurchaseController extends Controller
             'store_id',
             $store->id
         )
-        ->with([
-            'supplier',
-            'user',
-            'items',
-        ])
+->with([
+    'supplier',
+    'user',
+    'items.returnItems',
+])
 
         // 🔎 CARI PRODUK / INVOICE
         ->when($search !== '', function ($query) use ($search) {
@@ -955,11 +955,14 @@ class PurchaseController extends Controller
             'store_id',
             $store->id
         )
-        ->with([
-            'supplier',
-            'user',
-            'items.product',
-        ])
+->with([
+    'supplier',
+    'user',
+    'items.product',
+    'items.returnItems',
+    'returns.user',
+    'returns.items',
+])
         ->findOrFail($id);
 
         return view(

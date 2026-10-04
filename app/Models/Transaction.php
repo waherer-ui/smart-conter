@@ -46,9 +46,17 @@ class Transaction extends Model
     {
         return $this->hasMany(TransactionItem::class);
     }
-    
+
     public function customer()
 {
     return $this->belongsTo(Customer::class);
 }
+
+    /**
+     * Retur dari transaksi penjualan.
+     */
+    public function returns(): HasMany
+    {
+        return $this->hasMany(TransactionReturn::class);
+    }
 }

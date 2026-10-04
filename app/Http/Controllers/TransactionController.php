@@ -928,6 +928,30 @@ class TransactionController extends Controller
     }
 
     /**
+ * Menampilkan detail transaksi.
+ */
+public function show($id)
+{
+    $transaction = Transaction::where(
+        'store_id',
+        $this->activeStoreId()
+    )
+    ->with([
+        'user',
+        'customer',
+        'items.product',
+        'items.returnItems',
+        'returns.items',
+    ])
+    ->findOrFail($id);
+
+    return view(
+        'transaksi.show',
+        compact('transaction')
+    );
+}
+
+    /**
      * Menampilkan struk transaksi dalam bentuk PDF.
      */
     public function receiptPdf($id)

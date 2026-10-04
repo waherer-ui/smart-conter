@@ -58,52 +58,112 @@
 
         @forelse($purchases as $purchase)
 
+    @php
+        $purchasedQty = $purchase->items->sum('quantity');
+
+        $returnedQty = $purchase->items->sum(function ($item) {
+            return $item->returnItems->sum('quantity');
+        });
+
+        $canReturn = $returnedQty < $purchasedQty;
+    @endphp
+
+    <div
+        class="px-4 py-4
+               border-b border-white/5
+               last:border-b-0
+               hover:bg-white/[0.03]
+               transition"
+    >
+
+        <div class="flex items-center justify-between gap-3">
+
+            {{-- INFORMASI PEMBELIAN --}}
             <a
                 href="{{ route('purchase.show', $purchase->id) }}"
-                  class="block px-4 py-4
-                         border-b border-white/5
-                         last:border-b-0
-                         hover:bg-white/[0.03]
-                         transition"
-              >
+                class="min-w-0 flex-1"
+            >
 
-                <div class="flex items-center justify-between gap-3">
+                <h3 class="text-sm font-semibold text-white truncate">
+                    {{ $purchase->supplier->name ?? 'Supplier tidak ditemukan' }}
+                </h3>
 
-                    <div class="min-w-0">
+                <p class="text-xs text-gray-500 mt-1">
+                    {{ $purchase->invoice_number ?: 'Tanpa nomor invoice' }}
+                </p>
 
-                        <h3 class="text-sm font-semibold text-white truncate">
-                            {{ $purchase->supplier->name ?? 'Supplier tidak ditemukan' }}
-                        </h3>
-
-                        <p class="text-xs text-gray-500 mt-1">
-                            {{ $purchase->invoice_number ?: 'Tanpa nomor invoice' }}
-                        </p>
-
-                        <p class="text-xs text-gray-500 mt-1">
-                            📅 {{ $purchase->purchase_date->format('d/m/Y') }}
-                        </p>
-
-                    </div>
-
-                    <div class="text-right shrink-0">
-
-                        <p class="text-sm font-semibold text-emerald-400">
-                            Rp {{ number_format($purchase->total, 0, ',', '.') }}
-                        </p>
-
-                        <p class="text-[11px] text-gray-500 mt-1">
-                           {{ $purchase->items->sum('quantity') }} pcs
-                        <span class="text-gray-700">•</span>
-                        {{ $purchase->items->count() }} jenis
-                        </p>
-
-                    </div>
-
-                </div>
+                <p class="text-xs text-gray-500 mt-1">
+                    📅 {{ $purchase->purchase_date->format('d/m/Y') }}
+                </p>
 
             </a>
 
-        @empty
+
+            {{-- TOTAL + ACTION --}}
+            <div class="text-right shrink-0">
+
+                <p class="text-sm font-semibold text-emerald-400">
+                    Rp {{ number_format($purchase->total, 0, ',', '.') }}
+                </p>
+
+                <p class="text-[11px] text-gray-500 mt-1">
+                    {{ $purchasedQty }} pcs
+                    <span class="text-gray-700">•</span>
+                    {{ $purchase->items->count() }} jenis
+                </p>
+
+
+                {{-- ACTION --}}
+                <div class="flex items-center justify-end gap-2 mt-2">
+
+                    {{-- DETAIL --}}
+                    <a
+                        href="{{ route('purchase.show', $purchase->id) }}"
+                        class="inline-flex items-center
+                               px-2.5 py-1.5
+                               rounded-lg
+                               text-[10px]
+                               font-semibold
+                               text-gray-300
+                               bg-white/5
+                               hover:bg-white/10
+                               transition"
+                    >
+                        Detail
+                    </a>
+
+
+                    {{-- RETUR --}}
+                    @if($canReturn)
+
+                        <a
+                            href="{{ route('purchase.return.create', $purchase->id) }}"
+                            class="inline-flex items-center
+                                   gap-1
+                                   px-2.5 py-1.5
+                                   rounded-lg
+                                   text-[10px]
+                                   font-semibold
+                                   text-amber-300
+                                   bg-amber-500/10
+                                   border border-amber-500/20
+                                   hover:bg-amber-500/20
+                                   transition"
+                        >
+                            ↩️ Retur
+                        </a>
+
+                    @endif
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+@empty
 
             <div class="px-4 py-12 text-center">
 

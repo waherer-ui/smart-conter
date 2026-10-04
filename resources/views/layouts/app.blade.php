@@ -1019,7 +1019,7 @@
                                                 'kasir.*',
                                                 'produk.*',
                                                 'supplier.*',
-                                                'transfer.*'
+                                                'transfer.*','purchase.*',
                                             )
                                                 ? ''
                                                 : 'hidden' }}"
@@ -1063,6 +1063,17 @@
                                             <span>🚚</span>
                                             <span>Supplier</span>
                                         </a>
+
+                                        <a
+                              href="{{ route('purchase.index') }}"
+                              class="dropdown-link
+                                     {{ request()->routeIs('purchase.*')
+                                          ? 'bg-gray-700 text-white'
+                                          : '' }}"
+                          >
+                              <span>🧾</span>
+                              <span>Pembelian Supplier</span>
+                          </a>
 
                                         <a
                                             href="{{ route('transfer.index') }}"
@@ -1168,7 +1179,7 @@
                                             <span>Pelanggan</span>
                                         </a>
 
-                                        {{-- 
+                                        {{--
                                             Saat ini Casbon diarahkan ke modul
                                             pelanggan karena route khusus Casbon
                                             belum ada pada kode asli.
@@ -2073,7 +2084,8 @@
                                     'kasir.*',
                                     'produk.*',
                                     'supplier.*',
-                                    'transfer.*'
+                                    'transfer.*',
+                                    'purchase.*',
                                 )
                                     ? 'rotate-180'
                                     : '' }}"
@@ -2091,7 +2103,8 @@
                                 'kasir.*',
                                 'produk.*',
                                 'supplier.*',
-                                'transfer.*'
+                                'transfer.*',
+                                'purchase.*',
                             )
                                 ? ''
                                 : 'hidden' }}"
@@ -2102,7 +2115,7 @@
                             class="dropdown-link"
                         >
                             <span>🛒</span>
-                            <span>Kasir</span>
+                            <span>Keranjang belanja</span>
                         </a>
 
                         <a
@@ -2120,6 +2133,17 @@
                             <span>🚚</span>
                             <span>Supplier</span>
                         </a>
+
+                        <a
+                      href="{{ route('purchase.index') }}"
+                      class="dropdown-link
+                             {{ request()->routeIs('purchase.*')
+                                  ? 'bg-gray-700 text-white'
+                                  : '' }}"
+                  >
+                      <span>🧾</span>
+                      <span>Pembelian Supplier</span>
+                  </a>
 
                         <a
                             href="{{ route('transfer.index') }}"

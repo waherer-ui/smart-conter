@@ -183,6 +183,10 @@
                                 Total
                             </th>
 
+                            <th class="px-5 py-3 text-right">
+                                Aksi
+                            </th>
+
                         </tr>
 
                     </thead>
@@ -303,6 +307,26 @@
 
                                 </td>
 
+                                {{-- AKSI --}}
+<td class="px-5 py-4 text-right">
+
+    <a
+        href="{{ route('transaksi.show', $transaction->id) }}"
+        class="inline-flex items-center justify-center
+               bg-indigo-600
+               hover:bg-indigo-500
+               text-white
+               px-3 py-2
+               rounded-xl
+               text-[11px]
+               font-semibold
+               transition"
+    >
+        👁 Detail
+    </a>
+
+</td>
+
                             </tr>
 
                         @endforeach
@@ -353,13 +377,13 @@
                             <span class="text-gray-300">
                                 {{ $transaction->user->name ?? '-' }}
                             </span>
-                            
+
                             @if($transaction->payment_method === 'Cashbon / Utang')
                             <div class="mt-1 text-[11px]">
                                 <span class="text-gray-500">
                                     Pelanggan:
                                 </span>
-                        
+
                                 <span class="text-amber-400">
                                     {{ $transaction->customer->name ?? '-' }}
                                 </span>
@@ -476,18 +500,45 @@
 
                         </div>
 
-                        {{-- TOMBOL STRUK --}}
-              <div class="mt-4 pt-3 border-t border-white/10">
+{{-- AKSI --}}
+<div class="mt-4 pt-3 border-t border-white/10 grid grid-cols-2 gap-2">
 
-                  <a
-                      href="{{ route('transaksi.struk.pdf', $transaction->id) }}"
-                      target="_blank"
-                      class="block w-full text-center bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-xl text-xs font-semibold transition"
-                  >
-                      🧾 Cetak Struk
-                  </a>
+    <a
+        href="{{ route('transaksi.show', $transaction->id) }}"
+        class="block w-full text-center
+               bg-indigo-600
+               hover:bg-indigo-500
+               text-white
+               px-3 py-2
+               rounded-xl
+               text-xs
+               font-semibold
+               transition"
+    >
+        👁 Detail
+    </a>
 
-              </div>
+    <a
+        href="{{ route('transaksi.struk.pdf', $transaction->id) }}"
+        target="_blank"
+        class="block w-full text-center
+               bg-gray-700
+               hover:bg-gray-600
+               text-white
+               px-3 py-2
+               rounded-xl
+               text-xs
+               font-semibold
+               transition"
+    >
+        🧾 Struk
+    </a>
+
+</div>
+
+<th class="px-5 py-3 text-right">
+    Aksi
+</th>
 
                     </div>
 

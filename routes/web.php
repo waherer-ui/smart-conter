@@ -35,6 +35,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\SupportController as OwnerSupportController;
 use App\Http\Controllers\GoogleAuthController;
@@ -43,6 +44,7 @@ use App\Http\Controllers\PaymentQrController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\FaceRegistrationController;
 use App\Http\Controllers\PriceRuleController;
+use App\Http\Controllers\TransactionReturnController;
 
 
 
@@ -68,7 +70,7 @@ Route::middleware(['auth.role', 'active.store'])->group(function () {
         '/absensi/check-out',
         [AttendanceController::class, 'checkOut']
     )->name('attendance.check-out');
-    
+
     Route::get(
     '/absensi/riwayat',
     [AttendanceController::class, 'history']
@@ -108,7 +110,7 @@ Route::middleware('platform.admin')->group(function () {
         '/admin-kasirku/pengaturan/password',
         [SettingsController::class, 'updatePassword']
     )->name('admin-kasirku.settings.password');
-    
+
     Route::get(
     '/admin-kasirku/pengguna',
     [PlatformUserController::class, 'index']
@@ -223,7 +225,7 @@ Route::middleware(['auth.role', 'active.store'])->group(function () {
 
     Route::get('/pelanggan/{id}', [CustomerController::class, 'show'])
         ->name('pelanggan.show');
-        
+
         Route::post('/pelanggan/ajax', [CustomerController::class, 'ajaxStore'])
     ->middleware('active.store')
     ->name('pelanggan.ajax.store');
@@ -283,7 +285,33 @@ Route::middleware(['auth.role', 'active.store'])->group(function () {
 
     Route::get('/pembelian/{id}', [PurchaseController::class, 'show'])
         ->name('purchase.show');
-        
+
+        // =========================
+// RETUR SUPPLIER
+// =========================
+
+Route::get(
+    '/pembelian/{purchaseId}/retur',
+    [PurchaseReturnController::class, 'create']
+)->name('purchase.return.create');
+
+Route::post(
+    '/pembelian/{purchaseId}/retur',
+    [PurchaseReturnController::class, 'store']
+)->name('purchase.return.store');
+
+Route::get(
+    '/transaksi/{transactionId}/retur',
+    [TransactionReturnController::class, 'create']
+)->middleware('active.store')
+->name('transaction.return.create');
+
+Route::post(
+    '/transaksi/{transactionId}/retur',
+    [TransactionReturnController::class, 'store']
+)->middleware('active.store')
+->name('transaction.return.store');
+
             // =========================
     // TRANSFER ANTAR TOKO
     // =========================
@@ -296,13 +324,13 @@ Route::middleware(['auth.role', 'active.store'])->group(function () {
 
     Route::post('/transfer', [TransferController::class, 'store'])
         ->name('transfer.store');
-        
+
         Route::get('/transfer/{id}', [TransferController::class, 'show'])
     ->name('transfer.show');
-    
+
     Route::post('/transfer/{id}/terima', [TransferController::class, 'receive'])
     ->name('transfer.receive');
-    
+
     Route::get('/absensi/check-face', [AttendanceController::class, 'faceCheck'])
     ->name('attendance.face-check');
 
@@ -335,10 +363,10 @@ Route::post(
 
 Route::get('/paket', [PlanController::class, 'index'])
     ->name('paket');
-    
+
     Route::get('/paket/riwayat-pembayaran', [PlanController::class, 'paymentHistory'])
     ->name('paket.payment.history');
-    
+
     Route::get('/paket/riwayat-pembayaran/{payment}', [PlanController::class, 'paymentDetail'])
     ->name('paket.payment.detail');
 
@@ -358,12 +386,12 @@ Route::get(
     '/paket/pembayaran/{payment}/status',
     [PlanController::class, 'paymentStatus']
 )->name('paket.payment.status');
-    
+
     Route::post(
     '/paket/pembayaran/{payment}/cek-status',
     [PlanController::class, 'checkStatus']
 )->name('paket.payment.check-status');
-    
+
     Route::get('/paket/referral/validate', [PlanController::class, 'validateReferral'])
     ->name('paket.referral.validate');
 
@@ -996,7 +1024,7 @@ Route::post(
     [ProductController::class, 'scanBySku']
 )->middleware('active.store')
 ->name('produk.scan');
-    
+
     // Edit Produk
     Route::put(
         '/produk/{id}',
@@ -1040,6 +1068,12 @@ Route::post(
     [TransactionController::class, 'store']
 )->middleware('auth.role')
 ->name('transaksi.store');
+
+Route::get(
+    '/transaksi/{id}',
+    [TransactionController::class, 'show']
+)->middleware('active.store')
+->name('transaksi.show');
 
 // Cetak / tampilkan struk PDF
 Route::get(
@@ -1099,11 +1133,11 @@ Route::get(
     Route::get('/laporan', [LaporanController::class, 'index'])
     ->middleware('active.store')
     ->name('laporan');
-    
+
     Route::get('/laporan/piutang', [LaporanController::class, 'piutang'])
     ->middleware('active.store')
     ->name('laporan.piutang');
-    
+
 
 Route::middleware('auth.role')->group(function () {
 
@@ -1122,7 +1156,7 @@ Route::middleware('auth.role')->group(function () {
         '/profil',
         [AuthController::class, 'update']
     )->name('profile.update');
-    
+
     Route::get(
     '/profil/wajah',
     [FaceRegistrationController::class, 'create']
@@ -1137,20 +1171,20 @@ Route::delete(
     '/profil/wajah',
     [FaceRegistrationController::class, 'destroy']
 )->name('profil.face.destroy');
-    
+
         /*
       |--------------------------------------------------------------------------
       | CETAK LABEL QR
       |--------------------------------------------------------------------------
       */
-      
+
       Route::get(
           '/cetak-label',
           [LabelController::class, 'index']
       )->name('cetaklabel');
       });
-      
-      
+
+
       /*
 |--------------------------------------------------------------------------
 | PUSAT BANTUAN - OWNER
@@ -1208,16 +1242,16 @@ Route::get('/backup', [BackupController::class, 'index'])
 
     Route::get('/backup/download', [BackupController::class, 'download'])
         ->name('backup.download');
-        
+
         Route::get('/backup/restore', [BackupController::class, 'restoreIndex'])
     ->name('backup.restore');
 
 Route::post('/backup/restore/preview', [BackupController::class, 'restorePreview'])
     ->name('backup.restore.preview');
-    
+
     Route::post('/backup/restore', [BackupController::class, 'restore'])
     ->name('backup.restore.execute');
-    
+
     Route::get(
     '/pengaturan-pembayaran',
     [PaymentAccountController::class, 'index']
@@ -1258,8 +1292,8 @@ Route::patch(
     '/pengaturan-pembayaran/qr/{paymentQr}/toggle',
     [PaymentQrController::class, 'toggle']
 )->name('payment-qrs.toggle');
-        
-        
+
+
     /*
     |--------------------------------------------------------------------------
     | MANAJEMEN USER
@@ -1282,12 +1316,12 @@ Route::patch(
         '/admin/users/{id}',
         [UserController::class, 'destroy']
     )->name('admin.users.destroy');
-    
+
     Route::get(
     '/admin/users/{id}/activity',
     [UserController::class, 'activity']
 )->name('admin.users.activity');
-    
+
 
 
     /*
@@ -1306,8 +1340,8 @@ Route::patch(
         '/setting',
         [SettingController::class, 'update']
     )->name('setting.update');
-    
-    
+
+
     // =========================
 // HARGA KHUSUS & PROMOSI
 // =========================
