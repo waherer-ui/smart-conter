@@ -23,7 +23,7 @@
                     {{-- LOGO --}}
 <a href="/" class="flex items-center">
     <img
-        src="{{ asset('images/Icon-septian.png') }}"
+        src="{{ asset('images/icon-septian.png') }}"
         alt="Kasir½M"
         class="h-8 w-auto object-contain"
     >
@@ -265,7 +265,7 @@
         <div class="flex items-center">
 
             <img
-                src="{{ asset('images/Icon-septian.png') }}"
+                src="{{ asset('images/icon-septian.png') }}"
                 alt="Kasir½M"
                 class="h-8 w-auto object-contain"
             >
@@ -3544,7 +3544,7 @@
                    class="inline-flex items-center">
 
                     <img
-                        src="{{ asset('images/Icon-septian.png') }}"
+                        src="{{ asset('images/icon-septian.png') }}"
                         alt="Kasir½M"
                         class="h-9 w-auto object-contain"
                     >
