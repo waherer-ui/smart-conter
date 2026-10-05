@@ -1186,7 +1186,7 @@
                                         --}}
 
                                         <a
-                                            href="{{ route('pelanggan.index') }}"
+                              href="{{ route('laporan.piutang') }}"
                                             class="dropdown-link text-sm"
                                         >
                                             <span>💳</span>
@@ -1423,11 +1423,11 @@
 
             {{-- Administrasi --}}
             <a
-                href="{{ route('admin.index') }}"
+                href="{{ route('backup.index') }}"
                 class="dropdown-link"
             >
-                <span>👨‍💼</span>
-                <span>Administrasi</span>
+                <span>💾</span>
+                <span>Backup & Restore</span>
             </a>
 
 
@@ -1436,7 +1436,7 @@
                 href="{{ route('admin.index') }}"
                 class="dropdown-link"
             >
-                <span>👥</span>
+                <span>👨</span>
                 <span>Staf</span>
             </a>
 
@@ -2226,7 +2226,7 @@
                         </a>
 
                         <a
-                            href="{{ route('pelanggan.index') }}"
+                            href="{{ route('laporan.piutang') }}"
                             class="dropdown-link"
                         >
                             <span>💳</span>
@@ -2418,13 +2418,12 @@
             ) ? '' : 'hidden' }}"
         >
 
-            {{-- Administrasi --}}
             <a
-                href="{{ route('admin.index') }}"
+                href="{{ route('backup.index') }}"
                 class="dropdown-link"
             >
-                <span>👨‍💼</span>
-                <span>Administrasi</span>
+                <span>💾</span>
+                <span>Backup & Restore</span>
             </a>
 
 
@@ -2433,7 +2432,7 @@
                 href="{{ route('admin.index') }}"
                 class="dropdown-link"
             >
-                <span>👥</span>
+                <span>👨</span>
                 <span>Staf</span>
             </a>
 
