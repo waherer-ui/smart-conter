@@ -342,37 +342,39 @@ class ProductController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    $products = $query
-        ->orderBy('name')
-        ->get();
+    $products = $query->orderBy('name')->get();
 
+$categories = Product::where(
+    'store_id',
+    $this->activeStoreId()
+)
+->select('category')
+->distinct()
+->orderBy('category')
+->pluck('category');
 
-    /*
-    |--------------------------------------------------------------------------
-    | KATEGORI
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| Paket aktif toko
+|--------------------------------------------------------------------------
+| Store::currentPlan() sudah menangani fallback ke FREE
+| jika tidak ada subscription aktif.
+*/
+$subscription = $activeStore?->owner?->subscription;
+$plan = $activeStore?->currentPlan();
 
-    $categories = Product::where(
-        'store_id',
-        $this->activeStoreId()
+return view(
+    'home',
+    compact(
+        'products',
+        'categories',
+        'category',
+        'search',
+        'activeStore',
+        'subscription',
+        'plan'
     )
-    ->select('category')
-    ->distinct()
-    ->orderBy('category')
-    ->pluck('category');
-
-
-    return view(
-        'home',
-        compact(
-            'products',
-            'categories',
-            'category',
-            'search',
-            'activeStore'
-        )
-    );
+);
 }
 
 

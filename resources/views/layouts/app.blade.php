@@ -1063,7 +1063,7 @@
                                             <span>🚚</span>
                                             <span>Supplier</span>
                                         </a>
-
+                                        
                                         <a
                               href="{{ route('purchase.index') }}"
                               class="dropdown-link
@@ -1179,7 +1179,7 @@
                                             <span>Pelanggan</span>
                                         </a>
 
-                                        {{--
+                                        {{-- 
                                             Saat ini Casbon diarahkan ke modul
                                             pelanggan karena route khusus Casbon
                                             belum ada pada kode asli.
@@ -2133,7 +2133,7 @@
                             <span>🚚</span>
                             <span>Supplier</span>
                         </a>
-
+                        
                         <a
                       href="{{ route('purchase.index') }}"
                       class="dropdown-link

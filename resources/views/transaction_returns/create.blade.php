@@ -326,7 +326,7 @@
             @if ($transaction->items->contains(function ($item) {
                 $returnedQuantity = $item->returnItems->sum('quantity');
                 $remainingQuantity = $item->quantity - $returnedQuantity;
-
+            
                 return $remainingQuantity > 0;
             }))
                 <button
