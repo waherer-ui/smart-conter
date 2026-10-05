@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard')
-@section('header', '🏠')
+@section('header', '')
 @section('mobile_action', 'scan')
 
 
@@ -14,94 +14,88 @@
 <style>
 
     /* =========================================================
-       SEARCH
+       SEARCH STYLING (Clean & Minimalist ala E-commerce)
     ========================================================= */
 
-    .dashboard-search {
+    .dashboard-search-form {
+        width: 100%;
+    }
+
+    .dashboard-search-box {
+        position: relative;
         display: flex;
         align-items: center;
-        gap: 6px;
         width: 100%;
     }
 
-    .dashboard-search-input {
-        position: relative;
-        flex: 1;
-        min-width: 0;
-    }
-
-    .dashboard-search-input input {
+    .dashboard-search-box input {
         width: 100%;
-        height: 40px;
-        padding: 0 12px 0 36px;
+        height: 38px;
+        /* Padding kiri untuk kaca pembesar, kanan untuk kamera */
+        padding: 0 38px 0 34px; 
         box-sizing: border-box;
 
-        background: rgba(17, 24, 39, .92);
-        border: 1px solid rgba(255, 255, 255, .08);
-        border-radius: 12px;
+        /* Background putih semi-transparan / clean */
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px; /* Membuat bentuknya melengkung halus (pill shape) */
 
-        color: white;
-        font-size: 12px;
+        color: #1f2937; /* Teks warna gelap agar kontras dengan background putih */
+        font-size: 13px;
         outline: none;
+        transition: all 0.2s ease;
     }
 
-    .dashboard-search-input input:focus {
-        border-color: rgba(99, 102, 241, .55);
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, .08);
+    .dashboard-search-box input:focus {
+        background: #ffffff;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
     }
 
-    .dashboard-search-input input::placeholder {
-        color: #6b7280;
+    .dashboard-search-box input::placeholder {
+        color: #9ca3af;
     }
 
-    .dashboard-search-icon {
+    /* Posisi Icon Kaca Pembesar di Kiri */
+    .search-icon-left {
         position: absolute;
         left: 12px;
         top: 50%;
         transform: translateY(-50%);
-
         color: #6b7280;
-        font-size: 18px;
+        font-size: 16px;
+        pointer-events: none;
         z-index: 2;
     }
 
-    .dashboard-search-scan,
-    .dashboard-search-submit {
-        height: 40px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, .08);
-
+    /* Posisi Tombol Kamera di Kanan dalam Box */
+    .search-icon-right {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        
+        background: transparent;
+        border: none;
+        width: 30px;
+        height: 30px;
+        
         display: flex;
         align-items: center;
         justify-content: center;
-
-        transition: .18s ease;
+        
+        color: #4b5563;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 50%;
+        z-index: 2;
+        transition: background 0.15s ease;
     }
 
-    .dashboard-search-scan {
-        width: 40px;
-        flex-shrink: 0;
-
-        background: rgba(31, 41, 55, .95);
-        color: white;
-        font-size: 16px;
+    .search-icon-right:active {
+        background: rgba(0, 0, 0, 0.08);
     }
 
-    .dashboard-search-submit {
-        padding: 0 13px;
-        flex-shrink: 0;
-
-        background: #4f46e5;
-        color: white;
-
-        font-size: 11px;
-        font-weight: 700;
-    }
-
-    .dashboard-search-scan:active,
-    .dashboard-search-submit:active {
-        transform: scale(.94);
-    }
 
 
     /* =========================================================
@@ -2239,23 +2233,23 @@
 @section('header_tools')
 
     {{-- =========================================================
-         MOBILE SEARCH
+         MOBILE SEARCH (Gaya E-commerce / Minimalis)
     ========================================================== --}}
 
-    <div class="mt-1 w-full">
+
 
         <form
             action="{{ route('dashboard') }}"
             method="GET"
-            class="dashboard-search"
+            class="dashboard-search-form"
         >
-
-            <div class="dashboard-search-input">
-
-                <span class="dashboard-search-icon">
+            <div class="dashboard-search-box">
+                <!-- Icon Kaca Pembesar di Kiri -->
+                <span class="search-icon-left">
                     ⌕
                 </span>
 
+                <!-- Input Pencarian -->
                 <input
                     type="text"
                     name="search"
@@ -2264,31 +2258,22 @@
                     autocomplete="off"
                 >
 
+                <!-- Icon Kamera di Kanan (Berfungsi sebagai tombol/trigger scan) -->
+                <button
+                    type="button"
+                    onclick="openQrScanner()"
+                    class="search-icon-right"
+                    aria-label="Scan QR / Barcode"
+                >
+                    📷
+                </button>
             </div>
-
-
-            <button
-                type="button"
-                onclick="openQrScanner()"
-                class="dashboard-search-scan"
-                aria-label="Scan QR / Barcode"
-            >
-                📷
-            </button>
-
-
-            <button
-                type="submit"
-                class="dashboard-search-submit"
-            >
-                Cari
-            </button>
-
         </form>
 
-    </div>
+  
 
 @endsection
+
 
 
 @section('content')

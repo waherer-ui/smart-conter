@@ -2567,13 +2567,13 @@
 ========================================================= --}}
 
 <header
-    class="relative bg-gray-800/50
-           border-b border-white/10"
+    class="relative bg-gray-900/40
+           border-b border-white/5"
 >
 
     <div
         class="mx-auto max-w-7xl
-               px-4 py-3
+               px-4 py-2
                sm:px-6 lg:px-8"
     >
 
