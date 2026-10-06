@@ -1860,253 +1860,124 @@
     }
 
 
-    /* =========================================================
-       DASHBOARD MENU BOX
-    ========================================================= */
+/* =========================================================
+   DASHBOARD MENU GRID
+========================================================= */
+
+.dashboard-menu-box {
+    min-height: 82px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 9px 4px;
+
+    border-radius: 15px;
+
+    background: rgba(255, 255, 255, 0.07);
+
+    border: 1px solid rgba(255, 255, 255, 0.09);
+
+    color: white;
+    text-decoration: none;
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        border-color 0.18s ease;
+}
+
+.dashboard-menu-box:hover {
+    background: rgba(255, 255, 255, 0.11);
+
+    border-color: rgba(255, 255, 255, 0.16);
+
+    transform: translateY(-2px);
+}
+
+.dashboard-menu-box:active {
+    transform: scale(0.96);
+}
+
+
+/* =========================================================
+   MENU ICON
+========================================================= */
+
+.dashboard-menu-icon {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: rgba(255, 255, 255, 0.09);
+
+    font-size: 19px;
+
+    line-height: 1;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   MENU LABEL
+========================================================= */
+
+.dashboard-menu-label {
+    font-size: 10.5px;
+    font-weight: 600;
+
+    color: rgba(255, 255, 255, 0.88);
+
+    line-height: 1.15;
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 639px) {
 
     .dashboard-menu-box {
-        min-height: 88px;
+        min-height: 76px;
 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        padding: 8px 3px;
 
-        gap: 7px;
+        gap: 6px;
 
-        padding: 12px 6px;
-
-        border-radius: 16px;
-
-        background: rgba(255, 255, 255, 0.075);
-
-        border: 1px solid rgba(255, 255, 255, 0.10);
-
-        color: white;
-
-        text-decoration: none;
-
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-
-        transition:
-            transform 0.18s ease,
-            background 0.18s ease,
-            border-color 0.18s ease;
-    }
-
-    .dashboard-menu-box:hover {
-        background: rgba(255, 255, 255, 0.12);
-
-        border-color: rgba(255, 255, 255, 0.18);
-
-        transform: translateY(-2px);
-    }
-
-    .dashboard-menu-box:active {
-        transform: scale(0.96);
+        border-radius: 14px;
     }
 
     .dashboard-menu-icon {
-        width: 42px;
-        height: 42px;
+        width: 34px;
+        height: 34px;
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        font-size: 18px;
 
-        border-radius: 13px;
-
-        background: rgba(255, 255, 255, 0.10);
-
-        font-size: 22px;
-
-        line-height: 1;
+        border-radius: 10px;
     }
 
     .dashboard-menu-label {
-        font-size: 11px;
-        font-weight: 600;
-
-        color: rgba(255, 255, 255, 0.90);
-
-        line-height: 1.2;
-
-        text-align: center;
-
-        white-space: nowrap;
+        font-size: 10px;
     }
-
-
-    /* =========================================================
-       MOBILE
-    ========================================================= */
-
-    @media (max-width: 639px) {
-
-        .dashboard-menu-box {
-            min-height: 82px;
-
-            padding: 10px 4px;
-
-            border-radius: 15px;
-        }
-
-        .dashboard-menu-icon {
-            width: 38px;
-            height: 38px;
-
-            font-size: 20px;
-
-            border-radius: 12px;
-        }
-
-        .dashboard-menu-label {
-            font-size: 10.5px;
-        }
-
-        .hero-package-card {
-            margin-top: 14px;
-            padding: 13px;
-
-            border-radius: 18px;
-        }
-
-        .hero-package-label {
-            font-size: 13px;
-        }
-
-        .hero-package-action {
-            padding: 7px 9px;
-
-            font-size: 10px;
-        }
-
-        .hero-package-status {
-            margin-top: 11px;
-            padding: 10px;
-
-            border-radius: 13px;
-        }
-
-        .hero-package-status strong {
-            font-size: 11px;
-        }
-
-        .hero-package-status small {
-            font-size: 9px;
-        }
-
-        .hero-feature-slide {
-            min-height: 48px;
-        }
-
-        .hero-feature-icon {
-            width: 33px;
-            height: 33px;
-
-            flex-basis: 33px;
-
-            font-size: 15px;
-        }
-
-        .hero-feature-slide strong {
-            font-size: 11px;
-        }
-
-        .hero-feature-slide small {
-            font-size: 9px;
-        }
-
-        #productModal {
-            align-items: flex-end !important;
-            justify-content: center !important;
-            padding: 12px !important;
-        }
-
-        .dashboard-product-modal {
-            width: 100% !important;
-            max-width: 430px !important;
-
-            max-height: 68dvh !important;
-            min-height: auto !important;
-
-            border-radius: 26px !important;
-
-            display: flex;
-            flex-direction: column;
-
-            margin: 0 auto;
-
-            position: relative;
-
-            overflow-y: auto;
-
-            padding-bottom: env(safe-area-inset-bottom);
-
-            box-shadow:
-                0 25px 70px rgba(0, 0, 0, .55),
-                0 0 0 1px rgba(255, 255, 255, .05);
-        }
-
-        .dashboard-product-modal::before {
-            content: "";
-
-            width: 42px;
-            height: 4px;
-
-            border-radius: 999px;
-
-            background: rgba(255, 255, 255, .18);
-
-            position: absolute;
-
-            top: 9px;
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            z-index: 20;
-        }
-
-        .dashboard-product-modal img {
-            max-height: 135px !important;
-
-            object-fit: contain !important;
-        }
-
-        .dashboard-product-modal .p-5,
-        .dashboard-product-modal .p-6 {
-            padding: 14px !important;
-        }
-
-        .dashboard-product-modal h2,
-        .dashboard-product-modal h3 {
-            font-size: 16px !important;
-            line-height: 1.3 !important;
-        }
-
-        .dashboard-product-modal .text-xl,
-        .dashboard-product-modal .text-2xl {
-            font-size: 19px !important;
-        }
-
-        .dashboard-product-modal .space-y-6 {
-            gap: 12px !important;
-        }
-
-        .dashboard-product-modal .space-y-4 {
-            gap: 10px !important;
-        }
-
-        .dashboard-product-modal button {
-            min-height: 40px;
-        }
-
-        .dashboard-product-modal button[type="button"] {
-            border-radius: 14px;
-        }
-    }
+}
 
 
     /* =========================================================
@@ -2226,6 +2097,217 @@
         }
 
     }
+    
+/* =========================================================
+   DASHBOARD MENU — ICON ONLY
+========================================================= */
+
+.dashboard-menu-box {
+    min-height: 78px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 6px 2px;
+
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    color: white;
+    text-decoration: none;
+
+    transition:
+        transform 0.18s ease,
+        opacity 0.18s ease;
+}
+
+.dashboard-menu-box:hover {
+    background: transparent !important;
+    border: none !important;
+
+    transform: translateY(-3px);
+}
+
+.dashboard-menu-box:active {
+    transform: scale(0.94);
+}
+
+
+/* =========================================================
+   MODERN ICON
+========================================================= */
+
+.dashboard-menu-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent !important;
+    border: none !important;
+
+    font-size: 0;
+
+    line-height: 1;
+
+    flex-shrink: 0;
+
+    filter:
+        drop-shadow(0 5px 10px rgba(0, 0, 0, 0.18));
+}
+
+.dashboard-menu-icon svg {
+    width: 34px;
+    height: 34px;
+
+    display: block;
+
+    stroke-width: 1.8;
+
+    transition:
+        transform 0.18s ease,
+        filter 0.18s ease;
+}
+
+.dashboard-menu-box:hover .dashboard-menu-icon svg {
+    transform: scale(1.08);
+
+    filter:
+        drop-shadow(0 4px 8px rgba(255, 255, 255, 0.12));
+}
+
+
+/* =========================================================
+   ICON COLORS
+========================================================= */
+
+.menu-icon-cart {
+    color: #35e0a1;
+}
+
+.menu-icon-product {
+    color: #ffb84d;
+}
+
+.menu-icon-attendance {
+    color: #b58cff;
+}
+
+.menu-icon-supplier {
+    color: #42b8ff;
+}
+
+.menu-icon-cashbon {
+    color: #ffd45a;
+}
+
+.menu-icon-customer {
+    color: #f472b6;
+}
+
+.menu-icon-transfer {
+    color: #42d9e8;
+}
+
+.menu-icon-payment {
+    color: #a78bfa;
+}
+
+
+/* =========================================================
+   LABEL
+========================================================= */
+
+.dashboard-menu-label {
+    font-size: 10.5px;
+
+    font-weight: 600;
+
+    color: rgba(255, 255, 255, 0.88);
+
+    line-height: 1.15;
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 639px) {
+
+    .dashboard-menu-box {
+        min-height: 72px;
+
+        padding: 5px 2px;
+
+        gap: 6px;
+    }
+
+    .dashboard-menu-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .dashboard-menu-icon svg {
+        width: 32px;
+        height: 32px;
+    }
+
+    .dashboard-menu-label {
+        font-size: 10px;
+    }
+}
+
+/* =========================================================
+   TOUCH / CLICK FEEDBACK
+========================================================= */
+
+.dashboard-menu-box {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.dashboard-menu-box:active {
+    transform: scale(0.92);
+    opacity: 0.78;
+}
+
+.dashboard-menu-box:active .dashboard-menu-icon svg {
+    transform: scale(0.88);
+    filter:
+        drop-shadow(0 2px 5px rgba(255, 255, 255, 0.20));
+    transition:
+        transform 0.08s ease,
+        filter 0.08s ease;
+}
+
+
+/* =========================================================
+   MOBILE TOUCH FEEDBACK
+========================================================= */
+
+@media (max-width: 639px) {
+
+    .dashboard-menu-box:active {
+        transform: scale(0.90);
+        opacity: 0.75;
+    }
+
+    .dashboard-menu-box:active .dashboard-menu-icon svg {
+        transform: scale(0.86);
+    }
+}
 
 </style>
 
@@ -2290,147 +2372,176 @@
             <div class="dashboard-hero-glow dashboard-hero-glow-2"></div>
 
 
-            {{-- =====================================================
-                 MENU GRID
-            ====================================================== --}}
+{{-- =====================================================
+     MENU GRID
+====================================================== --}}
 
-            <div class="grid grid-cols-4 gap-2.5 sm:gap-3">
+<div class="grid grid-cols-4 gap-2.5 sm:gap-3">
 
-                {{-- KASIR --}}
-                <a
-                    href="{{ route('kasir.index') }}"
-                    class="dashboard-menu-box"
-                >
+    {{-- KASIR --}}
+    <a
+        href="{{ route('kasir.index') }}"
+        class="dashboard-menu-box"
+    >
+        <span class="dashboard-menu-icon menu-icon-cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="20" r="1.5"/>
+                <circle cx="18" cy="20" r="1.5"/>
+                <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H6"/>
+                <path d="M8 12h10"/>
+            </svg>
+        </span>
 
-                    <span class="dashboard-menu-icon">
-                        🛒
-                    </span>
-
-                    <span class="dashboard-menu-label">
-                        Kasir
-                    </span>
-
-                </a>
-
-
-                {{-- PRODUK --}}
-                <a
-                    href="{{ route('produk.index') }}"
-                    class="dashboard-menu-box"
-                >
-
-                    <span class="dashboard-menu-icon">
-                        📦
-                    </span>
-
-                    <span class="dashboard-menu-label">
-                        Produk
-                    </span>
-
-                </a>
+        <span class="dashboard-menu-label">
+            Kasir
+        </span>
+    </a>
 
 
-                {{-- ABSEN --}}
-                <a
-                    href="{{ route('attendance.index') }}"
-                    class="dashboard-menu-box"
-                >
+    {{-- PRODUK --}}
+    <a
+        href="{{ route('produk.index') }}"
+        class="dashboard-menu-box"
+    >
+        <span class="dashboard-menu-icon menu-icon-product">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/>
+                <path d="m4.5 7.5 7.5 4 7.5-4"/>
+                <path d="M12 11.5V21"/>
+            </svg>
+        </span>
 
-                    <span class="dashboard-menu-icon">
-                        🕘
-                    </span>
-
-                    <span class="dashboard-menu-label">
-                        Absen
-                    </span>
-
-                </a>
-
-
-                {{-- SUPPLIER --}}
-                <a
-                    href="{{ route('supplier.index') }}"
-                    class="dashboard-menu-box"
-                >
-
-                    <span class="dashboard-menu-icon">
-                        🚚
-                    </span>
-
-                    <span class="dashboard-menu-label">
-                        Supplier
-                    </span>
-
-                </a>
+        <span class="dashboard-menu-label">
+            Produk
+        </span>
+    </a>
 
 
-                {{-- CASHBON --}}
-                <a
-                    href="{{ route('laporan.piutang') }}"
-                    class="dashboard-menu-box"
-                >
+    {{-- ABSEN --}}
+    <a
+        href="{{ route('attendance.index') }}"
+        class="dashboard-menu-box"
+    >
+        <span class="dashboard-menu-icon menu-icon-attendance">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="8.5"/>
+                <path d="M12 7v5l3 2"/>
+            </svg>
+        </span>
 
-                    <span class="dashboard-menu-icon">
-                        💰
-                    </span>
-
-                    <span class="dashboard-menu-label">
-                        Cashbon
-                    </span>
-
-                </a>
-
-
-                {{-- PELANGGAN --}}
-                <a
-                    href="{{ route('pelanggan.index') }}"
-                    class="dashboard-menu-box"
-                >
-
-                    <span class="dashboard-menu-icon">
-                        👥
-                    </span>
-
-                    <span class="dashboard-menu-label">
-                        Pelanggan
-                    </span>
-
-                </a>
+        <span class="dashboard-menu-label">
+            Absen
+        </span>
+    </a>
 
 
-                {{-- TRANSFER --}}
-                <a
-                    href="{{ route('transfer.index') }}"
-                    class="dashboard-menu-box"
-                >
+    {{-- SUPPLIER --}}
+    <a
+        href="{{ route('supplier.index') }}"
+        class="dashboard-menu-box"
+    >
+        <span class="dashboard-menu-icon menu-icon-supplier">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h11v11H3z"/>
+                <path d="M14 10h4l3 3v4h-7z"/>
+                <circle cx="7" cy="19" r="1.7"/>
+                <circle cx="18" cy="19" r="1.7"/>
+                <path d="M14 14h7"/>
+            </svg>
+        </span>
 
-                    <span class="dashboard-menu-icon">
-                        🔄
-                    </span>
-
-                    <span class="dashboard-menu-label">
-                        Transfer
-                    </span>
-
-                </a>
+        <span class="dashboard-menu-label">
+            Supplier
+        </span>
+    </a>
 
 
-                <a
-                    href="{{ route('payment-settings.index') }}"
-                    class="dashboard-menu-box"
-                >
+    {{-- CASHBON --}}
+    <a
+        href="{{ route('laporan.piutang') }}"
+        class="dashboard-menu-box"
+    >
+        <span class="dashboard-menu-icon menu-icon-cashbon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="8.5"/>
+                <path d="M12 7v10"/>
+                <path d="M15 9.5c-.7-.8-1.7-1.2-3-1.2-1.6 0-2.7.8-2.7 2s1 1.8 2.7 2.1c1.7.3 2.7 1 2.7 2.1s-1.1 2-2.8 2c-1.3 0-2.4-.5-3.1-1.4"/>
+            </svg>
+        </span>
 
-                    <span class="dashboard-menu-icon">
-                        💳
-                    </span>
+        <span class="dashboard-menu-label">
+            Cashbon
+        </span>
+    </a>
 
-                    <span class="dashboard-menu-label">
-                        Rekening
-                    </span>
 
-                </a>
+    {{-- PELANGGAN --}}
+    <a
+        href="{{ route('pelanggan.index') }}"
+        class="dashboard-menu-box"
+    >
+        <span class="dashboard-menu-icon menu-icon-customer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="8" r="3"/>
+                <path d="M3.5 19c.5-3.2 2.4-5 5.5-5s5 1.8 5.5 5"/>
+                <path d="M16 5.5a3 3 0 0 1 0 5.8"/>
+                <path d="M17 14c2.1.4 3.4 2 3.7 4.5"/>
+            </svg>
+        </span>
 
-            </div>
+        <span class="dashboard-menu-label">
+            Pelanggan
+        </span>
+    </a>
+
+
+    {{-- TRANSFER --}}
+    <a
+        href="{{ route('transfer.index') }}"
+        class="dashboard-menu-box"
+    >
+        <span class="dashboard-menu-icon menu-icon-transfer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 8h13"/>
+                <path d="m14 5 3 3-3 3"/>
+                <path d="M20 16H7"/>
+                <path d="m10 13-3 3 3 3"/>
+            </svg>
+        </span>
+
+        <span class="dashboard-menu-label">
+            Transfer
+        </span>
+    </a>
+
+
+    {{-- REKENING --}}
+    <a
+        href="{{ route('payment-settings.index') }}"
+        class="dashboard-menu-box"
+    >
+        <span class="dashboard-menu-icon menu-icon-payment">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="2"/>
+                <path d="M3 10h18"/>
+                <path d="M7 15h4"/>
+            </svg>
+        </span>
+
+        <span class="dashboard-menu-label">
+            Rekening
+        </span>
+    </a>
+
+</div>
 
         </section>
 

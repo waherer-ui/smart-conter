@@ -52,54 +52,38 @@ if ($activeStoreId) {
     }
 @endphp
 
-@section('header', '🛒 Kasir')
+@section('header', '🛒')
 @section('mobile_action', 'scan')
 
 @section('header_tools')
 <div class="mt-1">
-   {{-- PENCARIAN --}}
-        <div class="bg-gray-800/80 border border-white/10 rounded-xl p-1 shadow-xl backdrop-blur-md">
+    {{-- Search Produk --}}
+    <div class="bg-gray-800/80 border border-white/10 rounded-xl p-1 shadow-xl backdrop-blur-md">
+        <form action="{{ route('kasir.index') }}" method="GET" class="flex gap-2">
+            
+            @if(request('category') && request('category') != 'all')
+                <input type="hidden" name="category" value="{{ request('category') }}">
+            @endif
 
-            <form action="{{ route('kasir.index') }}" method="GET" class="flex gap-2">
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Cari produk atau SKU..."
+                class="flex-1 min-w-0 bg-gray-900 border border-white/10 rounded-xl px-3 py-2 text-white text-sm focus:ring-1 focus:ring-indigo-500 outline-none"
+                autocomplete="off"
+            >
 
-                <input
-                    type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    placeholder="Cari nama barang, kategori, atau kode SKU..."
-                    class="w-full bg-gray-900 border border-white/10 rounded-xl px-1 py-0.5 text-white text-sm focus:ring-1 focus:ring-indigo-500 outline-none"
-                >
-                                <button
-                    type="button"
-                    onclick="openQrScanner()"
-                    class="px-1 py-0.5 bg-black text-white rounded-lg hover:bg-gray-800"
-                >
-                    📷
-                </button>
-
-                <button
-                    type="submit"
-                    class="bg-indigo-600 hover:bg-indigo-500 text-white px-2 py-1 rounded-xl text-xs font-medium transition shadow"
-                >
-                    Cari
-                </button>
-
-                @if(request('search') || request('category'))
-
-                    <a
-                        href="{{ route('kasir.index') }}"
-                        class="bg-gray-700 hover:bg-gray-600 text-gray-300 px-1 py-1 rounded-xl text-xs font-medium flex items-center transition"
-                    >
-                        Reset
-                    </a>
-
-                @endif
-
-            </form>
-
-        </div>
+            <button
+                type="button"
+                onclick="openQrScanner()"
+                class="shrink-0 px-3 rounded-xl bg-gray-700 hover:bg-gray-600 text-white"
+            >
+                📷
+            </button>
+        </form>
+    </div>
 </div>
-
 @endsection
 
 @section('content')
@@ -112,65 +96,38 @@ if ($activeStoreId) {
     <div class="lg:col-span-2 space-y-4">
 
         {{-- KATEGORI --}}
-        <div class="bg-gray-800/80 border border-white/10 rounded-xl p-1 shadow-xl backdrop-blur-md">
+<div class="category-scroll">
 
-            <form
-                action="{{ route('kasir.index') }}"
-                method="GET"
-                id="kasirCategoryForm"
+    {{-- SEMUA --}}
+    <a
+        href="{{ route('kasir.index', array_filter([
+            'search' => request('search'),
+        ])) }}"
+        class="category-chip {{ (!$category || $category === 'all') ? 'active' : '' }}"
+    >
+        Semua
+    </a>
+
+    {{-- CATEGORY DARI DATABASE --}}
+    @isset($categories)
+
+        @foreach($categories as $cat)
+
+            <a
+                href="{{ route('kasir.index', array_filter([
+                    'search' => request('search'),
+                    'category' => $cat,
+                ])) }}"
+                class="category-chip {{ $category === $cat ? 'active' : '' }}"
             >
+                {{ $cat }}
+            </a>
 
-                @if(request('search'))
+        @endforeach
 
-                    <input
-                        type="hidden"
-                        name="search"
-                        value="{{ request('search') }}"
-                    >
+    @endisset
 
-                @endif
-
-                <div class="flex items-center gap-2">
-
-                    <span class="text-xs text-gray-400 font-medium">
-                        Kategori:
-                    </span>
-
-                    <select
-                        name="category"
-                        onchange="document.getElementById('kasirCategoryForm').submit()"
-                        class="w-full bg-gray-900 border border-white/10 rounded-xl px-1 py-2 text-white text-xs outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
-                    >
-
-                        <option
-                            value="all"
-                            {{ (!request('category') || request('category') == 'all') ? 'selected' : '' }}
-                        >
-                            Semua Kategori
-                        </option>
-
-                        @isset($categories)
-
-                            @foreach($categories as $cat)
-
-                                <option
-                                    value="{{ $cat }}"
-                                    {{ request('category') == $cat ? 'selected' : '' }}
-                                >
-                                    {{ $cat }}
-                                </option>
-
-                            @endforeach
-
-                        @endisset
-
-                    </select>
-
-                </div>
-
-            </form>
-
-        </div>
+</div>
 
 
         {{-- DAFTAR PRODUK --}}
@@ -1182,6 +1139,166 @@ STRUK
         }
 
     }
+    
+    /* =========================================================
+   CATEGORY FILTER CONTAINER
+========================================================= */
+
+.dashboard-category {
+    width: 100%;
+
+    margin-top: 8px;
+    margin-bottom: 10px;
+
+    padding: 5px;
+
+    background: rgba(17, 24, 39, .72);
+
+    border: 1px solid rgba(255, 255, 255, .07);
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 4px 14px rgba(0, 0, 0, .12);
+}
+
+
+/* =========================================================
+   CATEGORY HORIZONTAL SCROLL
+========================================================= */
+
+.category-scroll {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    width: 100%;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    white-space: nowrap;
+
+    padding: 1px;
+
+    scrollbar-width: none;
+
+    -webkit-overflow-scrolling: touch;
+
+    overscroll-behavior-x: contain;
+}
+
+.category-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* =========================================================
+   CATEGORY CHIP
+========================================================= */
+
+.category-chip {
+    flex: 0 0 auto;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 31px;
+
+    padding: 0 12px;
+
+    border-radius: 999px;
+
+    background: transparent;
+
+    border: 1px solid transparent;
+
+    color: #9ca3af;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+    transition:
+        background .18s ease,
+        color .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease,
+        transform .12s ease;
+}
+
+
+/* =========================================================
+   CATEGORY HOVER
+========================================================= */
+
+.category-chip:hover {
+    background: rgba(255, 255, 255, .05);
+
+    color: #e5e7eb;
+}
+
+
+/* =========================================================
+   CATEGORY ACTIVE
+========================================================= */
+
+.category-chip.active {
+    background: #4f46e5;
+
+    border-color: #6366f1;
+
+    color: #ffffff;
+
+    box-shadow:
+        0 4px 10px rgba(79, 70, 229, .25);
+}
+
+
+/* =========================================================
+   CATEGORY TAP
+========================================================= */
+
+.category-chip:active {
+    transform: scale(.95);
+}
+
+
+/* =========================================================
+   TABLET / DESKTOP
+========================================================= */
+
+@media (min-width: 640px) {
+
+    .dashboard-category {
+        margin-top: 10px;
+        margin-bottom: 12px;
+
+        padding: 6px;
+    }
+
+    .category-scroll {
+        gap: 7px;
+    }
+
+    .category-chip {
+        min-height: 33px;
+
+        padding: 0 14px;
+
+        font-size: 11px;
+    }
+
+}
 
 </style>
 
