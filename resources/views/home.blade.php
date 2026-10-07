@@ -95,9 +95,6 @@
     .search-icon-right:active {
         background: rgba(0, 0, 0, 0.08);
     }
-
-
-
     /* =========================================================
        DASHBOARD
     ========================================================= */
@@ -106,233 +103,6 @@
         width: 100%;
         padding-bottom: 7rem;
     }
-
-
-    /* =========================================================
-       HERO
-    ========================================================= */
-
-    .dashboard-hero {
-        position: relative;
-        overflow: hidden;
-
-        padding: 12px;
-
-        border-radius: 20px;
-
-        background:
-            linear-gradient(
-                145deg,
-                rgba(17, 24, 39, .98),
-                rgba(15, 23, 42, .92)
-            );
-
-        border: 1px solid rgba(255, 255, 255, .08);
-
-        box-shadow:
-            0 18px 45px rgba(0, 0, 0, .22);
-
-        margin-bottom: 8px !important;
-    }
-
-    .dashboard-hero-glow {
-        position: absolute;
-        border-radius: 999px;
-        filter: blur(35px);
-        pointer-events: none;
-    }
-
-    .dashboard-hero-glow-1 {
-        width: 120px;
-        height: 120px;
-
-        top: -55px;
-        right: -35px;
-
-        background: rgba(16, 185, 129, .14);
-    }
-
-    .dashboard-hero-glow-2 {
-        width: 120px;
-        height: 120px;
-
-        bottom: -65px;
-        left: -45px;
-
-        background: rgba(132, 204, 22, .10);
-    }
-
-
-    /* =========================================================
-       STORE / HERO
-    ========================================================= */
-
-    .store-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-
-        padding: 6px 9px;
-
-        border-radius: 999px;
-
-        background: rgba(255, 255, 255, .06);
-        border: 1px solid rgba(255, 255, 255, .08);
-
-        color: #d1d5db;
-
-        font-size: 9px;
-        font-weight: 700;
-    }
-
-    .store-status-dot {
-        width: 6px;
-        height: 6px;
-
-        border-radius: 999px;
-
-        background: #34d399;
-
-        box-shadow: 0 0 8px rgba(52, 211, 153, .7);
-
-        animation: storePulse 2s infinite;
-    }
-
-    @keyframes storePulse {
-        0%, 100% {
-            opacity: 1;
-        }
-
-        50% {
-            opacity: .45;
-        }
-    }
-
-    .hero-package-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-
-        padding: 7px 10px;
-
-        border-radius: 10px;
-
-        background: rgba(16, 185, 129, .92);
-
-        color: #07130e;
-
-        font-size: 9px;
-        font-weight: 800;
-
-        box-shadow:
-            0 7px 18px rgba(16, 185, 129, .15);
-    }
-
-    .hero-title {
-        margin-top: 14px;
-
-        color: white;
-
-        font-size: 19px;
-        line-height: 1.25;
-
-        font-weight: 800;
-        letter-spacing: -.025em;
-    }
-
-    .hero-title span {
-        color: #f8fafc;
-    }
-
-    .hero-description {
-        margin-top: 7px;
-
-        max-width: 500px;
-
-        color: #9ca3af;
-
-        font-size: 10px;
-        line-height: 1.6;
-    }
-
-    .hero-description img {
-        height: 16px;
-        width: auto;
-
-        display: inline-block;
-
-        vertical-align: middle;
-    }
-
-
-    /* =========================================================
-       PREMIUM STRIP
-    ========================================================= */
-
-    .hero-premium {
-        margin-top: 15px;
-        padding-top: 12px;
-
-        border-top: 1px solid rgba(255, 255, 255, .08);
-    }
-
-    .hero-premium-title {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 6px;
-
-        color: white;
-
-        font-size: 9px;
-        font-weight: 800;
-    }
-
-    .premium-badge {
-        padding: 3px 7px;
-
-        border-radius: 999px;
-
-        background: rgba(251, 191, 36, .12);
-        border: 1px solid rgba(251, 191, 36, .16);
-
-        color: #fcd34d;
-
-        font-size: 7px;
-    }
-
-    .hero-marquee-wrapper {
-        overflow: hidden;
-        margin-top: 9px;
-    }
-
-    .dashboard-marquee {
-        width: max-content;
-
-        display: flex;
-        align-items: center;
-        gap: 24px;
-
-        white-space: nowrap;
-
-        color: #9ca3af;
-
-        font-size: 9px;
-
-        animation:
-            dashboardMarquee 24s linear infinite;
-    }
-
-    @keyframes dashboardMarquee {
-        from {
-            transform: translateX(100%);
-        }
-
-        to {
-            transform: translateX(-100%);
-        }
-    }
-
 
 /* =========================================================
    CATEGORY FILTER CONTAINER
@@ -357,7 +127,6 @@
     box-shadow:
         0 4px 14px rgba(0, 0, 0, .12);
 }
-
 
 /* =========================================================
    CATEGORY HORIZONTAL SCROLL
@@ -493,8 +262,6 @@
     }
 
 }
-
-
     /* =========================================================
        PRODUCTS HEADER
     ========================================================= */
@@ -835,7 +602,6 @@
 
         font-weight: 900;
     }
-
 
     /* =========================================================
        PRODUCT ACTION
@@ -1615,371 +1381,6 @@
             0 8px 20px rgba(49, 46, 129, .25);
     }
 
-
-    /* =========================================================
-       HERO PACKAGE CARD
-    ========================================================= */
-
-    .hero-package-card {
-        margin-top: 18px;
-        padding: 15px;
-
-        border-radius: 20px;
-
-        background:
-            linear-gradient(
-                145deg,
-                rgba(255, 255, 255, .10),
-                rgba(255, 255, 255, .045)
-            );
-
-        border: 1px solid rgba(255, 255, 255, .10);
-
-        box-shadow:
-            0 14px 35px rgba(0, 0, 0, .18),
-            inset 0 1px 0 rgba(255, 255, 255, .05);
-
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-    }
-
-    .hero-package-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-
-        gap: 12px;
-    }
-
-    .hero-package-label {
-        font-size: 14px;
-        font-weight: 800;
-
-        color: #fff;
-
-        letter-spacing: .2px;
-    }
-
-    .hero-package-expiry {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-
-        margin-top: 4px;
-
-        font-size: 11px;
-        color: rgba(255, 255, 255, .65);
-    }
-
-    .hero-active-dot {
-        width: 6px;
-        height: 6px;
-
-        border-radius: 50%;
-
-        background: #22c55e;
-
-        box-shadow:
-            0 0 8px rgba(34, 197, 94, .7);
-    }
-
-    .hero-package-action {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-
-        padding: 8px 11px;
-
-        border-radius: 11px;
-
-        font-size: 11px;
-        font-weight: 800;
-
-        color: #fff;
-
-        background: rgba(255, 255, 255, .09);
-        border: 1px solid rgba(255, 255, 255, .10);
-
-        text-decoration: none;
-
-        white-space: nowrap;
-
-        transition: .2s ease;
-    }
-
-    .hero-package-action:hover {
-        background: rgba(255, 255, 255, .15);
-
-        transform: translateY(-1px);
-    }
-
-    .hero-package-status {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        margin-top: 13px;
-        padding: 11px 12px;
-
-        border-radius: 14px;
-
-        background: rgba(0, 0, 0, .14);
-    }
-
-    .hero-package-status > span {
-        font-size: 20px;
-        line-height: 1;
-    }
-
-    .hero-package-status strong {
-        display: block;
-
-        font-size: 12px;
-        font-weight: 800;
-
-        color: #fff;
-    }
-
-    .hero-package-status small {
-        display: block;
-
-        margin-top: 2px;
-
-        font-size: 10px;
-        line-height: 1.4;
-
-        color: rgba(255, 255, 255, .58);
-    }
-
-
-    /* =========================================================
-       FEATURE SLIDER
-    ========================================================= */
-
-    .hero-feature-slider {
-        margin-top: 12px;
-
-        overflow: hidden;
-    }
-
-    .hero-feature-track {
-        position: relative;
-
-        min-height: 52px;
-    }
-
-    .hero-feature-slide {
-        display: none;
-        align-items: center;
-        gap: 10px;
-
-        min-height: 52px;
-
-        animation:
-            heroFeatureIn .35s ease;
-    }
-
-    .hero-feature-slide.active {
-        display: flex;
-    }
-
-    .hero-feature-icon {
-        width: 36px;
-        height: 36px;
-
-        flex: 0 0 36px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        border-radius: 11px;
-
-        background: rgba(255, 255, 255, .08);
-
-        font-size: 17px;
-    }
-
-    .hero-feature-slide strong {
-        display: block;
-
-        font-size: 12px;
-        font-weight: 800;
-
-        color: #fff;
-    }
-
-    .hero-feature-slide small {
-        display: block;
-
-        margin-top: 2px;
-
-        font-size: 10px;
-        line-height: 1.35;
-
-        color: rgba(255, 255, 255, .55);
-    }
-
-    .hero-feature-dots {
-        display: flex;
-        justify-content: center;
-        gap: 5px;
-
-        margin-top: 8px;
-    }
-
-    .hero-feature-dots span {
-        width: 5px;
-        height: 5px;
-
-        border-radius: 50%;
-
-        background: rgba(255, 255, 255, .20);
-
-        transition: .25s ease;
-    }
-
-    .hero-feature-dots span.active {
-        width: 14px;
-
-        border-radius: 999px;
-
-        background: rgba(255, 255, 255, .75);
-    }
-
-    @keyframes heroFeatureIn {
-        from {
-            opacity: 0;
-            transform: translateY(5px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-
-/* =========================================================
-   DASHBOARD MENU GRID
-========================================================= */
-
-.dashboard-menu-box {
-    min-height: 82px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    gap: 6px;
-
-    padding: 9px 4px;
-
-    border-radius: 15px;
-
-    background: rgba(255, 255, 255, 0.07);
-
-    border: 1px solid rgba(255, 255, 255, 0.09);
-
-    color: white;
-    text-decoration: none;
-
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
-    transition:
-        transform 0.18s ease,
-        background 0.18s ease,
-        border-color 0.18s ease;
-}
-
-.dashboard-menu-box:hover {
-    background: rgba(255, 255, 255, 0.11);
-
-    border-color: rgba(255, 255, 255, 0.16);
-
-    transform: translateY(-2px);
-}
-
-.dashboard-menu-box:active {
-    transform: scale(0.96);
-}
-
-
-/* =========================================================
-   MENU ICON
-========================================================= */
-
-.dashboard-menu-icon {
-    width: 36px;
-    height: 36px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 11px;
-
-    background: rgba(255, 255, 255, 0.09);
-
-    font-size: 19px;
-
-    line-height: 1;
-
-    flex-shrink: 0;
-}
-
-
-/* =========================================================
-   MENU LABEL
-========================================================= */
-
-.dashboard-menu-label {
-    font-size: 10.5px;
-    font-weight: 600;
-
-    color: rgba(255, 255, 255, 0.88);
-
-    line-height: 1.15;
-
-    text-align: center;
-
-    white-space: nowrap;
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 639px) {
-
-    .dashboard-menu-box {
-        min-height: 76px;
-
-        padding: 8px 3px;
-
-        gap: 6px;
-
-        border-radius: 14px;
-    }
-
-    .dashboard-menu-icon {
-        width: 34px;
-        height: 34px;
-
-        font-size: 18px;
-
-        border-radius: 10px;
-    }
-
-    .dashboard-menu-label {
-        font-size: 10px;
-    }
-}
-
-
     /* =========================================================
        TABLET / DESKTOP
     ========================================================= */
@@ -2001,18 +1402,6 @@
 
         .dashboard-mobile {
             padding-bottom: 100px;
-        }
-
-        .dashboard-hero {
-            padding: 24px;
-        }
-
-        .hero-title {
-            font-size: 26px;
-        }
-
-        .hero-description {
-            font-size: 13px;
         }
 
         .product-grid {
@@ -2311,15 +1700,11 @@
 
 </style>
 
-
 @section('header_tools')
 
     {{-- =========================================================
          MOBILE SEARCH (Gaya E-commerce / Minimalis)
     ========================================================== --}}
-
-
-
         <form
             action="{{ route('dashboard') }}"
             method="GET"
@@ -2351,27 +1736,12 @@
                 </button>
             </div>
         </form>
-
-  
-
 @endsection
-
-
 
 @section('content')
 
     <div class="dashboard-mobile">
-
-        {{-- =========================================================
-             HERO / MENU
-        ========================================================== --}}
-
-        <section class="dashboard-hero">
-
-            <div class="dashboard-hero-glow dashboard-hero-glow-1"></div>
-            <div class="dashboard-hero-glow dashboard-hero-glow-2"></div>
-
-
+        <section class="">
 {{-- =====================================================
      MENU GRID
 ====================================================== --}}
@@ -2394,7 +1764,7 @@
         </span>
 
         <span class="dashboard-menu-label">
-            Kasir
+            Keranjang
         </span>
     </a>
 
@@ -2414,7 +1784,7 @@
         </span>
 
         <span class="dashboard-menu-label">
-            Produk
+           Restock Produk
         </span>
     </a>
 
@@ -2517,7 +1887,7 @@
         </span>
 
         <span class="dashboard-menu-label">
-            Transfer
+            Transfer Produk
         </span>
     </a>
 

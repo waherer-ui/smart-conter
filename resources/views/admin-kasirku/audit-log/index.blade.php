@@ -16,7 +16,7 @@
                 </h1>
 
                 <p class="text-sm text-gray-400 mt-1">
-                    Riwayat aktivitas seluruh platform KasirKU
+                    Riwayat aktivitas seluruh platform Kasir½M
                 </p>
             </div>
 

@@ -14,7 +14,7 @@
     {{-- HEADER --}}
     <div>
         <h1 class="text-2xl font-bold text-white">
-            Paket KasirKU
+            Paket Kasir½M
         </h1>
 
         <p class="text-sm text-gray-400 mt-1">
