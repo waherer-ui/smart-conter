@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Tambah Supplier')
-@section('header', '🚚')
 
 @section('content')
 

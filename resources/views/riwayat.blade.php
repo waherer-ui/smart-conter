@@ -3,8 +3,6 @@
 @section('title', 'Riwayat Transaksi')
 @section('mobile_action', 'scan')
 
-@section('header', 'Riwayat Transaksi')
-
 @section('content')
 
 <div class="space-y-6">

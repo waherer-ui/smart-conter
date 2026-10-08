@@ -1,54 +1,44 @@
 @extends('layouts.app')
 
-@section('header', '📦')
 @section('mobile_action', 'tambah')
-
-@section('header_tools')
-
-    <div class="mt-1">
-        <div class="flex flex-wrap gap-1">
-
-            {{-- =====================================================
-                 CETAK LABEL HARGA
-            ====================================================== --}}
-            <a
-                href="{{ route('cetaklabel') }}"
-                class="inline-flex items-center gap-2
-                       bg-emerald-600 hover:bg-emerald-500
-                       text-white text-xs font-medium
-                       px-2.5 py-2
-                       rounded-xl
-                       transition
-                       shadow"
-            >
-                🏷️ Cetak Label
-            </a>
-
-
-            {{-- =====================================================
-                 TAMBAH PRODUK
-            ====================================================== --}}
-            <button
-                type="button"
-                onclick="toggleProductModal()"
-                class="inline-flex items-center
-                       bg-indigo-600 hover:bg-indigo-500
-                       text-white text-xs font-medium
-                       px-2.5 py-2
-                       rounded-xl
-                       transition
-                       shadow"
-            >
-                + Tambah Produk / Servis
-            </button>
-
-        </div>
-    </div>
-
-@endsection
-
-
 @section('content')
+
+<div class="mt-1 mb-3">
+    <div class="flex flex-wrap items-center gap-2">
+
+        {{-- TAMBAH PRODUK --}}
+        <button
+            type="button"
+            onclick="toggleProductModal()"
+            class="inline-flex items-center justify-center gap-1.5
+                   bg-indigo-600 hover:bg-indigo-500
+                   text-white text-xs font-semibold
+                   px-3 py-2
+                   rounded-xl
+                   transition
+                   shadow-sm"
+        >
+            <span class="text-sm leading-none">＋</span>
+            <span>Tambah Produk / Servis</span>
+        </button>
+
+        {{-- CETAK LABEL --}}
+        <a
+            href="{{ route('cetaklabel') }}"
+            class="inline-flex items-center justify-center gap-1.5
+                   bg-emerald-600/90 hover:bg-emerald-500
+                   text-white text-xs font-semibold
+                   px-3 py-2
+                   rounded-xl
+                   transition
+                   shadow-sm"
+        >
+            <span>🏷️</span>
+            <span>Cetak Label</span>
+        </a>
+
+    </div>
+</div>
 
 <div class="space-y-6 pb-12">
 
@@ -313,38 +303,38 @@
                                uppercase tracking-wider"
                     >
 
-                        <th class="py-3 px-4">
-                            Kode / SKU
-                        </th>
+<th class="py-2.5 px-3 sm:px-4 whitespace-nowrap">
+    Kode / SKU
+</th>
 
-                        <th class="py-3 px-4">
-                            Nama & Merek
-                        </th>
+<th class="py-2.5 px-3 sm:px-4 whitespace-nowrap">
+    Nama & Merek
+</th>
 
-                        <th class="py-3 px-4">
-                            Kategori
-                        </th>
+<th class="py-2.5 px-3 sm:px-4 whitespace-nowrap">
+    Kategori
+</th>
 
-                        <th class="py-3 px-4">
-                            Harga Modal
-                        </th>
+<th class="py-2.5 px-3 sm:px-4 whitespace-nowrap">
+    Harga Modal
+</th>
 
-                        <th class="py-3 px-4">
-                            Harga Jual
-                        </th>
+<th class="py-2.5 px-3 sm:px-4 whitespace-nowrap">
+    Harga Jual
+</th>
 
-                        <th class="py-3 px-4">
-                            Ketersediaan
-                        </th>
+<th class="py-2.5 px-3 sm:px-4 whitespace-nowrap">
+    Ketersediaan
+</th>
 
                         @if(
                             session('user_role') === 'admin' ||
                             !session('logged_in')
                         )
 
-                            <th class="py-3 px-4 text-right">
-                                Aksi
-                            </th>
+<th class="py-2.5 px-3 sm:px-4 text-right whitespace-nowrap">
+    Aksi
+</th>
 
                         @endif
 
@@ -361,10 +351,10 @@
 
                     @forelse($products as $p)
 
-                        <tr class="hover:bg-white/5 transition">
+                      <tr class="hover:bg-white/[0.035] transition-colors duration-150">
 
                             {{-- SKU --}}
-                            <td class="py-3.5 px-4">
+                            <td class="py-3 px-3 sm:px-4">
 
                                 <span
                                     class="font-mono
@@ -378,7 +368,7 @@
 
 
                             {{-- NAMA --}}
-                            <td class="py-3.5 px-4">
+                            <td class="py-3 px-3 sm:px-4">
 
                                 <div class="flex items-center gap-3">
 
@@ -447,7 +437,7 @@
 
 
                             {{-- KATEGORI --}}
-                            <td class="py-3.5 px-4">
+                            <td class="py-3 px-3 sm:px-4">
 
                                 <span
                                     class="px-2.5 py-1
@@ -465,10 +455,7 @@
 
                             {{-- HARGA MODAL --}}
                             <td
-                                class="py-3.5 px-4
-                                       text-gray-400
-                                       text-xs"
-                            >
+                              class="py-3 px-3 sm:px-4 text-gray-400 text-xs">
 
                                 Rp {{ number_format(
                                     $p->capital_price,
@@ -481,11 +468,7 @@
 
 
                             {{-- HARGA JUAL --}}
-                            <td
-                                class="py-3.5 px-4
-                                       text-emerald-400
-                                       font-medium"
-                            >
+                            <td class="py-3 px-3 sm:px-4 text-emerald-400 font-medium">
 
                                 Rp {{ number_format(
                                     $p->price,
@@ -501,7 +484,7 @@
                                  INDIKATOR STOK
                             ================================================== --}}
 
-                            <td class="py-3.5 px-4">
+                            <td class="py-3 px-3 sm:px-4">
 
                                 @if($p->stock <= 0)
 
@@ -640,7 +623,7 @@
                                 !session('logged_in')
                             )
 
-                                <td class="py-3.5 px-4">
+                                <td class="py-3 px-3 sm:px-4">
 
                                     <div
                                         class="flex

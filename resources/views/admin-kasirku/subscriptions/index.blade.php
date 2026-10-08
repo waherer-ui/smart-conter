@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Langganan KasirKU')
-@section('header', 'Langganan')
-
+@section('title', 'Langganan Kasir½M')
 @section('content')
 
 <div class="space-y-6">{{-- HEADER --}}
@@ -10,11 +8,11 @@
 
     <div>
         <h1 class="text-2xl font-bold text-white">
-            Langganan KasirKU
+            Langganan Kasir½M
         </h1>
 
         <p class="text-sm text-gray-400 mt-1">
-            Pantau paket dan status langganan seluruh pemilik akun KasirKU.
+            Pantau paket dan status langganan seluruh pemilik akun Kasir½M.
         </p>
     </div>
 

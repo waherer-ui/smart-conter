@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Paket KasirKU')
-@section('header', 'Paket KasirKU')
+@section('title', 'Paket Kasir½M')
 
 @section('content')
 

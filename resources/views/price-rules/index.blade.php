@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-@section('header', '🏷️ Harga Khusus & Promosi')
-
 @section('content')
 
 <div class="max-w-2xl mx-auto px-4 py-4">

@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Pengaturan Admin KasirKU')
-@section('header', 'Pengaturan')
-
+@section('title', 'Pengaturan Admin Kasir½M')
 @section('content')
 
 <div class="max-w-3xl mx-auto space-y-6">
@@ -10,7 +8,7 @@
     {{-- HEADER --}}
     <div>
         <h1 class="text-2xl font-bold text-white">
-            Pengaturan Admin KasirKU
+            Pengaturan Admin Kasir½M
         </h1>
 
         <p class="text-sm text-gray-400 mt-1">
@@ -28,7 +26,7 @@
             </h2>
 
             <p class="text-sm text-gray-400 mt-1">
-                Ubah nama dan email akun Admin KasirKU.
+                Ubah nama dan email akun Admin Kasir½M.
             </p>
         </div>
 
@@ -107,7 +105,7 @@
             </h2>
 
             <p class="text-sm text-gray-400 mt-1">
-                Ganti password Admin KasirKU secara berkala untuk menjaga keamanan akun.
+                Ganti password Admin Kasir½M secara berkala untuk menjaga keamanan akun.
             </p>
         </div>
 

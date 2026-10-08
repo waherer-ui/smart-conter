@@ -1,10 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Dashboard')
-@section('header', '')
 @section('mobile_action', 'scan')
-
-
 {{-- =============================================================
      DASHBOARD CSS
      Diletakkan SEBELUM HTML dashboard agar tidak terjadi
@@ -1700,7 +1697,7 @@
 
 </style>
 
-@section('header_tools')
+@section('content')
 
     {{-- =========================================================
          MOBILE SEARCH (Gaya E-commerce / Minimalis)
@@ -1736,9 +1733,6 @@
                 </button>
             </div>
         </form>
-@endsection
-
-@section('content')
 
     <div class="dashboard-mobile">
         <section class="">

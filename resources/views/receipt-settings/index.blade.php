@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Pengaturan Struk')
-@section('header', 'Pengaturan Struk')
 
 @section('content')
 

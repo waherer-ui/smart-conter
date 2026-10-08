@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Paket')
-@section('header', '📦')
-
 @section('content')
 
 <div class="space-y-6">

@@ -52,13 +52,12 @@ if ($activeStoreId) {
     }
 @endphp
 
-@section('header', '🛒')
 @section('mobile_action', 'scan')
+@section('content')
 
-@section('header_tools')
 <div class="mt-1">
     {{-- Search Produk --}}
-    <div class="bg-gray-800/80 border border-white/10 rounded-xl p-1 shadow-xl backdrop-blur-md">
+    <div class="bg-gray-800/80 border border-white/10 mb-4 rounded-xl p-1 shadow-xl backdrop-blur-md">
         <form action="{{ route('kasir.index') }}" method="GET" class="flex gap-2">
             
             @if(request('category') && request('category') != 'all')
@@ -84,9 +83,6 @@ if ($activeStoreId) {
         </form>
     </div>
 </div>
-@endsection
-
-@section('content')
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-12">
 

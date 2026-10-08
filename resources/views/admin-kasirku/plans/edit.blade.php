@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Edit Paket')
-@section('header', '📦')
-
 @section('content')
 
 <div class="max-w-4xl mx-auto space-y-6">{{-- =====================================================

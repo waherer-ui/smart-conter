@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Detail Supplier')
-@section('header', '🚚')
-@section('header_tools')
+@section('content')
 
 <form
     id="supplierDateFilterForm"
@@ -163,10 +162,6 @@
     </form>
 
 </div>
-
-@endsection
-
-@section('content')
 
 <div class="max-w-2xl mx-auto space-y-4">
 

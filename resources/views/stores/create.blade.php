@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Tambah Toko')
-@section('header', 'Tambah Toko / Cabang')
 
 @section('content')
 

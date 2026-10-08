@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Retur Penjualan')
-@section('header', '↩️')
 
 @section('content')
 

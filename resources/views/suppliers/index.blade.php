@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Supplier')
-@section('header', '🚚')
 
 @section('content')
 

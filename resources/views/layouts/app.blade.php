@@ -259,7 +259,6 @@
 
 </head>
 
-
 <body class="min-h-screen text-gray-200 flex flex-col">
 
 {{-- =========================================================
@@ -277,23 +276,21 @@
 @if(session('logged_in'))
 
     <div
-        id="kasirku-splash"
+        id="Kasir½M-splash"
         class="fixed inset-0 z-[9999]
-               hidden items-center justify-center
+               hidden
                bg-gray-900
                opacity-0
                transition-opacity duration-500"
     >
 
-        <div class="w-full h-full flex items-center justify-center">
-
-            <img
-                src="{{ asset('images/Icon-Splash.png') }}"
-                alt="Kasir½M"
-                class="w-full h-full object-cover"
-            >
-
-        </div>
+        <img
+            src="{{ asset('images/Icon-Splash.png') }}"
+            alt="Kasir½M"
+            class="absolute inset-0
+                   w-full h-full
+                   object-cover"
+        >
 
     </div>
 
@@ -1560,44 +1557,6 @@
 
 
 {{-- =========================================================
-     HEADER HALAMAN
-========================================================= --}}
-
-<header
-    class="relative bg-gray-900/40
-           border-b border-white/5"
->
-
-    <div
-        class="mx-auto max-w-7xl
-               px-4 py-2
-               sm:px-6 lg:px-8"
-    >
-
-        <div class="flex items-center gap-4">
-
-            <h1
-                class="text-2xl sm:text-3xl
-                       font-bold tracking-tight
-                       text-white shrink-0"
-            >
-                @yield('header', 'Dashboard')
-            </h1>
-
-            <div class="flex-1 min-w-0">
-
-                @yield('header_tools')
-
-            </div>
-
-        </div>
-
-    </div>
-
-</header>
-
-
-{{-- =========================================================
      MAIN CONTENT
 ========================================================= --}}
 
@@ -2541,7 +2500,7 @@ document.addEventListener(
 
         const splash =
             document.getElementById(
-                'kasirku-splash'
+                'Kasir½M-splash'
             );
 
         if (!splash) {
@@ -2550,7 +2509,7 @@ document.addEventListener(
 
         const splashShown =
             sessionStorage.getItem(
-                'kasirku_splash_shown'
+                'Kasir½M_splash_shown'
             );
 
         if (splashShown) {
@@ -2561,7 +2520,7 @@ document.addEventListener(
         }
 
         sessionStorage.setItem(
-            'kasirku_splash_shown',
+            'Kasir½M_splash_shown',
             '1'
         );
 
@@ -2612,7 +2571,6 @@ document.addEventListener(
 );
 
 </script>
-
 
 </body>
 </html>

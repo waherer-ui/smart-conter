@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Semua Aktivitas')
-
 @section('content')
 
 <div class="min-h-screen bg-gray-900 text-white">

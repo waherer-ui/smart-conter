@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Detail Pembelian')
-@section('header', '🛒')
 
 @section('content')
 

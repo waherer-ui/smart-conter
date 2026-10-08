@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Tambah Pembelian')
-@section('header', '🛒')
-
 @section('content')
 
 <div class="max-w-3xl mx-auto space-y-4">

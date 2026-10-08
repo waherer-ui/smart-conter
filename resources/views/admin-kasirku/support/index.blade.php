@@ -17,7 +17,7 @@
             </h1>
 
             <p class="mt-1 text-sm text-gray-400">
-                Kelola tiket bantuan dan keluhan dari pemilik toko KasirKU.
+                Kelola tiket bantuan dan keluhan dari pemilik toko Kasir½M.
             </p>
         </div>
 

@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Admin KasirKU')
-@section('header', 'Admin KasirKU')
-
+@section('title', 'Admin Kasir½M')
 @section('content')
 
 <div class="space-y-6">{{-- =========================================================
@@ -22,11 +20,11 @@
 
         <div>
             <h1 class="text-2xl font-bold text-white">
-                Dashboard Admin KasirKU
+                Dashboard Admin Kasir½M
             </h1>
 
             <p class="text-sm text-gray-400 mt-1">
-                Pusat kontrol dan monitoring platform KasirKU.
+                Pusat kontrol dan monitoring platform Kasir½M.
             </p>
         </div>
 

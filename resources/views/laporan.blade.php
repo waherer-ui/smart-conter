@@ -2,10 +2,10 @@
 
 @section('title', 'Laporan Penjualan')
 @section('mobile_action', 'scan')
-@section('header', ' 📊')
-@section('header_tools')
 
-    <div class="flex items-center gap-2 overflow-x-auto max-w-full">
+@section('content')
+
+<div class="flex items-center gap-2 overflow-x-auto max-w-full mb-4">
 
         <a
             href="{{ route('laporan', array_merge(request()->query(), ['tab' => 'laporan'])) }}"
@@ -59,10 +59,6 @@
         </a>
 
     </div>
-
-@endsection
-
-@section('content')
 
 <div class="space-y-6">
 
@@ -816,23 +812,23 @@ document.addEventListener('DOMContentLoaded', function () {
     {{-- =========================================================
          RINGKASAN HARI INI
     ========================================================== --}}
-    <div class="mb-5">
+<div class="mb-4">
 
-            <h2 class="text-lg font-semibold text-white">
-                Ringkasan Hari Ini
-            </h2>
+    <h2 class="text-base sm:text-lg font-semibold text-white">
+        Ringkasan Hari Ini
+    </h2>
 
-            <p class="text-sm text-gray-400 mt-1">
-                {{ $startDate->format('d/m/Y') }}
-                -
-                {{ $endDate->format('d/m/Y') }}
-            </p>
+    <p class="text-xs text-gray-400 mt-1">
+        {{ $startDate->format('d/m/Y') }}
+        -
+        {{ $endDate->format('d/m/Y') }}
+    </p>
 
-        </div>
+</div>
 
-    <div class="grid grid-cols-2 md:grid-cols-2
-                {{ $isAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-3' }}
-                gap-1">
+<div class="grid grid-cols-2
+            {{ $isAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-3' }}
+            gap-2">
 
 
 
@@ -843,7 +839,7 @@ document.addEventListener('DOMContentLoaded', function () {
         @if($isAdmin)
 
             {{-- Pendapatan --}}
-            <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
                 <p class="text-sm text-gray-400">
                     Pendapatan Hari Ini
@@ -856,7 +852,7 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
 
             {{-- Utang Pelanggan --}}
-              <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
                   <p class="text-sm text-gray-400">
                       Utang Pelanggan Hari Ini
@@ -870,7 +866,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
               {{-- Pelunasan Piutang --}}
-              <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
                   <p class="text-sm text-gray-400">
                       Pelunasan Piutang Hari Ini
@@ -884,7 +880,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             {{-- HPP --}}
-            <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
                 <p class="text-sm text-gray-400">
                     HPP Hari Ini
@@ -898,7 +894,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             {{-- Laba Kotor --}}
-            <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
                 <p class="text-sm text-gray-400">
                     Laba Kotor Hari Ini
@@ -917,7 +913,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             {{-- Pengeluaran --}}
-            <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
                 <p class="text-sm text-gray-400">
                     Pengeluaran Hari Ini
@@ -931,7 +927,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             {{-- Setoran --}}
-            <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
                 <p class="text-sm text-gray-400">
                     Setoran Hari Ini
@@ -950,7 +946,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             {{-- Laba Bersih --}}
-            <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
                 <p class="text-sm text-gray-400">
                     Laba Bersih Hari Ini
@@ -976,7 +972,7 @@ document.addEventListener('DOMContentLoaded', function () {
             ================================================== --}}
 
             {{-- Pendapatan --}}
-            <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
                 <p class="text-sm text-gray-400">
                     Pendapatan Hari Ini
@@ -1017,7 +1013,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             {{-- Pengeluaran --}}
-            <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
                 <p class="text-sm text-gray-400">
                     Pengeluaran Hari Ini
@@ -1031,7 +1027,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             {{-- Setoran --}}
-            <div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
                 <p class="text-sm text-gray-400">
                     Setoran Hari Ini
@@ -1058,7 +1054,7 @@ document.addEventListener('DOMContentLoaded', function () {
      FILTER LAPORAN
 ========================================================== --}}
 
-<div class="bg-gray-800 p-5 rounded-xl border border-white/10">
+<div class="bg-gray-800 p-4 sm:p-5 rounded-xl border border-white/10">
 
     <div class="mb-3">
 
@@ -1116,7 +1112,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         id="cashier_id"
                         name="cashier_id"
                         class="w-full bg-gray-900 border border-white/10
-                               rounded-lg px-3 py-2.5 text-white
+                               rounded-xl px-3 py-2.5 text-white
                                focus:outline-none focus:border-blue-500"
                     >
 
@@ -1162,7 +1158,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     name="period"
                     onchange="toggleReportCustomDate()"
                     class="w-full bg-gray-900 border border-white/10
-                           rounded-lg px-3 py-2.5 text-white
+                           rounded-xl px-3 py-2.5 text-white
                            focus:outline-none focus:border-blue-500"
                 >
 
@@ -1234,7 +1230,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         name="start_date"
                         value="{{ request('start_date', $startDate->format('Y-m-d')) }}"
                         class="w-full bg-gray-900 border border-white/10
-                               rounded-lg px-3 py-2.5 text-white
+                               rounded-xl px-3 py-2.5 text-white
                                focus:outline-none focus:border-blue-500"
                     >
 
@@ -1256,7 +1252,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         name="end_date"
                         value="{{ request('end_date', $endDate->format('Y-m-d')) }}"
                         class="w-full bg-gray-900 border border-white/10
-                               rounded-lg px-3 py-2.5 text-white
+                               rounded-xl px-3 py-2.5 text-white
                                focus:outline-none focus:border-blue-500"
                     >
 
@@ -1276,7 +1272,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <button
                 type="submit"
                 class="flex-1 bg-blue-600 hover:bg-blue-700
-                       text-white font-medium rounded-lg
+                       text-white font-medium rounded-xl
                        px-3 sm:px-4 py-2.5 transition
                        text-xs sm:text-sm"
             >
@@ -1286,7 +1282,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <a
                 href="{{ route('laporan') }}"
                 class="bg-gray-700 hover:bg-gray-600
-                       text-white font-medium rounded-lg
+                       text-white font-medium rounded-xl
                        px-4 py-2.5 transition
                        text-xs sm:text-sm"
             >
@@ -1392,8 +1388,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         @if($isAdmin)
 
-            <div class="grid grid-cols-2 md:grid-cols-2
-                        lg:grid-cols-4 gap-1">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
 
 
                 {{-- Omzet --}}
@@ -1410,7 +1405,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
 
                 {{-- Utang Pelanggan --}}
-            <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                 <p class="text-sm text-gray-400">
                     Utang Pelanggan
@@ -1424,7 +1419,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             {{-- Pelunasan Piutang --}}
-            <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                 <p class="text-sm text-gray-400">
                     Pelunasan Piutang
@@ -1438,7 +1433,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- HPP --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         HPP / Modal Barang
@@ -1452,7 +1447,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Laba Kotor --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Laba Kotor
@@ -1471,7 +1466,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Pengeluaran --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Total Pengeluaran
@@ -1485,7 +1480,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Laba Bersih --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Laba Bersih
@@ -1504,7 +1499,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Total Transaksi --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Total Transaksi
@@ -1518,7 +1513,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Barang Terjual --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Barang Terjual
@@ -1532,7 +1527,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Total Diskon --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Total Diskon
@@ -1559,7 +1554,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Omzet --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Omzet Penjualan
@@ -1573,7 +1568,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Pengeluaran --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Total Pengeluaran
@@ -1587,7 +1582,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Setoran --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Setoran Periode
@@ -1606,7 +1601,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Total Transaksi --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Total Transaksi
@@ -1620,7 +1615,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Barang Terjual --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Barang Terjual
@@ -1634,7 +1629,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
                 {{-- Total Diskon --}}
-                <div class="bg-gray-900 rounded-lg p-4">
+<div class="bg-gray-900/70 rounded-xl p-4 border border-white/5">
 
                     <p class="text-sm text-gray-400">
                         Total Diskon
@@ -1659,7 +1654,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <div class="bg-gray-800 rounded-xl border border-white/10 overflow-hidden">
 
-        <div class="p-5 border-b border-white/10">
+<div class="p-4 sm:p-5 border-b border-white/10">
 
             <h2 class="text-lg font-semibold text-white">
                 Riwayat Penjualan
@@ -1676,31 +1671,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
             <table class="w-full text-sm text-left">
 
-                <thead class="bg-gray-900 text-gray-400">
+<thead class="bg-gray-900/80 text-gray-400">
 
                     <tr>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             No
                         </th>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             No. Transaksi
                         </th>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             Tanggal
                         </th>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             Kasir
                         </th>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             Total
                         </th>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             Pembayaran
                         </th>
 
@@ -1713,29 +1708,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     @forelse($transaksi ?? [] as $index => $item)
 
-                        <tr class="hover:bg-white/5 transition">
+                <tr class="hover:bg-white/[0.035] transition-colors duration-150">
 
-                            <td class="px-5 py-3 text-gray-400">
+                            <td class="px-3 sm:px-4 py-2.5 text-gray-400">
                                 {{ $index + 1 }}
                             </td>
 
-                            <td class="px-5 py-3 text-white font-medium">
+                            <td class="px-3 sm:px-4 py-2.5 text-white font-medium">
                                 {{ $item->invoice_number }}
                             </td>
 
-                            <td class="px-5 py-3 text-gray-400">
+                            <td class="px-3 sm:px-4 py-2.5 text-gray-400">
                                 {{ $item->created_at?->format('d/m/Y H:i') ?? '-' }}
                             </td>
 
-                            <td class="px-5 py-3 text-gray-400">
+                            <td class="px-3 sm:px-4 py-2.5 text-gray-400">
                                 {{ $item->user?->name ?? '-' }}
                             </td>
 
-                            <td class="px-5 py-3 text-white font-medium">
+                            <td class="px-3 sm:px-4 py-2.5 text-white font-medium">
                                 Rp {{ number_format($item->total ?? 0, 0, ',', '.') }}
                             </td>
 
-                            <td class="px-5 py-3 text-gray-400">
+                            <td class="px-3 sm:px-4 py-2.5 text-gray-400">
                                 {{ ucfirst($item->payment_method ?? '-') }}
                             </td>
 
@@ -1772,7 +1767,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     <div class="bg-gray-800 rounded-xl border border-white/10 overflow-hidden">
 
-        <div class="p-5 border-b border-white/10">
+<div class="p-4 sm:p-5 border-b border-white/10">
 
             <h2 class="text-lg font-semibold text-white">
                 Riwayat Pengeluaran
@@ -1789,31 +1784,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
             <table class="w-full text-sm text-left">
 
-                <thead class="bg-gray-900 text-gray-400">
+<thead class="bg-gray-900/80 text-gray-400">
 
                     <tr>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             No
                         </th>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             Tanggal
                         </th>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             Kategori
                         </th>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             Keterangan
                         </th>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             Jumlah
                         </th>
 
-                        <th class="px-5 py-3">
+                        <th class="px-3 sm:px-4 py-2.5">
                             Dicatat Oleh
                         </th>
 
@@ -1826,29 +1821,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     @forelse($pengeluaran ?? [] as $index => $item)
 
-                        <tr class="hover:bg-white/5 transition">
+<tr class="hover:bg-white/[0.035] transition-colors duration-150">
 
-                            <td class="px-5 py-3 text-gray-400">
+                            <td class="px-3 sm:px-4 py-2.5 text-gray-400">
                                 {{ $index + 1 }}
                             </td>
 
-                            <td class="px-5 py-3 text-gray-400">
+                            <td class="px-3 sm:px-4 py-2.5 text-gray-400">
                                 {{ $item->expense_date?->format('d/m/Y') ?? '-' }}
                             </td>
 
-                            <td class="px-5 py-3 text-white">
+                            <td class="px-3 sm:px-4 py-2.5 text-white">
                                 {{ $item->category }}
                             </td>
 
-                            <td class="px-5 py-3 text-gray-400">
+                            <td class="px-3 sm:px-4 py-2.5 text-gray-400">
                                 {{ $item->description ?? '-' }}
                             </td>
 
-                            <td class="px-5 py-3 text-white font-medium">
+                            <td class="px-3 sm:px-4 py-2.5 text-white font-medium">
                                 Rp {{ number_format($item->amount ?? 0, 0, ',', '.') }}
                             </td>
 
-                            <td class="px-5 py-3 text-gray-400">
+                            <td class="px-3 sm:px-4 py-2.5 text-gray-400">
                                 {{ $item->user?->name ?? '-' }}
                             </td>
 

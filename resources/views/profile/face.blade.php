@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-@section('header', '👤 Daftarkan Wajah')
-
 @section('content')
 
 <div class="max-w-lg mx-auto px-4 py-4">

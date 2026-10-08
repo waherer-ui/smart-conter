@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Transfer Antar Toko')
-@section('header', '🔄')
 
 @section('content')
 

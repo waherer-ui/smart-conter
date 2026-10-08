@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('title', 'Tambah Utang')
-@section('header', '💰')
 
 @section('content')
 

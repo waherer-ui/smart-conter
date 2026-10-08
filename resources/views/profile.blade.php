@@ -1,8 +1,98 @@
 @extends('layouts.app')
 
-@section('header', 'Pengaturan Profil')
-
 @section('content')
+
+<style>
+/* =========================================================
+   PROFIL - MOBILE OPTIMIZATION
+========================================================= */
+
+@media (max-width: 640px) {
+
+    /* Container */
+    .max-w-xl {
+        width: 100%;
+    }
+
+    /* Semua card */
+    .max-w-xl > div {
+        border-radius: 1rem !important;
+    }
+
+    /* Card profil utama */
+    .max-w-xl > div:first-of-type {
+        padding: 1rem !important;
+    }
+
+    /* Card referral */
+    .max-w-xl > div:last-of-type {
+        padding: 1rem !important;
+    }
+
+    /* Foto profil */
+    .max-w-xl .w-20.h-20 {
+        width: 76px !important;
+        height: 76px !important;
+    }
+
+    /* Input file */
+    .max-w-xl input[type="file"] {
+        font-size: 0.7rem;
+        width: 100%;
+    }
+
+    /* Semua input */
+    .max-w-xl input[type="text"],
+    .max-w-xl input[type="password"] {
+        min-height: 44px;
+    }
+
+    /* Tombol simpan */
+    .max-w-xl form .justify-end {
+        display: block;
+    }
+
+    .max-w-xl form .justify-end button {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    /* Menu Kelola Wajah & Backup */
+    .max-w-xl a.flex {
+        min-height: 68px;
+    }
+
+    /* Icon menu */
+    .max-w-xl a.flex .w-10.h-10 {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+    }
+
+    /* Referral code */
+    #referral-code {
+        font-size: 1rem !important;
+        letter-spacing: 0.12em;
+    }
+
+    /* Statistik referral */
+    .max-w-xl .grid-cols-3 {
+        gap: 0.5rem;
+    }
+
+    .max-w-xl .grid-cols-3 > div {
+        padding: 0.65rem 0.4rem !important;
+    }
+
+    /* Angka statistik */
+    .max-w-xl .grid-cols-3 p:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+}
+</style>
 
 <div class="max-w-xl mx-auto space-y-6 pb-12">@if(session('success'))
     <div class="bg-emerald-500/10 border border-emerald-500/35 text-emerald-400 px-4 py-3 rounded-xl text-sm">
@@ -49,13 +139,24 @@
                 Ganti Foto Profil
             </label>
 
-            <input
-                type="file"
-                name="avatar"
-                accept="image/*"
-                class="w-full text-xs text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
-            >
+<label
+    for="avatar"
+    class="inline-flex items-center justify-center gap-2
+           bg-indigo-600 hover:bg-indigo-500
+           text-white px-4 py-2.5
+           rounded-xl text-xs font-semibold
+           transition cursor-pointer"
+>
+    📷 Pilih Foto
+</label>
 
+<input
+    id="avatar"
+    type="file"
+    name="avatar"
+    accept="image/*"
+    class="hidden"
+>
         </div>
 
 
@@ -235,7 +336,7 @@
             <div>
 
                 <h2 class="text-base font-semibold text-white">
-                    Referral KasirKU
+                   Referral Kasir½M
                 </h2>
 
                 <p class="text-xs text-gray-400 mt-1">

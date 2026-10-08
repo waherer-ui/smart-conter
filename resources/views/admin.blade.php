@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-@section('header', 'Kontrol Manajemen & Kasir')
-
 @section('content')
 <div class="space-y-6">
     

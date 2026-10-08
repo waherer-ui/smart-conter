@@ -1,9 +1,120 @@
 @extends('layouts.app')
 
 @section('title', 'Pengaturan')
-@section('header', 'Pengaturan Aplikasi & Toko')
-
 @section('content')
+
+<style>
+/* =========================================================
+   PENGATURAN - MOBILE OPTIMIZATION
+========================================================= */
+
+@media (max-width: 640px) {
+
+    /* Container utama */
+    .space-y-6 {
+        gap: 1rem !important;
+    }
+
+    /* Semua card pengaturan */
+    .space-y-6 > form > div {
+        padding: 1rem !important;
+        border-radius: 0.875rem !important;
+    }
+
+    /* Judul section */
+    .space-y-6 h2 {
+        font-size: 1rem !important;
+        line-height: 1.4;
+    }
+
+    .space-y-6 h2 + p {
+        font-size: 0.75rem !important;
+        line-height: 1.4;
+    }
+
+    /* Jarak heading */
+    .space-y-6 .mb-6 {
+        margin-bottom: 1rem !important;
+    }
+
+    /* Semua input / select / textarea */
+    .space-y-6 input,
+    .space-y-6 select,
+    .space-y-6 textarea {
+        font-size: 0.875rem !important;
+    }
+
+    /* Tinggi input lebih nyaman disentuh */
+    .space-y-6 input:not([type="checkbox"]),
+    .space-y-6 select {
+        min-height: 44px;
+    }
+
+    /* Textarea */
+    .space-y-6 textarea {
+        min-height: 90px;
+    }
+
+    /* Lokasi - tombol */
+    #get-store-location,
+    #use-map-location {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Peta */
+    #store-location-map {
+        height: 260px !important;
+        border-radius: 0.75rem !important;
+    }
+
+    /* Grid koordinat tetap 2 kolom */
+    #latitude,
+    #longitude {
+        font-size: 0.75rem !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    /* Grid jam kerja menjadi satu kolom */
+    .space-y-6 .md\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Grid informasi toko */
+    .space-y-6 .md\:grid-cols-2 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Maksimal diskon dll */
+    .space-y-6 .max-w-md {
+        max-width: 100% !important;
+    }
+
+    /* Checkbox */
+    .space-y-6 label.flex.items-center {
+        min-height: 44px;
+        align-items: center;
+    }
+
+    .space-y-6 label.flex.items-center input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+
+    /* Tombol simpan */
+    .space-y-6 .justify-end {
+        display: block !important;
+    }
+
+    .space-y-6 .justify-end button {
+        width: 100%;
+        min-height: 46px;
+    }
+
+}
+</style>
 
 <div class="space-y-6">{{-- =========================================================
      PESAN
@@ -180,7 +291,7 @@
     <div class="space-y-5">
 
         {{-- PILIH LOKASI --}}
-        <div class="flex flex-wrap gap-2">
+<div class="grid grid-cols-1 sm:flex sm:flex-wrap gap-2">
 
             <button
                 type="button"
@@ -670,14 +781,14 @@
          SIMPAN
     ========================================================== --}}
 
-    <div class="flex justify-end pb-4">
+<div class="flex flex-col sm:flex-row sm:justify-end pb-4">
 
         <button
-            type="submit"
-            class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-2.5 rounded-lg transition"
-        >
-            Simpan Pengaturan
-        </button>
+    type="submit"
+    class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-6 py-2.5 rounded-lg transition"
+>
+    Simpan Pengaturan
+</button>
 
     </div>
 
