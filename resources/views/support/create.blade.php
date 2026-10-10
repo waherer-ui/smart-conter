@@ -20,7 +20,7 @@
             Buat Tiket Bantuan
         </h1>
         <p class="text-sm text-gray-400 mt-1">
-            Jelaskan masalah atau kebutuhan Anda kepada tim KasirKU.
+            Jelaskan masalah atau kebutuhan Anda kepada tim Kasir½M.
         </p>
     </div>
 </div>

@@ -8,26 +8,92 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Store;
 use App\Services\AuditLogService;
+use App\Models\AppNotification;
+use App\Models\User;
+use App\Models\Announcement;
+use App\Models\TutorialVideo;
 
 class SupportController extends Controller
 {
-    /**
-     * Daftar tiket milik owner yang sedang login.
-     */
-    public function index()
-    {
-        $userId = session('user_id');
+/**
+ * Halaman Pusat Bantuan.
+ */
+public function index()
+{
+    $userId = session('user_id');
 
-        $tickets = SupportTicket::with('store')
-            ->where('owner_id', $userId)
-            ->latest()
-            ->get();
+    $user = User::findOrFail($userId);
 
-        return view(
-            'support.index',
-            compact('tickets')
-        );
-    }
+    // Daftar tiket bantuan milik pengguna.
+    $tickets = SupportTicket::with('store')
+        ->where('owner_id', $userId)
+        ->latest()
+        ->get();
+
+    // Pengumuman yang sudah diterbitkan.
+    $announcements = Announcement::published()
+        ->latest('published_at')
+        ->get()
+        ->filter(function ($announcement) use ($user) {
+
+            // Semua pengguna toko.
+            if ($announcement->target_audience === 'all') {
+                return in_array($user->role, ['admin', 'kasir'], true)
+                    && $user->stores()->exists();
+            }
+
+            // Khusus pemilik toko.
+            if ($announcement->target_audience === 'owners') {
+                return $user->role === 'admin'
+                    && $user->ownedStores()->exists();
+            }
+
+            // Khusus paket Free, Pro, atau Premium.
+            if (in_array(
+                $announcement->target_audience,
+                ['free', 'pro', 'premium'],
+                true
+            )) {
+                if (
+                    $user->role !== 'admin'
+                    || !$user->ownedStores()->exists()
+                ) {
+                    return false;
+                }
+
+                return $user->subscription()
+                    ->where('status', 'active')
+                    ->where(function ($query) {
+                        $query->whereNull('ends_at')
+                            ->orWhere('ends_at', '>=', now());
+                    })
+                    ->whereHas('plan', function ($query) use ($announcement) {
+                        $query->where(
+                            'slug',
+                            $announcement->target_audience
+                        );
+                    })
+                    ->exists();
+            }
+
+            return false;
+        })
+        ->values();
+        
+        // Video tutorial aktif untuk Pusat Bantuan.
+$tutorialVideos = TutorialVideo::query()
+    ->where('is_active', true)
+    ->orderBy('category')
+    ->orderBy('sort_order')
+    ->orderBy('title')
+    ->get()
+    ->groupBy('category');
+
+    return view(
+    'support.index',
+    compact('tickets', 'announcements', 'tutorialVideos')
+);
+}
 
     /**
      * Form membuat tiket baru.
@@ -69,8 +135,7 @@ class SupportController extends Controller
 
             'category' => [
                 'required',
-                'string',
-                'max:100',
+                'in:akun,teknis,pembayaran,langganan,fitur,lainnya',
             ],
 
             'subject' => [
@@ -87,6 +152,7 @@ class SupportController extends Controller
             'description' => [
                 'required',
                 'string',
+                 'max:5000',
             ],
         ]);
 
@@ -203,6 +269,31 @@ class SupportController extends Controller
                     $ticket->description,
             ]
         );
+        
+        /*
+|--------------------------------------------------------------------------
+| NOTIFIKASI SUPER ADMIN - TIKET BARU
+|--------------------------------------------------------------------------
+*/
+
+$platformAdmins = User::where(
+    'is_platform_admin',
+    true
+)->get(['id']);
+
+foreach ($platformAdmins as $admin) {
+    AppNotification::create([
+        'user_id' => $admin->id,
+        'type' => 'support_ticket_created',
+        'title' => 'Tiket Bantuan Baru',
+        'message' => 'Tiket '
+            . $ticket->ticket_number
+            . ' dibuat oleh pemilik toko. Subjek: '
+            . $ticket->subject,
+        'url' => '/admin-kasirku/bantuan/'
+            . $ticket->id,
+    ]);
+}
 
         return redirect()
             ->route(
@@ -251,6 +342,13 @@ class SupportController extends Controller
             $ticket->owner_id == $userId,
             403
         );
+        
+        if ($ticket->status === 'closed') {
+    return back()->with(
+        'error',
+        'Tiket sudah ditutup. Silakan buat tiket baru jika membutuhkan bantuan kembali.'
+    );
+}
 
         $validated = $request->validate([
             'message' => [
@@ -352,6 +450,31 @@ class SupportController extends Controller
                     $message->message,
             ]
         );
+        
+        /*
+|--------------------------------------------------------------------------
+| NOTIFIKASI SUPER ADMIN - BALASAN OWNER
+|--------------------------------------------------------------------------
+*/
+
+$platformAdmins = User::where(
+    'is_platform_admin',
+    true
+)->get(['id']);
+
+foreach ($platformAdmins as $admin) {
+    AppNotification::create([
+        'user_id' => $admin->id,
+        'type' => 'support_owner_reply',
+        'title' => 'Balasan Pemilik Toko',
+        'message' => 'Ada pesan baru pada tiket '
+            . $ticket->ticket_number
+            . ': '
+            . $ticket->subject,
+        'url' => '/admin-kasirku/bantuan/'
+            . $ticket->id,
+    ]);
+}
 
         return back()
             ->with(

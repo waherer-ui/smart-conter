@@ -5,7 +5,9 @@ namespace App\Http\Controllers\AdminKasirku;
 use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
 use App\Models\User;
+use App\Services\AuditLogService;
 use Illuminate\Http\Request;
+use App\Models\AppNotification;
 
 class SupportController extends Controller
 {
@@ -126,14 +128,31 @@ class SupportController extends Controller
         ->orderBy('name')
         ->get();
 
-        return view(
-            'admin-kasirku.support.index',
-            compact(
-                'tickets',
-                'stats',
-                'admins'
-            )
-        );
+        /*
+|--------------------------------------------------------------------------
+| NOTIFIKASI PUSAT BANTUAN SUPER ADMIN
+|--------------------------------------------------------------------------
+*/
+
+$notifications = AppNotification::whereIn('type', [
+    'support_ticket_created',
+    'support_owner_reply',
+])
+->whereNull('read_at')
+->where('user_id', session('user_id'))
+->latest()
+->take(10)
+->get();
+
+return view(
+    'admin-kasirku.support.index',
+    compact(
+        'tickets',
+        'stats',
+        'admins',
+        'notifications'
+    )
+);
     }
 
 
@@ -151,6 +170,29 @@ class SupportController extends Controller
             'assignedTo',
             'messages.user',
         ]);
+        
+        /*
+|--------------------------------------------------------------------------
+| TANDAI NOTIFIKASI TIKET SEBAGAI SUDAH DIBACA
+|--------------------------------------------------------------------------
+*/
+
+\App\Models\AppNotification::where(
+    'user_id',
+    session('user_id')
+)
+->whereIn('type', [
+    'support_ticket_created',
+    'support_owner_reply',
+])
+->where(
+    'url',
+    '/admin-kasirku/bantuan/' . $ticket->id
+)
+->whereNull('read_at')
+->update([
+    'read_at' => now(),
+]);
 
         $admins = User::where(function ($query) {
 
@@ -177,32 +219,69 @@ class SupportController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function updateStatus(
-        Request $request,
-        SupportTicket $ticket
-    ) {
-        $validated = $request->validate([
-            'status' => [
-                'required',
-                'in:open,processing,waiting,resolved,closed',
-            ],
-        ]);
+public function updateStatus(
+Request $request,
+SupportTicket $ticket
+) {
+$validated = $request->validate([
+'status' => [
+'required',
+'in:open,processing,waiting,resolved,closed',
+],
+]);
 
-        $ticket->update([
-            'status' => $validated['status'],
-            'closed_at' => in_array(
-                $validated['status'],
-                ['resolved', 'closed']
-            )
-                ? now()
-                : null,
-        ]);
+$oldStatus = $ticket->status;
+$newStatus = $validated['status'];
 
-        return back()->with(
-            'success',
-            'Status tiket berhasil diperbarui.'
-        );
-    }
+// Jika status tidak berubah, tidak perlu memproses ulang.
+if ($oldStatus === $newStatus) {
+    return back()->with(
+        'success',
+        'Status tiket tidak mengalami perubahan.'
+    );
+}
+
+$ticket->update([
+    'status' => $newStatus,
+    'closed_at' => in_array(
+        $newStatus,
+        ['resolved', 'closed'],
+        true
+    ) ? now() : null,
+]);
+
+// Catat perubahan status ke audit log.
+AuditLogService::log(
+    'support_status_updated',
+    'Status tiket bantuan ' . $ticket->ticket_number
+        . ' diubah dari ' . $oldStatus
+        . ' menjadi ' . $newStatus,
+    $ticket,
+    session('user_id'),
+    $ticket->store_id,
+    ['status' => $oldStatus],
+    ['status' => $newStatus]
+);
+
+// Beri tahu pemilik toko bahwa status tiket berubah.
+\App\Models\AppNotification::create([
+    'user_id' => $ticket->owner_id,
+    'type' => 'support_status_updated',
+    'title' => 'Status Tiket Diperbarui',
+    'message' => 'Status tiket '
+        . $ticket->ticket_number
+        . ' berubah menjadi '
+        . ucfirst($newStatus)
+        . '.',
+    'url' => route('support.show', $ticket, false),
+]);
+
+return back()->with(
+    'success',
+    'Status tiket berhasil diperbarui.'
+);
+
+}
 
 
     /*
@@ -212,25 +291,82 @@ class SupportController extends Controller
     */
 
     public function assign(
-        Request $request,
-        SupportTicket $ticket
+    Request $request,
+    SupportTicket $ticket
+) {
+    $validated = $request->validate([
+        'assigned_to' => [
+            'nullable',
+            'integer',
+            'exists:users,id',
+        ],
+    ]);
+
+    $newAssigneeId = $validated['assigned_to'] ?? null;
+
+    // Pastikan pengguna yang dipilih benar-benar admin.
+    if (
+        $newAssigneeId !== null &&
+        !User::where('id', $newAssigneeId)
+            ->where(function ($query) {
+                $query->where('is_platform_admin', true)
+                    ->orWhere('role', 'admin');
+            })
+            ->exists()
     ) {
-        $validated = $request->validate([
-            'assigned_to' => [
-                'nullable',
-                'exists:users,id',
-            ],
-        ]);
+        return back()
+            ->withErrors([
+                'assigned_to' => 'Penanggung jawab harus merupakan admin yang valid.',
+            ])
+            ->withInput();
+    }
 
-        $ticket->update([
-            'assigned_to' => $validated['assigned_to'] ?? null,
-        ]);
+    $oldAssigneeId = $ticket->assigned_to;
 
+    // Tidak perlu memproses jika penanggung jawab tidak berubah.
+    if ((string) $oldAssigneeId === (string) $newAssigneeId) {
         return back()->with(
             'success',
-            'Penanggung jawab tiket berhasil diperbarui.'
+            'Penanggung jawab tiket tidak mengalami perubahan.'
         );
     }
+
+    $ticket->update([
+        'assigned_to' => $newAssigneeId,
+    ]);
+
+    // Catat perubahan penanggung jawab pada audit log.
+    AuditLogService::log(
+        'support_assigned',
+        'Penanggung jawab tiket '
+            . $ticket->ticket_number
+            . ' berhasil diperbarui.',
+        $ticket,
+        session('user_id'),
+        $ticket->store_id,
+        ['assigned_to' => $oldAssigneeId],
+        ['assigned_to' => $newAssigneeId]
+    );
+
+    // Beri tahu pemilik toko bahwa tiketnya ditugaskan.
+    \App\Models\AppNotification::create([
+        'user_id' => $ticket->owner_id,
+        'type' => 'support_assigned',
+        'title' => 'Penanggung Jawab Tiket Diperbarui',
+        'message' => $newAssigneeId === null
+            ? 'Penugasan tiket ' . $ticket->ticket_number
+                . ' telah dihapus.'
+            : 'Penanggung jawab tiket '
+                . $ticket->ticket_number
+                . ' telah diperbarui.',
+        'url' => route('support.show', $ticket, false),
+    ]);
+
+    return back()->with(
+        'success',
+        'Penanggung jawab tiket berhasil diperbarui.'
+    );
+}
 
 
     /*
@@ -239,39 +375,70 @@ class SupportController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function reply(
-        Request $request,
-        SupportTicket $ticket
-    ) {
-        $validated = $request->validate([
-            'message' => [
-                'required',
-                'string',
-                'max:5000',
-            ],
-        ]);
+public function reply(
+Request $request,
+SupportTicket $ticket
+) {
+// Tiket yang sudah ditutup tidak bisa dibalas.
+if ($ticket->status === 'closed') {
+return back()->with(
+'error',
+'Tiket sudah ditutup. Silakan buka tiket baru jika membutuhkan bantuan kembali.'
+);
+}
 
-        $ticket->messages()->create([
-            'user_id' => session('user_id'),
-            'message' => $validated['message'],
-        ]);
+$validated = $request->validate([
+    'message' => [
+        'required',
+        'string',
+        'max:5000',
+    ],
+]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Jika admin membalas tiket yang masih baru,
-        | otomatis ubah menjadi processing.
-        |--------------------------------------------------------------------------
-        */
+$userId = session('user_id');
 
-        if ($ticket->status === 'open') {
-            $ticket->update([
-                'status' => 'processing',
-            ]);
-        }
+$message = $ticket->messages()->create([
+    'user_id' => $userId,
+    'message' => $validated['message'],
+]);
 
-        return back()->with(
-            'success',
-            'Balasan berhasil dikirim.'
-        );
-    }
+// Catat balasan admin pada audit log.
+AuditLogService::log(
+    'support_replied',
+    'Admin membalas tiket bantuan ' . $ticket->ticket_number,
+    $message,
+    $userId,
+    $ticket->store_id,
+    null,
+    [
+        'ticket_id' => $ticket->id,
+        'ticket_number' => $ticket->ticket_number,
+    ]
+);
+
+// Kirim notifikasi kepada pemilik tiket.
+\App\Models\AppNotification::create([
+    'user_id' => $ticket->owner_id,
+    'type' => 'support_reply',
+    'title' => 'Balasan Pusat Bantuan',
+    'message' => 'Admin telah membalas tiket '
+        . $ticket->ticket_number
+        . ': '
+        . $ticket->subject,
+    'url' => route('support.show', $ticket, false),
+]);
+
+// Tiket baru otomatis menjadi sedang diproses.
+if ($ticket->status === 'open') {
+    $ticket->update([
+        'status' => 'processing',
+    ]);
+}
+
+return back()->with(
+    'success',
+    'Balasan berhasil dikirim.'
+);
+
+}
 }

@@ -22,6 +22,92 @@
         </div>
 
     </div>
+    
+        {{-- =========================================================
+         NOTIFIKASI PUSAT BANTUAN
+    ========================================================== --}}
+    @if($notifications->isNotEmpty())
+
+        <div class="overflow-hidden rounded-2xl border border-emerald-500/30 bg-gray-800/80">
+
+            {{-- HEADER NOTIFIKASI --}}
+            <div class="flex items-center justify-between border-b border-gray-700 px-5 py-4">
+
+                <div>
+                    <h2 class="font-semibold text-white">
+                        🔔 Pemberitahuan Baru
+                    </h2>
+
+                    <p class="mt-1 text-xs text-gray-400">
+                        Informasi tiket dan pesan terbaru dari pemilik toko.
+                    </p>
+                </div>
+
+                <span class="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-400">
+                    {{ $notifications->count() }} baru
+                </span>
+
+            </div>
+
+            {{-- DAFTAR NOTIFIKASI --}}
+            <div class="divide-y divide-gray-700">
+
+                @foreach($notifications as $notification)
+
+                    <a
+                        href="{{ $notification->url }}"
+                        class="flex items-start gap-3 px-5 py-4 transition hover:bg-gray-700/40"
+                    >
+
+                        {{-- IKON --}}
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
+                            {{ $notification->type === 'support_ticket_created'
+                                ? 'bg-emerald-500/15 text-emerald-400'
+                                : 'bg-blue-500/15 text-blue-400' }}">
+
+                            {{ $notification->type === 'support_ticket_created' ? '🎫' : '💬' }}
+
+                        </div>
+
+                        {{-- INFORMASI --}}
+                        <div class="min-w-0 flex-1">
+
+                            <div class="flex flex-wrap items-center gap-2">
+
+                                <h3 class="text-sm font-semibold text-white">
+                                    {{ $notification->title }}
+                                </h3>
+
+                                <span class="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-400">
+                                    Baru
+                                </span>
+
+                            </div>
+
+                            <p class="mt-1 text-sm text-gray-300">
+                                {{ $notification->message }}
+                            </p>
+
+                            <p class="mt-2 text-xs text-gray-500">
+                                {{ $notification->created_at?->format('d M Y, H:i') }}
+                            </p>
+
+                        </div>
+
+                        {{-- TOMBOL --}}
+                        <span class="shrink-0 self-center text-sm font-medium text-emerald-400">
+                            Buka →
+                        </span>
+
+                    </a>
+
+                @endforeach
+
+            </div>
+
+        </div>
+
+    @endif
 
 
     {{-- =========================================================

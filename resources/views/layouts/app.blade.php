@@ -339,6 +339,24 @@
             ->count();
 
     }
+    
+        // =====================================================
+    // JUMLAH NOTIFIKASI BELUM DIBACA
+    // =====================================================
+
+    $unreadNotificationCount = 0;
+
+    if ($layoutUser) {
+
+        $unreadNotificationCount =
+            \App\Models\AppNotification::where(
+                'user_id',
+                $layoutUser->id
+            )
+            ->whereNull('read_at')
+            ->count();
+
+    }
 
 @endphp
 
@@ -602,6 +620,80 @@
 
 
                 {{-- =================================================
+                     TOMBOL NOTIFIKASI
+                ================================================== --}}
+
+                @if(session('logged_in'))
+
+                    <a
+                        href="{{ route('notifications.index') }}"
+                        aria-label="Notifikasi"
+                        title="Notifikasi"
+                        class="relative flex items-center justify-center
+                               w-10 h-10 shrink-0
+                               rounded-xl
+                               border border-white/10
+                               bg-gray-800/60
+                               hover:bg-emerald-500/15
+                               hover:border-emerald-500/30
+                               transition
+                               focus:outline-none
+                               focus:ring-2
+                               focus:ring-emerald-500"
+                    >
+
+                        {{-- IKON LONCENG --}}
+
+                        <svg
+                            class="w-5 h-5 text-gray-200"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15 17h5l-1.4-1.4
+                                   A2 2 0 0 1 18 14.2V11
+                                   a6 6 0 0 0-4.5-5.8V5
+                                   a1.5 1.5 0 0 0-3 0v.2
+                                   A6 6 0 0 0 6 11v3.2
+                                   a2 2 0 0 1-.6 1.4L4 17h5
+                                   m6 0a3 3 0 0 1-6 0"
+                            />
+                        </svg>
+
+                        {{-- BADGE NOTIFIKASI BELUM DIBACA --}}
+
+                        @if($unreadNotificationCount > 0)
+
+                            <span
+                                class="absolute
+                                       -top-1 -right-1
+                                       min-w-[18px] h-[18px]
+                                       px-1
+                                       rounded-full
+                                       bg-red-500
+                                       text-white
+                                       text-[10px]
+                                       font-bold
+                                       flex items-center justify-center
+                                       ring-2 ring-gray-900"
+                            >
+                                {{ $unreadNotificationCount > 99
+                                    ? '99+'
+                                    : $unreadNotificationCount }}
+                            </span>
+
+                        @endif
+
+                    </a>
+
+                @endif
+
+
+                {{-- =================================================
                      MAIN MENU BUTTON
                 ================================================== --}}
 
@@ -828,24 +920,47 @@
                                     <span>💳</span>
                                     <span>Langganan</span>
                                 </a>
+                                
+                                <a href="{{ route('admin-kasirku.tutorial-videos.index') }}"
+                                  class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition">
+                                  <span class="text-xl">🎬</span>
+                                  <span>Video Tutorial</span>
+                                  </a>
 
                                 <a
-                                    href="{{ route('admin-kasirku.plans.index') }}"
-                                    class="dropdown-link"
-                                >
-                                    <span>📦</span>
-                                    <span>Paket</span>
-                                </a>
-
-                                <a
-                                    href="{{ route(
-                                        'admin-kasirku.audit-log.index'
-                                    ) }}"
-                                    class="dropdown-link"
-                                >
-                                    <span>📋</span>
-                                    <span>Semua Aktivitas</span>
-                                </a>
+                                  href="{{ route('admin-kasirku.plans.index') }}"
+                                  class="dropdown-link"
+                                  
+                                  «»
+                                  
+                                  <span>📦</span>
+                                  <span>Paket</span>
+                                  
+                                  </a>{{-- PENGUMUMAN --}}
+                                  <a
+                                  href="{{ route('admin-kasirku.announcements.index') }}"
+                                  class="dropdown-link
+                                  {{ request()->routeIs('admin-kasirku.announcements.*')
+                                  ? 'bg-gray-700 text-white'
+                                  : '' }}"
+                                  
+                                  «»
+                                  
+                                  <span>📢</span>
+                                  <span>Pengumuman</span>
+                                  
+                                  </a><a
+                                  href="{{ route(
+                                  'admin-kasirku.audit-log.index'
+                                  ) }}"
+                                  class="dropdown-link"
+                                  
+                                  «»
+                                  
+                                  <span>📋</span>
+                                  <span>Semua Aktivitas</span>
+                                  
+                                  </a>
 
                             </div>
 
@@ -1747,11 +1862,11 @@
                    flex items-center justify-around"
         >
 
-            {{-- =================================================
-                 PLATFORM ADMIN
-            ================================================== --}}
+{{-- =================================================
+     PLATFORM ADMIN
+================================================== --}}
 
-            @if(request()->routeIs('admin-kasirku.*'))
+@if(session('is_platform_admin'))
 
                 <a
                     href="{{ route('admin-kasirku.dashboard') }}"
@@ -1840,6 +1955,23 @@
 
                     <span>Paket</span>
                 </a>
+                
+                <a
+                      href="{{ route('admin-kasirku.announcements.index') }}"
+                      class="mobile-bottom-item
+                      {{ request()->routeIs('admin-kasirku.announcements.*')
+                      ? 'mobile-bottom-active'
+                      : '' }}"
+                      
+                      «»
+                      
+                      <span class="text-xl leading-none">
+                          📢
+                      </span>
+                      
+                      <span>Pengumuman</span>
+                      
+                      </a>
 
 
             @else

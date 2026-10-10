@@ -11,6 +11,7 @@ use App\Models\Referral;
 use App\Models\ReferralReward;
 use App\Services\AuditLogService;
 use App\Services\MidtransService;
+use App\Models\AppNotification;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -1152,6 +1153,29 @@ protected function processSuccessfulPayment(
             'ends_at' =>
                 $endsAt,
         ]);
+        
+/*
+* =====================================================
+* NOTIFIKASI PEMBAYARAN LANGGANAN BERHASIL
+* =====================================================
+*/
+$planName = $payment->plan->name ?? 'Premium';
+
+    AppNotification::create([
+        'user_id' => $payment->owner_id,
+        'type' => 'subscription_payment_success',
+        'title' => 'Pembayaran Berhasil',
+        'message' => 'Pembayaran paket '
+            . $planName
+            . ' selama '
+            . $durationMonths
+            . ' bulan berhasil dikonfirmasi. Langganan Anda telah diperbarui.',
+        'url' => route(
+            'paket.payment.detail',
+            $payment,
+            false
+        ),
+    ]);
 
         /*
          * =====================================================

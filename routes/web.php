@@ -19,6 +19,8 @@ use App\Http\Controllers\AdminKasirku\SubscriptionController;
 use App\Http\Controllers\AdminKasirku\PlanController as PlatformPlanController;
 use App\Http\Controllers\AdminKasirku\SupportController;
 use App\Http\Controllers\AdminKasirku\AuditLogController;
+use App\Http\Controllers\AdminKasirku\AnnouncementController;
+use App\Http\Controllers\AdminKasirku\TutorialVideoController;
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\BackupController;
@@ -45,7 +47,9 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\FaceRegistrationController;
 use App\Http\Controllers\PriceRuleController;
 use App\Http\Controllers\TransactionReturnController;
-
+use App\Http\Controllers\AppNotificationController;
+use App\Http\Controllers\AnnouncementPublicController;
+use App\Http\Controllers\TutorialVideoPageController;
 
 
 /*
@@ -168,6 +172,87 @@ Route::get(
     '/admin-kasirku/aktivitas',
     [AuditLogController::class, 'index']
 )->name('admin-kasirku.audit-log.index');
+
+/*
+|--------------------------------------------------------------------------
+| PENGUMUMAN KASIR½M
+|--------------------------------------------------------------------------
+*/
+Route::get(
+    '/admin-kasirku/pengumuman',
+    [AnnouncementController::class, 'index']
+)->name('admin-kasirku.announcements.index');
+
+Route::get(
+    '/admin-kasirku/pengumuman/buat',
+    [AnnouncementController::class, 'create']
+)->name('admin-kasirku.announcements.create');
+
+Route::post(
+    '/admin-kasirku/pengumuman',
+    [AnnouncementController::class, 'store']
+)->name('admin-kasirku.announcements.store');
+
+Route::get(
+    '/admin-kasirku/pengumuman/{announcement}/edit',
+    [AnnouncementController::class, 'edit']
+)->name('admin-kasirku.announcements.edit');
+
+Route::put(
+    '/admin-kasirku/pengumuman/{announcement}',
+    [AnnouncementController::class, 'update']
+)->name('admin-kasirku.announcements.update');
+
+Route::post(
+    '/admin-kasirku/pengumuman/{announcement}/terbitkan',
+    [AnnouncementController::class, 'publish']
+)->name('admin-kasirku.announcements.publish');
+
+Route::post(
+    '/admin-kasirku/pengumuman/{announcement}/arsipkan',
+    [AnnouncementController::class, 'archive']
+)->name('admin-kasirku.announcements.archive');
+
+/*
+|--------------------------------------------------------------------------
+| VIDEO TUTORIAL KASIR½M
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/admin-kasirku/video-tutorial',
+    [TutorialVideoController::class, 'index']
+)->name('admin-kasirku.tutorial-videos.index');
+
+Route::get(
+    '/admin-kasirku/video-tutorial/buat',
+    [TutorialVideoController::class, 'create']
+)->name('admin-kasirku.tutorial-videos.create');
+
+Route::post(
+    '/admin-kasirku/video-tutorial',
+    [TutorialVideoController::class, 'store']
+)->name('admin-kasirku.tutorial-videos.store');
+
+Route::get(
+    '/admin-kasirku/video-tutorial/{tutorialVideo}/edit',
+    [TutorialVideoController::class, 'edit']
+)->name('admin-kasirku.tutorial-videos.edit');
+
+Route::put(
+    '/admin-kasirku/video-tutorial/{tutorialVideo}',
+    [TutorialVideoController::class, 'update']
+)->name('admin-kasirku.tutorial-videos.update');
+
+Route::post(
+    '/admin-kasirku/video-tutorial/{tutorialVideo}/toggle',
+    [TutorialVideoController::class, 'toggle']
+)->name('admin-kasirku.tutorial-videos.toggle');
+
+Route::delete(
+    '/admin-kasirku/video-tutorial/{tutorialVideo}',
+    [TutorialVideoController::class, 'destroy']
+)->name('admin-kasirku.tutorial-videos.destroy');
 
 /*
 |--------------------------------------------------------------------------
@@ -1197,6 +1282,22 @@ Route::middleware('auth.role')->group(function () {
         '/bantuan',
         [OwnerSupportController::class, 'index']
     )->name('support.index');
+    
+    // NOTIFIKASI
+Route::get('/notifikasi', [
+    AppNotificationController::class,
+    'index',
+])->name('notifications.index');
+
+Route::post('/notifikasi/baca-semua', [
+    AppNotificationController::class,
+    'readAll',
+])->name('notifications.read-all');
+
+Route::post('/notifikasi/{notification}/baca', [
+    AppNotificationController::class,
+    'read',
+])->name('notifications.read');
 
     Route::get(
         '/bantuan/buat',
@@ -1207,6 +1308,11 @@ Route::middleware('auth.role')->group(function () {
         '/bantuan',
         [OwnerSupportController::class, 'store']
     )->name('support.store');
+    
+    Route::get(
+    '/bantuan/video-tutorial',
+    [TutorialVideoPageController::class, 'index']
+)->name('support.videos');
 
     Route::get(
         '/bantuan/{ticket}',
@@ -1217,6 +1323,12 @@ Route::middleware('auth.role')->group(function () {
         '/bantuan/{ticket}/pesan',
         [OwnerSupportController::class, 'message']
     )->name('support.message');
+    
+    Route::get(
+    '/pengumuman/{announcement}',
+    [AnnouncementPublicController::class, 'show']
+)->name('announcements.show');
+
 });
 
 /*
